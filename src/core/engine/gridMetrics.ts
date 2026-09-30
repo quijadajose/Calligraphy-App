@@ -111,12 +111,16 @@ export interface GenkouLayout {
 }
 
 export function genkouyoushiLayout(width: number, height: number): GenkouLayout {
-  const boxSize = Math.min(220, Math.floor(Math.min(width, height) * 0.45));
-  const gap = 20;
+  const top = practiceChrome.top;
+  const usableH = Math.max(180, height - top - practiceChrome.bottom);
+  const boxSize = Math.min(200, Math.floor(Math.min(width, usableH) * 0.34));
+  const gap = 16;
   const cols = Math.max(1, Math.floor((width - gap) / (boxSize + gap)));
-  const rows = Math.max(1, Math.floor((height - gap) / (boxSize + gap)));
-  const offsetX = (width - (cols * (boxSize + gap) - gap)) / 2;
-  const offsetY = (height - (rows * (boxSize + gap) - gap)) / 2;
+  const rows = Math.max(1, Math.floor((usableH - gap) / (boxSize + gap)));
+  const gridW = cols * (boxSize + gap) - gap;
+  const gridH = rows * (boxSize + gap) - gap;
+  const offsetX = (width - gridW) / 2;
+  const offsetY = top + (usableH - gridH) / 2;
   const boxes: GuideBox[] = [];
 
   for (let r = 0; r < rows; r++) {
@@ -132,10 +136,9 @@ export function genkouyoushiLayout(width: number, height: number): GenkouLayout 
   return { boxes, boxSize, cols, rows };
 }
 
-export function centerBox(layout: GenkouLayout): GuideBox {
-  const row = Math.floor(layout.rows / 2);
-  const col = Math.floor(layout.cols / 2);
-  return layout.boxes[row * layout.cols + col] ?? layout.boxes[0];
+/** El primer cuadrado, arriba a la izquierda, es el ejemplo. El resto se copia. */
+export function exampleBox(layout: GenkouLayout): GuideBox {
+  return layout.boxes[0] ?? { x: 0, y: practiceChrome.top, size: layout.boxSize };
 }
 
 export function dominantBox(points: Point2[], layout: GenkouLayout): GuideBox | null {

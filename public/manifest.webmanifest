@@ -2,14 +2,14 @@
   "name": "Calligraphy Master",
   "short_name": "Calligraphy",
   "description": "Práctica de caligrafía Palmer y japonesa con lápiz óptico.",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#121418",
   "theme_color": "#121418",
   "lang": "es",
   "icons": [
     {
-      "src": "/icon.svg",
+      "src": "icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"

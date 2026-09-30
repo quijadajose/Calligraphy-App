@@ -33,7 +33,7 @@ function kanaLesson(char: string, reading: string, strokes: number, group: strin
     group,
     title: `${char}  ${reading}`,
     subTitle: `${strokes} trazos`,
-    instructions: 'Sigue el fantasma dentro del cuadrado. Cada trazo entra en orden y termina en tome, hane o harai, según el modelo.',
+    instructions: 'El primer cuadrado es el ejemplo. Copia la letra en los demás, con el mismo orden y el mismo remate.',
     characterOrWord: char,
     recommendedTool: 'fude',
     suggestedGrid: 'genkouyoushi',

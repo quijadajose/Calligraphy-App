@@ -457,6 +457,8 @@ window.addEventListener('DOMContentLoaded', () => {
       stepIndex
     );
     if (penMatchesModel) applyModelPen();
+    if (isPalmerGlyph(lesson)) palmerPreview.animate();
+    inkCanvas.animateCurrentStep();
   }
 
   function lessonForScore(lesson: Lesson): Lesson {
@@ -481,7 +483,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const markBox = document.getElementById('character-target-container') as HTMLElement;
     markBox.hidden = !animated && !showMark;
     guideChar.style.display = showMark ? 'block' : 'none';
-    kanjiAnimatorBox.style.display = animated ? 'block' : 'none';
+    kanjiAnimatorBox.style.display = palmerGlyph ? 'block' : 'none';
     btnAnimateStroke.style.display = animated ? 'inline-flex' : 'none';
     guideChar.textContent = showMark ? mark : '';
     liveFeedback.textContent = singleJp ? 'Cargando orden de trazos…' : '';
@@ -533,21 +535,22 @@ window.addEventListener('DOMContentLoaded', () => {
       const record = await loadCharRecord(lesson.characterOrWord);
       if (token !== lessonToken) return;
       activeGeometry = record.geometry;
+      btnAnimateStroke.style.display = record.geometry ? 'inline-flex' : 'none';
       if (record.raw) {
         mountWriter(lesson.characterOrWord, record.raw);
         kanjiAnimatorBox.style.display = 'block';
-        btnAnimateStroke.style.display = 'inline-flex';
         guideChar.style.display = 'none';
+        kanjiWriter?.animateCharacter();
       } else {
         kanjiAnimatorBox.style.display = 'none';
-        btnAnimateStroke.style.display = 'none';
         guideChar.style.display = 'block';
         guideChar.textContent = lesson.characterOrWord;
       }
       inkCanvas.setGhost(record.geometry?.strokes ?? []);
       if (penMatchesModel) applyModelPen();
+      if (record.geometry) inkCanvas.animateGuide();
       liveFeedback.textContent = record.geometry
-        ? `${record.geometry.strokes.length} trazos. Empieza por el primero.`
+        ? `${record.geometry.strokes.length} trazos. El ejemplo está arriba; copia la letra en los demás cuadrados.`
         : 'No hay datos de trazo para este carácter.';
       return;
     }
@@ -577,7 +580,10 @@ window.addEventListener('DOMContentLoaded', () => {
   btnAnimateStroke.addEventListener('click', (event) => {
     event.stopPropagation();
     if (isPalmerGlyph(activeLesson)) palmerPreview.animate();
-    else kanjiWriter?.animateCharacter();
+    else if (kanjiWriter) {
+      kanjiAnimatorBox.style.display = 'block';
+      kanjiWriter.animateCharacter();
+    }
     inkCanvas.animateGuide();
   });
 
@@ -629,7 +635,7 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   if (import.meta.env.PROD && 'serviceWorker' in window.navigator) {
-    window.navigator.serviceWorker.register('/sw.js').catch(() => undefined);
+    window.navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`).catch(() => undefined);
   }
 
   showDashboard('lessons');

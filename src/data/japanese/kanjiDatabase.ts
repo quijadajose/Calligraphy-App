@@ -2245,7 +2245,7 @@ export function kanjiLessons(): Lesson[] {
         group: level,
         title: entry.c + '  ' + entry.r,
         subTitle: entry.s + ' trazos · ' + entry.m,
-        instructions: 'Copia el fantasma en el cuadrado central. El orden y la dirección de cada trazo cuentan, igual que el remate (tome, hane o harai).',
+        instructions: 'El primer cuadrado es el ejemplo. Copia el kanji en los demás. El orden, la dirección y el remate cuentan.',
         characterOrWord: entry.c,
         recommendedTool: 'fude',
         suggestedGrid: 'genkouyoushi',

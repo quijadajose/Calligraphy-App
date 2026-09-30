@@ -2,7 +2,7 @@ const CACHE = 'calligraphy-v1';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE).then((cache) => cache.addAll(['/', '/index.html', '/manifest.webmanifest', '/icon.svg']))
+    caches.open(CACHE).then((cache) => cache.addAll(['./', './index.html', './manifest.webmanifest', './icon.svg']))
   );
   self.skipWaiting();
 });

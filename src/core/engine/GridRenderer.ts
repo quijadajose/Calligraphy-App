@@ -2,7 +2,7 @@ import { GridMode, Point2 } from '../../types/ink';
 import {
   PALMER_PEN_RATIO,
   PALMER_SLANT_DEG,
-  centerBox,
+  exampleBox,
   genkouyoushiLayout,
   mapPalmerPoint,
   palmerCellWidth,
@@ -38,7 +38,9 @@ export class GridRenderer {
     ctx.strokeStyle = mode === 'genkouyoushi'
       ? (mood === 'dark' ? 'rgba(220, 150, 130, 0.7)' : mood === 'kids' ? 'rgba(232, 112, 138, 0.55)' : 'rgba(180, 80, 60, 0.45)')
       : (mood === 'dark' ? 'rgba(168, 186, 204, 0.62)' : mood === 'kids' ? 'rgba(70, 120, 190, 0.5)' : 'rgba(70, 90, 120, 0.4)');
-    ctx.lineWidth = 2.4;
+    ctx.lineWidth = mode === 'genkouyoushi'
+      ? Math.max(8, exampleBox(genkouyoushiLayout(width, height)).size * 0.07)
+      : 2.4;
 
     for (const stroke of strokes) {
       if (stroke.length === 0) continue;
@@ -127,7 +129,7 @@ export class GridRenderer {
     const mapped = strokes.map((stroke) => stroke.map((point) => this.mapGuidePoint(point, width, height, mode)));
     let lineWidth = 10;
     if (mode === 'genkouyoushi') {
-      const box = centerBox(genkouyoushiLayout(width, height));
+      const box = exampleBox(genkouyoushiLayout(width, height));
       lineWidth = Math.max(8, box.size * 0.07);
     } else {
       const row = palmerRowGeometry(this.modelRowIndex(height), height);
@@ -255,7 +257,7 @@ export class GridRenderer {
 
   private mapGuidePoint(point: Point2, width: number, height: number, mode: GridMode): Point2 {
     if (mode === 'genkouyoushi') {
-      const box = centerBox(genkouyoushiLayout(width, height));
+      const box = exampleBox(genkouyoushiLayout(width, height));
       return { x: box.x + point.x * box.size, y: box.y + point.y * box.size };
     }
 
