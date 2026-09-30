@@ -3,8 +3,11 @@ import { dominantBox, genkouyoushiLayout } from '../engine/gridMetrics';
 import {
   classifyEnding,
   directionScore,
+  distanceToPolyline,
   endingScore,
   normalizeStrokes,
+  polylineLength,
+  resample,
   shapeScore
 } from './geometry';
 
@@ -32,6 +35,41 @@ function userUnits(strokes: Stroke[], width: number, height: number): Point2[][]
     );
   }
   return normalizeStrokes(strokes.map((stroke) => stroke.points.map((point) => ({ x: point.x, y: point.y }))));
+}
+
+function strokeInBox(stroke: Stroke, width: number, height: number): Point2[] | null {
+  const layout = genkouyoushiLayout(width, height);
+  const box = dominantBox(stroke.points, layout);
+  if (!box || stroke.points.length < 2) return null;
+  return stroke.points.map((point) => ({
+    x: (point.x - box.x) / box.size,
+    y: (point.y - box.y) / box.size
+  }));
+}
+
+/** El último trazo no llega a recorrer el modelo: se puede descartar y repetir. */
+export function lastStrokeIsIncomplete(
+  strokes: Stroke[],
+  geometry: CharGeometry | null,
+  width: number,
+  height: number
+): boolean {
+  if (!geometry || strokes.length === 0) return false;
+  const index = strokes.length - 1;
+  const ideal = geometry.strokes[index];
+  if (!ideal || ideal.length < 2) return false;
+  const drawn = strokeInBox(strokes[index], width, height);
+  if (!drawn) return true;
+  const idealLength = polylineLength(ideal);
+  const drawnLength = polylineLength(drawn);
+  if (idealLength < 0.02) return drawnLength < 0.012;
+  if (drawnLength / idealLength < 0.58) return true;
+  const samples = resample(ideal, 14);
+  let close = 0;
+  for (const point of samples) {
+    if (distanceToPolyline(point, drawn) <= 0.12) close += 1;
+  }
+  return close / samples.length < 0.5;
 }
 
 export class KanjiOrderValidator {

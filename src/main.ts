@@ -3,6 +3,7 @@ import { DictationService, suggestedSeconds } from './core/audio/DictationServic
 import { loadCharRecord } from './core/evaluation/CharDataLoader';
 import { SlantAnalyzer } from './core/evaluation/SlantAnalyzer';
 import { guideDirection, strokeCoversGuide } from './core/evaluation/geometry';
+import { lastStrokeIsIncomplete } from './core/evaluation/KanjiOrderValidator';
 import { StrokeEvaluator } from './core/evaluation/StrokeEvaluator';
 import { baseWidthMatching } from './core/engine/BrushRenderer';
 import { InkCanvas } from './core/engine/InkCanvas';
@@ -123,11 +124,17 @@ window.addEventListener('DOMContentLoaded', () => {
       return;
     }
     if (activeLesson.category === 'japanese' && activeLesson.characterOrWord.length === 1) {
+      const size = inkCanvas.getSize();
+      if (lastStrokeIsIncomplete(strokes, activeGeometry, size.width, size.height)) {
+        inkCanvas.undo();
+        liveFeedback.textContent = 'Ese trazo quedó a medias. Se borró: hazlo de principio a fin.';
+        return;
+      }
       liveFeedback.textContent = StrokeEvaluator.liveKanjiMessage(
         strokes,
         activeGeometry,
-        inkCanvas.getSize().width,
-        inkCanvas.getSize().height
+        size.width,
+        size.height
       );
       noteLesson({ practiced: true });
       return;
