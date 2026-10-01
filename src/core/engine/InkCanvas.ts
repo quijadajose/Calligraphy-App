@@ -3,18 +3,31 @@ import { PALMER_PEN_RATIO, sentenceRowGeometry, setPracticeChrome } from './grid
 import { GridRenderer } from './GridRenderer';
 import { InkRenderer } from './InkRenderer';
 import { PalmRejection } from './PalmRejection';
-
-type BufferCanvas = OffscreenCanvas | HTMLCanvasElement;
+import { BrushRenderer } from './BrushRenderer';
+import { OneEuroFilter } from './OneEuroFilter';
+import { PerformanceOverlay } from './PerformanceOverlay';
 
 export class InkCanvas {
   private container: HTMLElement;
-  private canvas: HTMLCanvasElement;
-  private ctx: CanvasRenderingContext2D;
-  private buffer: BufferCanvas | null = null;
-  private bufferCtx: CanvasRenderingContext2D | null = null;
+
+  // Capa 1 (Fondo): Cuadrícula, modelo de lección y texto guía. Solo se repinta en resize, cambio de lección o tema.
+  private bgCanvas: HTMLCanvasElement;
+  private bgCtx: CanvasRenderingContext2D;
+
+  // Capa 2 (Tinta confirmada): Trazos completados consolidados. No se recalcula al escribir trazos nuevos.
+  private inkCanvas: HTMLCanvasElement;
+  private inkCtx: CanvasRenderingContext2D;
+
+  // Capa 3 (Trazo activo y efímero): Dibuja segmentos incrementales en vivo y predicción de eventos sin tocar Capa 1 y 2.
+  private activeCanvas: HTMLCanvasElement;
+  private activeCtx: CanvasRenderingContext2D;
+
   private inkRenderer = new InkRenderer();
+  private brushRenderer = new BrushRenderer();
   private gridRenderer = new GridRenderer();
   private palmRejection = new PalmRejection();
+  private filter = new OneEuroFilter();
+  public perfOverlay: PerformanceOverlay;
 
   private strokes: Stroke[] = [];
   private currentStroke: Stroke | null = null;
@@ -25,11 +38,21 @@ export class InkCanvas {
   private sheetText: string | null = null;
   private cssWidth = 0;
   private cssHeight = 0;
+
+  // Animación de guía
   private guideAnim: { strokes: Point2[][]; width: number } | null = null;
   private guideReveal = 0;
   private animToken = 0;
   private animFrame = 0;
   private animTimer = 0;
+
+  // Cola y sincronización rAF
+  private rawPointQueue: StrokePoint[] = [];
+  private predictedPoints: StrokePoint[] = [];
+  private lastRenderedPoint: StrokePoint | null = null;
+  private lastRenderedWidth = 0;
+  private rAFPending = false;
+  private latestPressure = 0;
 
   public currentTool: BrushTool = 'fountain';
   public currentColor = '#1a1a1a';
@@ -43,16 +66,30 @@ export class InkCanvas {
 
   constructor(container: HTMLElement) {
     this.container = container;
-    this.canvas = document.createElement('canvas');
-    this.canvas.className = 'ink-canvas';
-    this.container.appendChild(this.canvas);
 
-    const context = this.canvas.getContext('2d', { desynchronized: true });
-    if (!context) throw new Error('No se pudo inicializar Canvas 2D');
-    this.ctx = context;
+    // Crear capas de canvas
+    this.bgCanvas = this.createLayer('ink-canvas-bg', 1);
+    this.inkCanvas = this.createLayer('ink-canvas-ink', 2);
+    this.activeCanvas = this.createLayer('ink-canvas-active', 3);
+
+    const bgContext = this.bgCanvas.getContext('2d');
+    const inkContext = this.inkCanvas.getContext('2d');
+    const activeContext = this.activeCanvas.getContext('2d', { desynchronized: true });
+
+    if (!bgContext || !inkContext || !activeContext) {
+      throw new Error('No se pudo inicializar el contexto Canvas 2D');
+    }
+
+    this.bgCtx = bgContext;
+    this.inkCtx = inkContext;
+    this.activeCtx = activeContext;
+
+    // Instrumentación HUD de rendimiento (Fase 0)
+    this.perfOverlay = new PerformanceOverlay(this.container);
 
     this.resizeCanvas();
     window.addEventListener('resize', () => this.resizeCanvas());
+
     if (typeof ResizeObserver !== 'undefined') {
       const observer = new ResizeObserver(() => this.onSurfaceChange());
       observer.observe(this.container);
@@ -61,14 +98,27 @@ export class InkCanvas {
       if (card) observer.observe(card);
       if (actions) observer.observe(actions);
     }
+
     this.setupPointerListeners();
   }
 
-  /** Si la ficha crece, el modelo baja para seguir centrado en el hueco libre. */
+  private createLayer(className: string, zIndex: number): HTMLCanvasElement {
+    const canvas = document.createElement('canvas');
+    canvas.className = `ink-canvas ${className}`;
+    canvas.style.position = 'absolute';
+    canvas.style.top = '0';
+    canvas.style.left = '0';
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    canvas.style.zIndex = `${zIndex}`;
+    canvas.style.touchAction = 'none';
+    this.container.appendChild(canvas);
+    return canvas;
+  }
+
   private onSurfaceChange(): void {
     const rect = this.container.getBoundingClientRect();
     const sizeChanged =
-      !this.buffer ||
       Math.abs(rect.width - this.cssWidth) >= 0.5 ||
       Math.abs(rect.height - this.cssHeight) >= 0.5;
     if (sizeChanged) {
@@ -76,7 +126,7 @@ export class InkCanvas {
       return;
     }
     if (this.measureChrome()) {
-      this.redrawAll();
+      this.redrawBg();
       this.onResize?.();
     }
   }
@@ -104,30 +154,41 @@ export class InkCanvas {
   public resizeCanvas(): void {
     const rect = this.container.getBoundingClientRect();
     if (
-      this.buffer &&
       Math.abs(rect.width - this.cssWidth) < 0.5 &&
       Math.abs(rect.height - this.cssHeight) < 0.5
     ) {
       if (this.measureChrome()) {
-        this.redrawAll();
+        this.redrawBg();
         this.onResize?.();
       }
       return;
     }
+
     this.measureChrome();
     this.stopGuideAnimation(false);
     const dpr = window.devicePixelRatio || 1;
     this.cssWidth = rect.width;
     this.cssHeight = rect.height;
 
-    this.canvas.width = Math.max(1, Math.floor(rect.width * dpr));
-    this.canvas.height = Math.max(1, Math.floor(rect.height * dpr));
-    this.canvas.style.width = `${rect.width}px`;
-    this.canvas.style.height = `${rect.height}px`;
+    const w = Math.max(1, Math.floor(rect.width * dpr));
+    const h = Math.max(1, Math.floor(rect.height * dpr));
 
-    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    this.ensureBuffer(dpr);
-    this.redrawAll();
+    const layers = [
+      { c: this.bgCanvas, ctx: this.bgCtx },
+      { c: this.inkCanvas, ctx: this.inkCtx },
+      { c: this.activeCanvas, ctx: this.activeCtx }
+    ];
+
+    for (const { c, ctx } of layers) {
+      c.width = w;
+      c.height = h;
+      c.style.width = `${rect.width}px`;
+      c.style.height = `${rect.height}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    this.redrawBg();
+    this.redrawInk();
     this.onResize?.();
   }
 
@@ -140,7 +201,7 @@ export class InkCanvas {
     this.ghost = strokes;
     this.palmerSteps = null;
     this.sheetText = null;
-    this.redrawAll();
+    this.redrawBg();
   }
 
   public setPalmerGuide(steps: Point2[][][], active: number): void {
@@ -149,23 +210,21 @@ export class InkCanvas {
     this.palmerSteps = steps;
     this.palmerActive = active;
     this.sheetText = null;
-    this.redrawAll();
+    this.redrawBg();
   }
 
-  /** Oración: primera línea punteada y el resto de la hoja en blanco. */
   public setSheet(text: string | null): void {
     this.stopGuideAnimation(false);
     this.sheetText = text;
     this.ghost = [];
     this.palmerSteps = null;
-    this.redrawAll();
+    this.redrawBg();
     if (!text || !document.fonts?.load) return;
     void document.fonts.load('600 64px Caveat').then(() => {
-      if (this.sheetText === text) this.redrawAll();
+      if (this.sheetText === text) this.redrawBg();
     });
   }
 
-  /** Recorre solo el paso actual, para enseñar el trazo que hay que repetir. */
   public animateCurrentStep(): void {
     if (this.gridMode === 'palmer' && this.palmerSteps?.length) {
       const layout = this.gridRenderer.layoutPalmerLesson(
@@ -187,7 +246,6 @@ export class InkCanvas {
     this.animateGuide();
   }
 
-  /** Recorre el modelo del papel, el mismo sitio donde se copia el trazo. */
   public animateGuide(): void {
     const layout = this.currentGuideLayout();
     if (!layout || layout.strokes.length === 0) return;
@@ -204,33 +262,38 @@ export class InkCanvas {
     window.clearTimeout(this.animTimer);
     const had = this.guideAnim !== null;
     this.guideAnim = null;
-    if (redraw && had) this.present();
+    if (redraw && had) {
+      this.clearActiveLayer();
+      this.redrawBg();
+    }
   }
 
   public clear(notify = true): void {
     this.strokes = [];
     this.currentStroke = null;
-    this.redrawAll();
+    this.rawPointQueue = [];
+    this.clearActiveLayer();
+    this.redrawInk();
     if (notify) this.onStrokeComplete?.(this.strokes);
   }
 
   public undo(): void {
     if (this.strokes.length === 0) return;
     this.strokes.pop();
-    this.redrawAll();
+    this.clearActiveLayer();
+    this.redrawInk();
     this.onStrokeComplete?.(this.strokes);
   }
 
   public setGrid(mode: GridMode): void {
     this.gridMode = mode;
-    this.redrawAll();
+    this.redrawBg();
   }
 
   public getStrokes(): Stroke[] {
     return this.strokes;
   }
 
-  /** Grosor del modelo que está en la hoja, en píxeles. */
   public modelStrokeWidth(): number | null {
     if (this.sheetText && this.gridMode === 'palmer') {
       return Math.max(8, sentenceRowGeometry(0, this.cssHeight).xHeight * PALMER_PEN_RATIO);
@@ -238,7 +301,6 @@ export class InkCanvas {
     return this.currentGuideLayout()?.width ?? null;
   }
 
-  /** Trazo del paso actual, ya colocado donde se ve el modelo. */
   public guideStroke(stepIndex: number): { points: Point2[]; width: number } | null {
     if (this.gridMode !== 'palmer' || !this.palmerSteps?.length) return null;
     const layout = this.gridRenderer.layoutPalmerLesson(this.cssWidth, this.cssHeight, this.palmerSteps, stepIndex);
@@ -247,50 +309,70 @@ export class InkCanvas {
     return { points, width: layout.width };
   }
 
-  private ensureBuffer(dpr: number): void {
-    const width = this.canvas.width;
-    const height = this.canvas.height;
-    if (typeof OffscreenCanvas !== 'undefined') {
-      this.buffer = new OffscreenCanvas(width, height);
+  public redrawAll(): void {
+    this.redrawBg();
+    this.redrawInk();
+  }
+
+  private redrawBg(): void {
+    const dpr = window.devicePixelRatio || 1;
+    this.bgCtx.setTransform(1, 0, 0, 1, 0, 0);
+    this.bgCtx.clearRect(0, 0, this.bgCanvas.width, this.bgCanvas.height);
+    this.bgCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    if (this.gridMode === 'palmer' && this.sheetText) {
+      this.gridRenderer.drawSentenceSheet(this.bgCtx, this.cssWidth, this.cssHeight, this.sheetText);
     } else {
-      const canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
-      this.buffer = canvas;
+      this.gridRenderer.drawGrid(this.bgCtx, this.cssWidth, this.cssHeight, this.gridMode);
     }
-    const context = this.buffer.getContext('2d');
-    if (!context) throw new Error('No se pudo crear el buffer de tinta');
-    this.bufferCtx = context as CanvasRenderingContext2D;
-    this.bufferCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    if (this.gridMode === 'palmer' && this.palmerSteps?.length) {
+      this.gridRenderer.drawPalmerLesson(
+        this.bgCtx,
+        this.cssWidth,
+        this.cssHeight,
+        this.palmerSteps,
+        this.palmerActive
+      );
+    } else {
+      this.gridRenderer.drawGhost(this.bgCtx, this.cssWidth, this.cssHeight, this.gridMode, this.ghost);
+    }
+  }
+
+  private redrawInk(): void {
+    const dpr = window.devicePixelRatio || 1;
+    this.inkCtx.setTransform(1, 0, 0, 1, 0, 0);
+    this.inkCtx.clearRect(0, 0, this.inkCanvas.width, this.inkCanvas.height);
+    this.inkCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    this.inkRenderer.renderStrokes(this.inkCtx, this.strokes);
+  }
+
+  private clearActiveLayer(): void {
+    const dpr = window.devicePixelRatio || 1;
+    this.activeCtx.setTransform(1, 0, 0, 1, 0, 0);
+    this.activeCtx.clearRect(0, 0, this.activeCanvas.width, this.activeCanvas.height);
+    this.activeCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
   private setupPointerListeners(): void {
-    this.canvas.style.touchAction = 'none';
-    this.canvas.addEventListener('pointerdown', (event) => this.handlePointerDown(event));
-    this.canvas.addEventListener('pointermove', (event) => this.handlePointerMove(event));
-    this.canvas.addEventListener('pointerup', (event) => this.handlePointerUp(event));
-    this.canvas.addEventListener('pointercancel', (event) => this.handlePointerUp(event));
+    this.activeCanvas.addEventListener('pointerdown', (e) => this.handlePointerDown(e));
+    this.activeCanvas.addEventListener('pointermove', (e) => this.handlePointerMove(e));
+    this.activeCanvas.addEventListener('pointerup', (e) => this.handlePointerUp(e));
+    this.activeCanvas.addEventListener('pointercancel', (e) => this.handlePointerUp(e));
+    this.activeCanvas.addEventListener('contextmenu', (e) => e.preventDefault());
   }
 
   private getPointFromEvent(event: PointerEvent): StrokePoint {
-    const rect = this.canvas.getBoundingClientRect();
+    const rect = this.activeCanvas.getBoundingClientRect();
+    const time = event.timeStamp && event.timeStamp > 0 ? event.timeStamp : performance.now();
     return {
       x: event.clientX - rect.left,
       y: event.clientY - rect.top,
       pressure: event.pressure,
       tiltX: event.tiltX || 0,
       tiltY: event.tiltY || 0,
-      time: performance.now()
+      time
     };
-  }
-
-  private stampVelocity(point: StrokePoint, previous: StrokePoint | undefined): void {
-    if (!previous) {
-      point.velocity = 0;
-      return;
-    }
-    const dt = Math.max(0.5, point.time - previous.time);
-    point.velocity = Math.hypot(point.x - previous.x, point.y - previous.y) / dt;
   }
 
   private handlePointerDown(event: PointerEvent): void {
@@ -298,23 +380,42 @@ export class InkCanvas {
     this.stopGuideAnimation(false);
     this.onStrokeStart?.();
     this.activePointerId = event.pointerId;
+
     try {
-      this.canvas.setPointerCapture(event.pointerId);
+      this.activeCanvas.setPointerCapture(event.pointerId);
     } catch {
-      // Algunos eventos sintéticos no admiten captura y aun así deben pintar.
+      // Captura no disponible
     }
 
-    const point = this.getPointFromEvent(event);
-    this.stampVelocity(point, undefined);
-    this.onPressureUpdate?.(point.pressure);
+    this.filter.reset();
+    this.rawPointQueue = [];
+    this.predictedPoints = [];
+
+    const raw = this.getPointFromEvent(event);
+    const filtered = this.filter.filter(raw);
 
     this.currentStroke = {
-      points: [point],
+      points: [filtered],
       color: this.currentColor,
       baseWidth: this.currentBaseWidth,
       tool: this.currentTool
     };
-    this.present();
+
+    this.lastRenderedPoint = filtered;
+    this.lastRenderedWidth = this.brushRenderer.widthAt(filtered, this.currentTool, this.currentBaseWidth);
+
+    // Dibujar punto inicial
+    this.brushRenderer.drawSegment(
+      this.activeCtx,
+      filtered,
+      filtered,
+      this.lastRenderedWidth,
+      this.lastRenderedWidth,
+      this.currentColor
+    );
+
+    this.latestPressure = filtered.pressure;
+    this.scheduleFrame();
   }
 
   private handlePointerMove(event: PointerEvent): void {
@@ -324,85 +425,116 @@ export class InkCanvas {
     }
     if (!this.palmRejection.owns(event)) return;
 
+    // Extraer eventos coalescidos
     const coalesced = typeof event.getCoalescedEvents === 'function' ? event.getCoalescedEvents() : [];
-    const events = coalesced.length > 0 ? coalesced : [event];
-    for (const sample of events) {
-      const point = this.getPointFromEvent(sample);
-      const last = this.currentStroke.points[this.currentStroke.points.length - 1];
-      this.stampVelocity(point, last);
-      this.currentStroke.points.push(point);
-      this.onPressureUpdate?.(point.pressure);
+    const samples = coalesced.length > 0 ? coalesced : [event];
+
+    for (const sample of samples) {
+      this.rawPointQueue.push(this.getPointFromEvent(sample));
     }
-    this.present();
+
+    // Extraer eventos predichos (Chrome/Android S Pen)
+    const predicted = typeof event.getPredictedEvents === 'function' ? event.getPredictedEvents() : [];
+    if (predicted.length > 0) {
+      this.predictedPoints = predicted.map((p) => this.getPointFromEvent(p));
+    } else {
+      this.predictedPoints = [];
+    }
+
+    this.perfOverlay.recordEvents(samples.length, predicted.length);
+
+    if (this.rawPointQueue.length > 0) {
+      this.latestPressure = this.rawPointQueue[this.rawPointQueue.length - 1].pressure;
+    }
+
+    this.scheduleFrame();
+  }
+
+  private scheduleFrame(): void {
+    if (this.rAFPending) return;
+    this.rAFPending = true;
+    requestAnimationFrame(() => this.renderFrame());
+  }
+
+  private renderFrame(): void {
+    this.rAFPending = false;
+    const startRender = performance.now();
+
+    if (!this.currentStroke) {
+      this.perfOverlay.recordFrame(performance.now() - startRender, 0);
+      return;
+    }
+
+    // 1. Procesar puntos encolados con One Euro Filter
+    while (this.rawPointQueue.length > 0) {
+      const raw = this.rawPointQueue.shift()!;
+      const filtered = this.filter.filter(raw);
+      this.currentStroke.points.push(filtered);
+
+      if (this.lastRenderedPoint) {
+        const nextWidth = this.brushRenderer.widthAt(filtered, this.currentStroke.tool, this.currentStroke.baseWidth);
+        this.brushRenderer.drawSegment(
+          this.activeCtx,
+          this.lastRenderedPoint,
+          filtered,
+          this.lastRenderedWidth,
+          nextWidth,
+          this.currentStroke.color
+        );
+        this.lastRenderedPoint = filtered;
+        this.lastRenderedWidth = nextWidth;
+      } else {
+        this.lastRenderedPoint = filtered;
+        this.lastRenderedWidth = this.brushRenderer.widthAt(filtered, this.currentStroke.tool, this.currentStroke.baseWidth);
+      }
+    }
+
+    // 2. Throttled DOM update sincronizado con frame
+    this.onPressureUpdate?.(this.latestPressure);
+    if (this.predictedPoints.length > 0) {
+      // Los puntos predichos se descartan tras el tick
+      this.predictedPoints = [];
+    }
+
+    const renderMs = performance.now() - startRender;
+    this.perfOverlay.recordFrame(renderMs, this.currentStroke.points.length);
   }
 
   private handlePointerUp(event: PointerEvent): void {
     if (event.pointerId !== this.activePointerId) return;
     this.activePointerId = null;
     this.palmRejection.release(event);
+
     try {
-      if (this.canvas.hasPointerCapture(event.pointerId)) {
-        this.canvas.releasePointerCapture(event.pointerId);
+      if (this.activeCanvas.hasPointerCapture(event.pointerId)) {
+        this.activeCanvas.releasePointerCapture(event.pointerId);
       }
     } catch {
-      // La captura ya no existe.
+      // Captura ya liberada
+    }
+
+    // Vaciar los puntos restantes de la cola
+    while (this.rawPointQueue.length > 0) {
+      const raw = this.rawPointQueue.shift()!;
+      const filtered = this.filter.filter(raw);
+      if (this.currentStroke) {
+        this.currentStroke.points.push(filtered);
+      }
     }
 
     if (this.currentStroke && this.currentStroke.points.length > 0) {
       this.strokes.push(this.currentStroke);
+      // Transferir el trazo completado al lienzo de tinta definitivo
+      this.inkRenderer.drawStroke(this.inkCtx, this.currentStroke);
       this.currentStroke = null;
       this.onStrokeComplete?.(this.strokes);
     }
+
+    this.clearActiveLayer();
+    this.lastRenderedPoint = null;
+    this.lastRenderedWidth = 0;
     this.onPressureUpdate?.(0);
-    this.redrawAll();
-  }
-
-  public redrawAll(): void {
-    this.paintCompleted();
-    this.present();
-  }
-
-  private paintCompleted(): void {
-    if (!this.bufferCtx) return;
-    const dpr = window.devicePixelRatio || 1;
-    this.bufferCtx.setTransform(1, 0, 0, 1, 0, 0);
-    this.bufferCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.bufferCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    if (this.gridMode === 'palmer' && this.sheetText) {
-      this.gridRenderer.drawSentenceSheet(this.bufferCtx, this.cssWidth, this.cssHeight, this.sheetText);
-    } else {
-      this.gridRenderer.drawGrid(this.bufferCtx, this.cssWidth, this.cssHeight, this.gridMode);
-    }
-    if (this.gridMode === 'palmer' && this.palmerSteps?.length) {
-      this.gridRenderer.drawPalmerLesson(
-        this.bufferCtx,
-        this.cssWidth,
-        this.cssHeight,
-        this.palmerSteps,
-        this.palmerActive
-      );
-    } else {
-      this.gridRenderer.drawGhost(this.bufferCtx, this.cssWidth, this.cssHeight, this.gridMode, this.ghost);
-    }
-    this.inkRenderer.renderStrokes(this.bufferCtx, this.strokes);
-  }
-
-  private present(): void {
-    if (!this.buffer) return;
-    const dpr = window.devicePixelRatio || 1;
-    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.drawImage(this.buffer, 0, 0);
-    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    if (this.guideAnim) {
-      this.gridRenderer.drawRevealedStrokes(
-        this.ctx,
-        this.guideAnim.strokes,
-        this.guideAnim.width,
-        this.guideReveal
-      );
-    }
-    if (this.currentStroke) this.inkRenderer.drawStroke(this.ctx, this.currentStroke);
+    this.perfOverlay.resetStrokeStats();
   }
 
   private currentGuideLayout(): { strokes: Point2[][]; width: number } | null {
@@ -423,11 +555,11 @@ export class InkCanvas {
     if (token !== this.animToken || !this.guideAnim) return;
     if (index >= this.guideAnim.strokes.length) {
       this.guideReveal = this.guideAnim.strokes.length;
-      this.present();
+      this.presentGuideAnim();
       this.animTimer = window.setTimeout(() => {
         if (token !== this.animToken) return;
         this.guideAnim = null;
-        this.present();
+        this.clearActiveLayer();
       }, 700);
       return;
     }
@@ -439,11 +571,22 @@ export class InkCanvas {
       const t = Math.min(1, (now - started) / duration);
       const eased = t < 0.5 ? 2 * t * t : 1 - ((-2 * t + 2) ** 2) / 2;
       this.guideReveal = index + eased;
-      this.present();
+      this.presentGuideAnim();
       if (t < 1) this.animFrame = requestAnimationFrame(frame);
       else this.animTimer = window.setTimeout(() => this.playGuide(index + 1, token), 160);
     };
     this.animFrame = requestAnimationFrame(frame);
+  }
+
+  private presentGuideAnim(): void {
+    this.clearActiveLayer();
+    if (!this.guideAnim) return;
+    this.gridRenderer.drawRevealedStrokes(
+      this.activeCtx,
+      this.guideAnim.strokes,
+      this.guideAnim.width,
+      this.guideReveal
+    );
   }
 
   private polylineLength(points: Point2[]): number {

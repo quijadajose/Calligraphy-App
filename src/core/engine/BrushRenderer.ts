@@ -27,6 +27,74 @@ export function baseWidthMatching(tool: BrushTool, target: number): number {
 }
 
 export class BrushRenderer {
+  public widthAt(point: StrokePoint, tool: BrushTool, baseWidth: number): number {
+    const pressure = point.pressure > 0 ? point.pressure : 0.5;
+    const speed = Math.min(1, (point.velocity ?? 0) / 1.6);
+    const tilt = Math.min(1, Math.abs(point.tiltX) / 60);
+    return brushWidthAt(tool, baseWidth, pressure, speed, tilt);
+  }
+
+  /**
+   * Dibuja un segmento continuo entre dos puntos con grosor variable
+   * utilizando un trapecio delimitado por casquetes circulares.
+   */
+  public drawSegment(
+    ctx: CanvasRenderingContext2D,
+    p0: StrokePoint,
+    p1: StrokePoint,
+    w0: number,
+    w1: number,
+    color: string
+  ): void {
+    const dx = p1.x - p0.x;
+    const dy = p1.y - p0.y;
+    const dist = Math.hypot(dx, dy);
+
+    ctx.save();
+    ctx.fillStyle = color;
+
+    if (dist < 0.1) {
+      ctx.beginPath();
+      ctx.arc(p1.x, p1.y, Math.max(w0, w1) / 2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      return;
+    }
+
+    const nx = -dy / dist;
+    const ny = dx / dist;
+
+    const r0 = w0 / 2;
+    const r1 = w1 / 2;
+
+    const x0a = p0.x + nx * r0;
+    const y0a = p0.y + ny * r0;
+    const x0b = p0.x - nx * r0;
+    const y0b = p0.y - ny * r0;
+
+    const x1a = p1.x + nx * r1;
+    const y1a = p1.y + ny * r1;
+    const x1b = p1.x - nx * r1;
+    const y1b = p1.y - ny * r1;
+
+    // Cuerpo trapezoidal
+    ctx.beginPath();
+    ctx.moveTo(x0a, y0a);
+    ctx.lineTo(x1a, y1a);
+    ctx.lineTo(x1b, y1b);
+    ctx.lineTo(x0b, y0b);
+    ctx.closePath();
+    ctx.fill();
+
+    // Casquetes redondos en los extremos
+    ctx.beginPath();
+    ctx.arc(p0.x, p0.y, r0, 0, Math.PI * 2);
+    ctx.arc(p1.x, p1.y, r1, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
   public drawStroke(ctx: CanvasRenderingContext2D, stroke: Stroke): void {
     const points = stroke.points;
     if (points.length === 0) return;
@@ -41,6 +109,7 @@ export class BrushRenderer {
       ctx.restore();
       return;
     }
+
 
     const smooth = StrokeSmoother.smooth(points);
     const widths = this.smoothWidths(
@@ -124,11 +193,5 @@ export class BrushRenderer {
     const last = points[points.length - 1];
     ctx.lineTo(last.x, last.y);
   }
-
-  private widthAt(point: StrokePoint, tool: BrushTool, baseWidth: number): number {
-    const pressure = point.pressure > 0 ? point.pressure : 0.5;
-    const speed = Math.min(1, (point.velocity ?? 0) / 1.6);
-    const tilt = Math.min(1, Math.abs(point.tiltX) / 60);
-    return brushWidthAt(tool, baseWidth, pressure, speed, tilt);
-  }
 }
+

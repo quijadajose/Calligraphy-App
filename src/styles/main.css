@@ -625,6 +625,15 @@ body.is-notebook .main-workspace {
   display: none;
 }
 
+.live-feedback {
+  min-height: 1.45em;
+  margin: 6px 0 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: #1e293b;
+  font-weight: 500;
+}
+
 .stroke-step-btn {
   border: 1px solid rgba(15, 23, 42, 0.16);
   background: #f7f4ee;
@@ -1482,3 +1491,43 @@ html[data-theme='kids'] .progress-recent-item:hover,
 html[data-theme='kids'] .glyph-tile:hover {
   background: #e7f3ff;
 }
+
+/* Performance Overlay (Fase 0) */
+.perf-overlay {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  z-index: 45;
+  background: rgba(18, 20, 24, 0.85);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 6px 10px;
+  display: flex;
+  gap: 12px;
+  font-family: monospace, monospace;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.perf-metric {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.perf-label {
+  color: #64748b;
+  text-transform: uppercase;
+  font-size: 0.65rem;
+  letter-spacing: 0.05em;
+}
+
+.perf-val {
+  font-weight: 700;
+  color: #4ade80;
+}
+
