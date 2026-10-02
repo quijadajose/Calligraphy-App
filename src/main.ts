@@ -275,6 +275,10 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   finish.onHome = () => showDashboard('lessons');
+  finish.onStay = () => {
+    // Permite al usuario seguir practicando en la hoja
+    ensureStudio();
+  };
 
   function enterStudio(): void {
     screen = 'studio';

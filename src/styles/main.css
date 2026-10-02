@@ -928,6 +928,10 @@ button, input {
   padding: 16px;
 }
 
+.score-modal-backdrop[hidden] {
+  display: none !important;
+}
+
 .box {
   background: var(--ui2);
   border-radius: var(--border-radius-lg);
