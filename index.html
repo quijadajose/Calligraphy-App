@@ -19,6 +19,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Fredoka:wght@500;600;700&family=Noto+Serif+JP:wght@400;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.42.0/dist/tabler-icons.min.css" />
     <link rel="stylesheet" href="/src/styles/main.css" />
   </head>
   <body>
@@ -29,37 +30,10 @@
           <span class="logo-mark" aria-hidden="true">✒️</span>
           <span class="logo-title">Calligraphy</span>
         </div>
-        <nav class="header-menus" aria-label="Menús">
-          <button id="menu-lessons" class="menu-trigger" type="button" aria-expanded="true" aria-controls="course-home">Lecciones</button>
-          <button id="menu-progress" class="menu-trigger" type="button" aria-expanded="false" aria-controls="progress-panel">Progreso</button>
-          <div class="menu-anchor" data-menu="pen">
-            <button id="menu-pen" class="menu-trigger" type="button" aria-expanded="false" aria-controls="pen-menu">Pluma</button>
-            <div id="pen-menu" class="popover" hidden>
-              <button class="tool-btn active" data-tool="fountain" id="tool-fountain" type="button">Estilográfica</button>
-              <button class="tool-btn" data-tool="fude" id="tool-fude" type="button">Pincel fude</button>
-              <button class="tool-btn" data-tool="pencil" id="tool-pencil" type="button">Portaminas</button>
-              <div class="popover-row">
-                <label class="ink-color-label" title="Color de tinta">
-                  <input id="ink-color" type="color" value="#1a1a1a" />
-                </label>
-                <input id="ink-width" type="range" min="1.5" max="96" step="0.5" value="4" title="Grosor" />
-                <button class="tool-btn" id="btn-grid-toggle" type="button">Palmer</button>
-              </div>
-            </div>
-          </div>
-          <div class="menu-anchor" data-menu="session">
-            <button id="menu-session" class="menu-trigger" type="button" aria-expanded="false" aria-controls="session-menu">Sesión</button>
-            <div id="session-menu" class="popover" hidden>
-              <button id="evaluate-btn" class="tool-btn" type="button">Calificar</button>
-              <button id="dictation-btn" class="tool-btn" type="button">Dictado</button>
-              <button id="zen-mode-btn" class="tool-btn zen-toggle-btn" type="button">Modo inmersivo</button>
-              <div class="theme-choices" role="group" aria-label="Tema">
-                <button class="tool-btn" type="button" data-theme-choice="light">Claro</button>
-                <button class="tool-btn" type="button" data-theme-choice="dark">Oscuro</button>
-                <button class="tool-btn" type="button" data-theme-choice="kids">Infantil</button>
-              </div>
-            </div>
-          </div>
+        <nav class="header-menus" aria-label="Navegación principal">
+          <button id="menu-lessons" class="menu-trigger is-open" type="button" aria-controls="lessons-panel">Lecciones</button>
+          <button id="menu-progress" class="menu-trigger" type="button" aria-controls="progress-panel">Progreso</button>
+          <button id="menu-settings" class="ib-btn" type="button" aria-label="Ajustes" title="Ajustes"><i class="ti ti-settings"></i></button>
         </nav>
       </header>
 
@@ -89,47 +63,151 @@
           </div>
           <div id="progress-body" class="progress-body"></div>
         </aside>
-        </section>
 
-        <!-- Canvas -->
-        <div class="canvas-container" id="canvas-wrapper" hidden>
-          <!-- Tarjeta de guía flotante con animador de trazos -->
-          <div class="lesson-strip" id="guide-card">
-            <div class="lesson-strip-row">
-              <button id="back-home" class="notebook-back" type="button">← Menú</button>
-              <div id="character-target-container" class="lesson-strip-mark" hidden>
-                <div class="guide-char-preview" id="guide-char"></div>
-                <div id="kanji-animator-box" class="kanji-animator" style="display: none;"></div>
-              </div>
-              <div class="lesson-strip-copy">
-                <div class="lesson-strip-title">
-                  <h4 id="guide-title">Óvalos continuos</h4>
-                  <span class="mode-badge" id="current-category-badge">Palmer Cursiva</span>
+        <!-- Pantalla de Ajustes (Mockup) -->
+        <aside id="settings-panel" class="lesson-board settings-board" hidden>
+          <div class="board-top">
+            <h2 class="board-heading">Ajustes</h2>
+            <p class="board-blurb">Personaliza tema, pluma y cuadrícula.</p>
+          </div>
+          <div class="settings-body sc">
+            <div class="settings-section">
+              <div class="settings-subtitle">Tema</div>
+              <div class="theme-grid">
+                <div class="card theme-card" data-theme-choice="light">
+                  <div class="sw"><i style="background:#E9E3D6"></i><i style="background:#FBF7EE"></i><i style="background:#B85A3C"></i></div>
+                  <span>Claro</span>
                 </div>
-                <p id="guide-instructions">Cierra el óvalo entre la línea media y la base.</p>
-              </div>
-              <div class="lesson-strip-tools">
-                <button id="btn-animate-stroke" class="step-btn" type="button" style="display: none;">Animar</button>
-                <div class="pressure-meter-wrapper" title="Presión del lápiz">
-                  <span class="pressure-label">Presión</span>
-                  <div class="pressure-bar" aria-hidden="true">
-                    <div class="pressure-fill" id="pressure-indicator"></div>
-                  </div>
-                  <span id="pressure-text" class="sr-only">0%</span>
+                <div class="card theme-card" data-theme-choice="dark">
+                  <div class="sw"><i style="background:#1B1A18"></i><i style="background:#FBF7EE"></i><i style="background:#C9694A"></i></div>
+                  <span>Oscuro</span>
+                </div>
+                <div class="card theme-card" data-theme-choice="kids">
+                  <div class="sw"><i style="background:#8FD4FF"></i><i style="background:#FFFDF8"></i><i style="background:#FFB703"></i></div>
+                  <span>Infantil</span>
                 </div>
               </div>
             </div>
-            <div id="stroke-steps" class="stroke-steps" hidden></div>
-            <p id="live-feedback" class="live-feedback"></p>
+
+            <div class="settings-section">
+              <div class="settings-subtitle">Pluma predeterminada</div>
+              <div class="chips-row">
+                <button class="chip on" data-tool="fountain" type="button">Estilográfica</button>
+                <button class="chip" data-tool="fude" type="button">Pincel fude</button>
+                <button class="chip" data-tool="pencil" type="button">Portaminas</button>
+              </div>
+            </div>
+
+            <div class="settings-section settings-two-col">
+              <div>
+                <div class="settings-subtitle">Cuadrícula</div>
+                <div class="chips-row">
+                  <button class="chip" id="opt-grid-palmer" type="button">Palmer</button>
+                  <button class="chip" id="opt-grid-genkou" type="button">Genkōyōshi</button>
+                  <button class="chip" id="opt-grid-none" type="button">Libre</button>
+                </div>
+              </div>
+              <div>
+                <div class="settings-subtitle">Modo de trazo</div>
+                <div class="chips-row">
+                  <button class="chip on" id="btn-slant-toggle" type="button">Inclinación</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" style="display:flex;align-items:center;gap:10px;margin-top:14px">
+              <div style="flex:1">
+                <div style="font-weight:500">Datos y respaldo</div>
+                <div class="mu">Exporta o importa tu progreso en un archivo JSON.</div>
+              </div>
+              <button class="b2" id="btn-import-data" type="button">Importar</button>
+              <button class="b2" id="btn-export-data" type="button">Exportar</button>
+            </div>
+          </div>
+        </aside>
+        </section>
+
+        <!-- Canvas Studio (Pantalla de práctica según Mockup) -->
+        <div class="canvas-container" id="canvas-wrapper" hidden>
+          <!-- Barra superior de práctica -->
+          <div class="practice-bar">
+            <button class="ib" id="back-home" aria-label="Volver a lecciones"><i class="ti ti-chevron-left"></i></button>
+            <div class="practice-title-group">
+              <span id="practice-glyph-mark" class="practice-glyph-mark">a</span>
+              <span id="practice-sub-label" class="practice-sub-label">Palmer cursiva</span>
+            </div>
+            <div id="stroke-steps" class="chips-row practice-chips"></div>
+            <div style="flex:1"></div>
+            <button class="ib" id="btn-animate-stroke" aria-label="Ver cómo se traza" title="Ver cómo se traza"><i class="ti ti-player-play"></i></button>
+            <button class="ib" id="zen-mode-btn" aria-label="Modo inmersivo" title="Modo inmersivo"><i class="ti ti-arrows-maximize"></i></button>
+            <button class="go" id="evaluate-btn" type="button">Calificar</button>
+          </div>
+
+          <!-- Contenedor central: Dock lateral + Hoja de papel -->
+          <div class="practice-workspace">
+            <div class="dock" id="tool-dock">
+              <button class="ib on" data-tool="fountain" id="tool-fountain" aria-label="Estilográfica" title="Estilográfica"><i class="ti ti-pencil"></i></button>
+              <button class="ib" data-tool="fude" id="tool-fude" aria-label="Pincel fude" title="Pincel fude"><i class="ti ti-brush"></i></button>
+              <button class="ib" data-tool="pencil" id="tool-pencil" aria-label="Portaminas" title="Portaminas"><i class="ti ti-writing"></i></button>
+              
+              <button class="ib" id="btn-width-toggle" aria-label="Grosor" style="flex-direction:column;gap:3px">
+                <span id="dock-width-preview" style="width:18px;height:3px;background:currentColor;border-radius:2px"></span>
+                <span id="dock-width-label" style="font-size:10px;color:var(--um)">4.0</span>
+              </button>
+              <input id="ink-width" type="range" min="1.5" max="96" step="0.5" value="4" style="display:none" />
+
+              <label class="ib ink-color-label" title="Color de tinta">
+                <span id="dock-color-preview" style="width:20px;height:20px;border-radius:50%;background:#1E1B18;box-shadow:0 0 0 2px var(--um)"></span>
+                <input id="ink-color" type="color" value="#1a1a1a" style="opacity:0;position:absolute;width:1px;height:1px;pointer-events:none" />
+              </label>
+
+              <div class="sep"></div>
+
+              <button class="ib" id="btn-undo" aria-label="Deshacer" title="Deshacer"><i class="ti ti-arrow-back-up"></i></button>
+              <button class="ib" id="btn-redo" aria-label="Rehacer" title="Rehacer"><i class="ti ti-arrow-forward-up"></i></button>
+              <button class="ib" data-tool="eraser" id="tool-eraser" aria-label="Borrador" title="Borrador"><i class="ti ti-eraser"></i></button>
+
+              <div class="sep"></div>
+
+              <button class="ib" id="btn-clear" aria-label="Borrar hoja" title="Borrar hoja" style="color:#E08A78"><i class="ti ti-trash"></i></button>
+
+              <div style="flex:1;min-height:6px"></div>
+
+              <!-- Medidor vertical de presión S Pen -->
+              <div class="pressure-meter-vertical" title="Presión S Pen">
+                <div class="pressure-fill-vertical" id="pressure-indicator"></div>
+              </div>
+              <span id="pressure-text" class="sr-only">0%</span>
+            </div>
+
+            <!-- Hoja de dibujo -->
+            <div class="paper-wrap" id="paper-wrap">
+              <div class="tip" id="live-tip">
+                <i class="ti ti-info-circle"></i>
+                <span id="live-feedback">Cierra el óvalo entre la línea media y la base.</span>
+                <i class="ti ti-x" aria-label="Cerrar" onclick="this.parentNode.style.display='none'"></i>
+              </div>
+
+              <!-- Animador secundario kanji / palmer preview oculto pero preservado en DOM -->
+              <div id="character-target-container" hidden>
+                <div id="guide-char"></div>
+                <div id="kanji-animator-box"></div>
+              </div>
+              <!-- Contenedor de guías virtuales -->
+              <h4 id="guide-title" hidden></h4>
+              <p id="guide-instructions" hidden></p>
+              <button id="btn-grid-toggle" hidden type="button">Palmer</button>
+              <span id="current-category-badge" hidden>Palmer</span>
+            </div>
           </div>
 
           <div id="dictation-overlay" class="dictation-overlay" style="display: none;">
             <p id="dictation-prompt">Escucha y escribe.</p>
             <div id="dictation-clock" class="dictation-clock">0s</div>
             <div class="dictation-actions">
-              <button id="dictation-listen" class="tool-btn" type="button">Repetir</button>
-              <button id="dictation-submit" class="tool-btn active" type="button">Entregar</button>
-              <button id="dictation-cancel" class="tool-btn" type="button">Cancelar</button>
+              <button id="dictation-listen" class="b2" type="button">Repetir</button>
+              <button id="dictation-submit" class="go" type="button">Entregar</button>
+              <button id="dictation-cancel" class="b2" type="button">Cancelar</button>
             </div>
           </div>
 
@@ -137,50 +215,54 @@
           <button id="zen-exit-btn" class="tool-btn" type="button">
             ✕ Salir de Modo Inmersivo
           </button>
-
-          <!-- Barra de herramientas flotante inferior -->
-          <div class="ink-actions">
-            <button class="ink-action" id="btn-undo" type="button">Deshacer</button>
-            <button class="ink-action ink-action-clear" id="btn-clear" type="button">Limpiar</button>
-          </div>
         </div>
       </main>
 
-      <!-- Modal de Calificación (Oculto por defecto) -->
-      <div class="score-modal" id="score-modal" style="display: none;">
-        <h3>Evaluación de Caligrafía</h3>
-        <div class="score-circle" id="modal-score">85</div>
-        <p id="modal-feedback">
-          Buen ritmo e inclinación.
-        </p>
-        <ul id="modal-details" class="score-details"></ul>
-        <div class="modal-actions">
-          <button class="tool-btn active" id="modal-close-btn" type="button">Continuar Practicando</button>
+      <!-- Modal de Calificación (Mockup de Resultado) -->
+      <div class="score-modal-backdrop" id="score-modal" style="display: none;">
+        <div class="box score-box">
+          <div class="score-svg-wrap">
+            <svg width="104" height="104" viewBox="0 0 112 112" role="img" aria-label="Calificación">
+              <circle cx="56" cy="56" r="48" fill="none" stroke="var(--ub)" stroke-width="8"></circle>
+              <circle id="score-svg-arc" cx="56" cy="56" r="48" fill="none" stroke="#6FA97B" stroke-width="8" stroke-linecap="round" stroke-dasharray="247 302" transform="rotate(-90 56 56)"></circle>
+              <text id="modal-score" x="56" y="66" text-anchor="middle" font-size="32" font-weight="700" fill="var(--ut)">85</text>
+            </svg>
+          </div>
+          <h3 id="modal-feedback-title" style="font-weight:600;margin:6px 0 2px;font-size:16px">Resultado de la práctica</h3>
+          <p id="modal-feedback" class="mu" style="margin-bottom:12px">Buen ritmo e inclinación.</p>
+          <ul id="modal-details" class="score-details-list"></ul>
+          <div class="modal-actions" style="display:flex;gap:8px;justify-content:center;margin-top:14px">
+            <button class="go" id="modal-close-btn" type="button">Continuar practicando</button>
+          </div>
         </div>
       </div>
 
-      <div id="finish-layer" class="finish-layer" hidden>
+      <!-- Overlay de Lección Completada (Mockup Lección Completa) -->
+      <div id="finish-layer" class="score-modal-backdrop" hidden>
         <canvas id="finish-confetti" class="finish-confetti" aria-hidden="true"></canvas>
-        <section class="finish-card" role="dialog" aria-labelledby="finish-title">
-          <p class="finish-kicker">Completa</p>
-          <h2 id="finish-title"></h2>
-          <dl class="finish-stats">
-            <div>
-              <dt>Tiempo</dt>
-              <dd id="finish-time"></dd>
-            </div>
-            <div>
-              <dt>Presión media</dt>
-              <dd id="finish-pressure"></dd>
-            </div>
-          </dl>
-          <div class="finish-actions">
-            <button id="finish-stay" class="finish-stay" type="button">Seguir en la hoja</button>
-            <button id="finish-home" class="finish-home" type="button">Ir al tablero</button>
+        <div class="box finish-box" role="dialog" aria-labelledby="finish-title">
+          <div style="width:52px;height:52px;border-radius:50%;background:#2E4A36;color:#8FD0A0;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 10px">
+            <i class="ti ti-check"></i>
           </div>
-        </section>
+          <h2 id="finish-title" style="font-size:18px;font-weight:600;margin:0">Lección completada</h2>
+          <div style="display:flex;gap:10px;margin:14px 0">
+            <div class="card" style="flex:1">
+              <div class="mu">Tiempo</div>
+              <div id="finish-time" style="font-size:20px;font-weight:600;margin-top:2px">1:42</div>
+            </div>
+            <div class="card" style="flex:1">
+              <div class="mu">Presión media</div>
+              <div id="finish-pressure" style="font-size:20px;font-weight:600;margin-top:2px">58 %</div>
+            </div>
+          </div>
+          <div class="finish-actions" style="display:flex;gap:8px;justify-content:center">
+            <button id="finish-stay" class="b2" type="button">Seguir en la hoja</button>
+            <button id="finish-home" class="go" type="button">Ir a lecciones</button>
+          </div>
+        </div>
       </div>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
+

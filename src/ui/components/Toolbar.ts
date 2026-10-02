@@ -6,6 +6,7 @@ export class Toolbar {
   public onWidthChange?: (width: number) => void;
   public onGridCycle?: () => void;
   public onUndo?: () => void;
+  public onRedo?: () => void;
   public onClear?: () => void;
   public onZen?: (enabled: boolean) => void;
 
@@ -15,12 +16,13 @@ export class Toolbar {
     private widthInput: HTMLInputElement,
     private gridButton: HTMLButtonElement,
     private undoButton: HTMLButtonElement,
+    private redoButton: HTMLButtonElement,
     private clearButton: HTMLButtonElement,
     private zenButton: HTMLButtonElement,
     private zenExitButton: HTMLButtonElement
   ) {
     (Object.keys(this.tools) as BrushTool[]).forEach((tool) => {
-      this.tools[tool].addEventListener('click', () => {
+      this.tools[tool]?.addEventListener('click', () => {
         this.setTool(tool);
         this.onToolChange?.(tool);
       });
@@ -34,6 +36,10 @@ export class Toolbar {
     this.undoButton.addEventListener('click', (event) => {
       event.stopPropagation();
       this.onUndo?.();
+    });
+    this.redoButton.addEventListener('click', (event) => {
+      event.stopPropagation();
+      this.onRedo?.();
     });
     this.clearButton.addEventListener('click', (event) => {
       event.stopPropagation();

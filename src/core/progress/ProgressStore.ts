@@ -157,9 +157,43 @@ export class ProgressStore {
     }
   }
 
+  public exportJSON(): string {
+    const payload: Record<string, LessonProgress> = {};
+    for (const [id, record] of this.records) payload[id] = record;
+    return JSON.stringify(payload, null, 2);
+  }
+
+  public importJSON(jsonStr: string): boolean {
+    try {
+      const parsed = JSON.parse(jsonStr) as Record<string, LessonProgress>;
+      if (!parsed || typeof parsed !== 'object') return false;
+      for (const [id, record] of Object.entries(parsed)) {
+        if (!record || typeof record !== 'object') continue;
+        this.records.set(id, {
+          practiced: Boolean(record.practiced),
+          stepsDone: Number(record.stepsDone) || 0,
+          stepsTotal: Number(record.stepsTotal) || 0,
+          complete: Boolean(record.complete),
+          bestScore: record.bestScore == null ? null : Number(record.bestScore),
+          updatedAt: Number(record.updatedAt) || Date.now()
+        });
+      }
+      this.save();
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  public clearAll(): void {
+    this.records.clear();
+    localStorage.removeItem(STORAGE_KEY);
+  }
+
   private save(): void {
     const payload: Record<string, LessonProgress> = {};
     for (const [id, record] of this.records) payload[id] = record;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
   }
 }
+

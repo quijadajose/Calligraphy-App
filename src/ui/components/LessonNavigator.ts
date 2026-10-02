@@ -207,6 +207,11 @@ export class LessonNavigator {
     bar.setAttribute('aria-hidden', 'true');
 
     card.append(glyph, caption, bar);
+    if (this.done.has(lesson.id)) {
+      const check = document.createElement('i');
+      check.className = 'ti ti-circle-check tile-check-icon';
+      card.append(check);
+    }
     card.addEventListener('click', () => {
       this.place(lesson);
       this.activeId = lesson.id;

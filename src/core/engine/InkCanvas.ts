@@ -30,6 +30,7 @@ export class InkCanvas {
   public perfOverlay: PerformanceOverlay;
 
   private strokes: Stroke[] = [];
+  private redoStack: Stroke[] = [];
   private currentStroke: Stroke | null = null;
   private activePointerId: number | null = null;
   private ghost: Point2[][] = [];
@@ -270,6 +271,7 @@ export class InkCanvas {
 
   public clear(notify = true): void {
     this.strokes = [];
+    this.redoStack = [];
     this.currentStroke = null;
     this.rawPointQueue = [];
     this.clearActiveLayer();
@@ -279,7 +281,17 @@ export class InkCanvas {
 
   public undo(): void {
     if (this.strokes.length === 0) return;
-    this.strokes.pop();
+    const popped = this.strokes.pop()!;
+    this.redoStack.push(popped);
+    this.clearActiveLayer();
+    this.redrawInk();
+    this.onStrokeComplete?.(this.strokes);
+  }
+
+  public redo(): void {
+    if (this.redoStack.length === 0) return;
+    const stroke = this.redoStack.pop()!;
+    this.strokes.push(stroke);
     this.clearActiveLayer();
     this.redrawInk();
     this.onStrokeComplete?.(this.strokes);
@@ -473,13 +485,15 @@ export class InkCanvas {
 
       if (this.lastRenderedPoint) {
         const nextWidth = this.brushRenderer.widthAt(filtered, this.currentStroke.tool, this.currentStroke.baseWidth);
+        const targetCtx = this.currentStroke.tool === 'eraser' ? this.inkCtx : this.activeCtx;
+        const color = this.currentStroke.tool === 'eraser' ? 'eraser' : this.currentStroke.color;
         this.brushRenderer.drawSegment(
-          this.activeCtx,
+          targetCtx,
           this.lastRenderedPoint,
           filtered,
           this.lastRenderedWidth,
           nextWidth,
-          this.currentStroke.color
+          color
         );
         this.lastRenderedPoint = filtered;
         this.lastRenderedWidth = nextWidth;
@@ -524,8 +538,11 @@ export class InkCanvas {
 
     if (this.currentStroke && this.currentStroke.points.length > 0) {
       this.strokes.push(this.currentStroke);
-      // Transferir el trazo completado al lienzo de tinta definitivo
-      this.inkRenderer.drawStroke(this.inkCtx, this.currentStroke);
+      this.redoStack = [];
+      // Si no fue borrador incremental sobre inkCtx, transferir el trazo
+      if (this.currentStroke.tool !== 'eraser') {
+        this.inkRenderer.drawStroke(this.inkCtx, this.currentStroke);
+      }
       this.currentStroke = null;
       this.onStrokeComplete?.(this.strokes);
     }

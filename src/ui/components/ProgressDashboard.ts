@@ -26,6 +26,20 @@ export class ProgressDashboard {
       this.root.append(block);
     }
     if (view.recent.length > 0) this.root.append(this.recentList(view.recent));
+
+    // Tarjeta Local-first según mockup
+    const backupCard = document.createElement('div');
+    backupCard.className = 'card backup-card';
+    backupCard.innerHTML = `
+      <i class="ti ti-database" style="font-size:24px;color:var(--um)"></i>
+      <div style="flex:1">
+        <div style="font-weight:600">Tus datos viven en este dispositivo</div>
+        <div class="mu">Guarda una copia por si borras los datos del navegador.</div>
+      </div>
+      <button class="b2" id="dash-import-btn" type="button">Importar</button>
+      <button class="go" id="dash-export-btn" type="button">Exportar respaldo</button>
+    `;
+    this.root.append(backupCard);
   }
 
   private summary(view: ProgressView): HTMLElement {

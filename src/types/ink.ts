@@ -9,7 +9,7 @@ export interface StrokePoint {
   velocity?: number;
 }
 
-export type BrushTool = 'fountain' | 'fude' | 'pencil';
+export type BrushTool = 'fountain' | 'fude' | 'pencil' | 'eraser';
 
 export interface Stroke {
   points: StrokePoint[];

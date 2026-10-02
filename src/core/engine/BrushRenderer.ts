@@ -14,6 +14,8 @@ export function brushWidthAt(
       return baseWidth * (0.28 + Math.pow(pressure, 1.7) * 1.7) * (1 - speed * 0.45);
     case 'fude':
       return baseWidth * (0.18 + Math.pow(pressure, 1.3) * 2.6) * (1 - speed * 0.55) * (1 + tilt * 0.35);
+    case 'eraser':
+      return baseWidth * 2.5;
     case 'pencil':
     default:
       return baseWidth * (0.72 + pressure * 0.38) * (1 - speed * 0.12);
@@ -51,7 +53,12 @@ export class BrushRenderer {
     const dist = Math.hypot(dx, dy);
 
     ctx.save();
-    ctx.fillStyle = color;
+    if (color === 'eraser') {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.fillStyle = '#000000';
+    } else {
+      ctx.fillStyle = color;
+    }
 
     if (dist < 0.1) {
       ctx.beginPath();
@@ -141,7 +148,12 @@ export class BrushRenderer {
     }
 
     ctx.save();
-    ctx.fillStyle = stroke.color;
+    if (stroke.tool === 'eraser') {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.fillStyle = '#000000';
+    } else {
+      ctx.fillStyle = stroke.color;
+    }
     ctx.beginPath();
     this.curveThrough(ctx, left);
     this.curveThrough(ctx, right.reverse());
