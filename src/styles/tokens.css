@@ -63,6 +63,10 @@ html[data-theme='kids'] {
   -webkit-user-select: none;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html, body {
   background: var(--ui);
   color: var(--ut);
