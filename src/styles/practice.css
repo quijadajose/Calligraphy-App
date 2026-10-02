@@ -1,0 +1,183 @@
+/* ==========================================================================
+   Practice Screen (Mockup Architecture)
+   ========================================================================== */
+
+.canvas-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  background: var(--ui);
+  overflow: hidden;
+}
+
+.canvas-container[hidden] {
+  display: none !important;
+}
+
+/* Practice Minimal Header */
+.practice-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  height: 48px;
+  box-sizing: border-box;
+  background: var(--ui);
+  border-bottom: 0.5px solid var(--ub);
+  flex-shrink: 0;
+}
+
+.practice-title-group {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.practice-glyph-mark {
+  font-size: 22px;
+  font-weight: 600;
+  font-family: var(--font-voice);
+  color: var(--ut);
+}
+
+.practice-sub-label {
+  font-size: 13px;
+  color: var(--um);
+  white-space: nowrap;
+}
+
+.practice-chips {
+  margin-left: 8px;
+}
+
+/* Practice Workspace: Left Dock + Paper Canvas */
+.practice-workspace {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  position: relative;
+  padding: 0 10px 10px 10px;
+}
+
+.dock {
+  width: 54px;
+  background: var(--ui2);
+  border-radius: var(--border-radius-md);
+  border: 0.5px solid var(--ub);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 0;
+  flex: none;
+  box-sizing: border-box;
+  z-index: 10;
+}
+
+.dock .sep {
+  width: 28px;
+  height: 1px;
+  background: var(--ub);
+  margin: 4px 0;
+}
+
+.dock-width-btn {
+  flex-direction: column;
+  gap: 3px;
+}
+
+.pressure-meter-vertical {
+  width: 6px;
+  height: 64px;
+  border-radius: 3px;
+  background: var(--ub);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.pressure-fill-vertical {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 0%;
+  background: var(--accent-soft);
+  transition: height 0.05s ease-out;
+}
+
+/* Paper Canvas Container */
+.paper-wrap {
+  flex: 1;
+  position: relative;
+  margin-left: 10px;
+  min-width: 0;
+  border-radius: var(--border-radius-md);
+  background: var(--paper-bg);
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.canvas-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.canvas-layer-bg {
+  z-index: 1;
+  pointer-events: none;
+}
+
+.canvas-layer-ink {
+  z-index: 2;
+  pointer-events: none;
+}
+
+.canvas-layer-active {
+  z-index: 3;
+  touch-action: none;
+}
+
+/* Live Floating Tip Box (Mockup style) */
+.tip {
+  position: absolute;
+  left: 12px;
+  top: 10px;
+  right: 12px;
+  background: #2A2622;
+  color: #F3EEE3;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 20;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  animation: slideDownTip 0.2s ease-out;
+}
+
+@keyframes slideDownTip {
+  from { transform: translateY(-8px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.tip i {
+  font-size: 16px;
+  cursor: pointer;
+  opacity: 0.85;
+}
+
+.tip i:hover {
+  opacity: 1;
+}
+

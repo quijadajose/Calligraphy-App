@@ -1,0 +1,62 @@
+/* ==========================================================================
+   Settings Screen
+   ========================================================================== */
+
+.settings-section {
+  margin-bottom: 16px;
+}
+
+.settings-subtitle {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: var(--ut);
+}
+
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 10px;
+}
+
+.theme-card {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.15s ease;
+}
+
+.theme-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.theme-card.active {
+  box-shadow: inset 0 0 0 1.5px var(--accent-soft);
+}
+
+.sw {
+  display: flex;
+  gap: 4px;
+}
+
+.sw i {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: block;
+}
+
+.chips-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.settings-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+

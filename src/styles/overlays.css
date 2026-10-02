@@ -1,0 +1,165 @@
+/* ==========================================================================
+   Modals & Overlays (Mockup Style)
+   ========================================================================== */
+
+.score-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.score-modal-backdrop[hidden] {
+  display: none !important;
+}
+
+.box {
+  background: var(--ui2);
+  border-radius: var(--border-radius-lg);
+  padding: 20px 24px;
+  width: 320px;
+  max-width: 90vw;
+  text-align: center;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45), 0 0 0 0.5px var(--ub);
+  color: var(--ut);
+}
+
+.score-svg-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.score-details-list {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+  text-align: left;
+  font-size: 13px;
+  color: var(--um);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.score-details-list li {
+  padding-left: 12px;
+  position: relative;
+}
+
+.score-details-list li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--accent-soft);
+}
+
+.finish-confetti {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Dictation overlay */
+.dictation-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--ut);
+}
+
+.dictation-clock {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--accent-soft);
+}
+
+.dictation-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Zen mode exit button */
+#zen-exit-btn {
+  display: none;
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 99;
+  background: var(--ui2);
+  color: var(--ut);
+  border: 0.5px solid var(--ub);
+  border-radius: var(--border-radius-pill);
+  padding: 8px 16px;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+body.zen-mode #zen-exit-btn {
+  display: block;
+}
+
+body.zen-mode .practice-bar {
+  display: none;
+}
+
+body.zen-mode .dock {
+  opacity: 0.2;
+  transition: opacity 0.2s ease;
+}
+
+body.zen-mode .dock:hover {
+  opacity: 1;
+}
+
+/* Performance HUD Overlay */
+.perf-overlay {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  z-index: 45;
+  background: rgba(27, 26, 24, 0.85);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 0.5px solid var(--ub);
+  border-radius: var(--border-radius-sm);
+  padding: 6px 10px;
+  display: flex;
+  gap: 12px;
+  font-family: monospace, monospace;
+  font-size: 11px;
+  color: var(--um);
+  pointer-events: none;
+}
+
+.perf-metric {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.perf-label {
+  color: var(--um);
+  text-transform: uppercase;
+  font-size: 10px;
+}
+
+.perf-val {
+  font-weight: 700;
+  color: var(--accent-green);
+}

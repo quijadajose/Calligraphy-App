@@ -1,0 +1,108 @@
+/* ==========================================================================
+   Progress Dashboard Screen
+   ========================================================================== */
+
+.progress-board {
+  gap: 14px;
+}
+
+.progress-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.progress-stat {
+  background: var(--ui2);
+  border-radius: var(--border-radius-md);
+  padding: 12px 14px;
+  border: 0.5px solid var(--ub);
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.progress-stat span {
+  font-size: 12px;
+  color: var(--um);
+}
+
+.progress-stat strong {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--ut);
+}
+
+.progress-meter {
+  grid-column: 1 / -1;
+  height: 6px;
+  background: var(--ub);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-meter span {
+  display: block;
+  height: 100%;
+  background: var(--accent-green);
+}
+
+.progress-section {
+  background: var(--ui2);
+  border-radius: var(--border-radius-md);
+  padding: 12px 14px;
+  border: 0.5px solid var(--ub);
+  margin-bottom: 12px;
+}
+
+.progress-section h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--ut);
+}
+
+.progress-row {
+  display: grid;
+  grid-template-columns: 90px 1fr 64px;
+  gap: 8px 12px;
+  align-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--ut);
+  width: 100%;
+  padding: 6px 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.progress-row-name {
+  font-size: 13px;
+}
+
+.progress-row-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--ub);
+  overflow: hidden;
+}
+
+.progress-row-track span {
+  display: block;
+  height: 100%;
+  background: var(--accent-soft);
+}
+
+.progress-row-count {
+  font-size: 12px;
+  color: var(--um);
+  text-align: right;
+}
+
+.backup-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
