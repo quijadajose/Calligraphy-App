@@ -1,10 +1,9 @@
-import { BrushTool, GridMode } from '../../types/ink';
+import { BrushTool } from '../../types/ink';
 
+/** Dock de herramientas de la hoja. */
 export class Toolbar {
   public onToolChange?: (tool: BrushTool) => void;
   public onColorChange?: (color: string) => void;
-  public onWidthChange?: (width: number) => void;
-  public onGridCycle?: () => void;
   public onUndo?: () => void;
   public onRedo?: () => void;
   public onClear?: () => void;
@@ -13,8 +12,6 @@ export class Toolbar {
   constructor(
     private tools: Record<BrushTool, HTMLButtonElement>,
     private colorInput: HTMLInputElement,
-    private widthInput: HTMLInputElement,
-    private gridButton: HTMLButtonElement,
     private undoButton: HTMLButtonElement,
     private redoButton: HTMLButtonElement,
     private clearButton: HTMLButtonElement,
@@ -22,56 +19,42 @@ export class Toolbar {
     private zenExitButton: HTMLButtonElement
   ) {
     (Object.keys(this.tools) as BrushTool[]).forEach((tool) => {
-      this.tools[tool]?.addEventListener('click', () => {
+      this.tools[tool].addEventListener('click', () => {
         this.setTool(tool);
         this.onToolChange?.(tool);
       });
     });
     this.colorInput.addEventListener('input', () => this.onColorChange?.(this.colorInput.value));
-    this.widthInput.addEventListener('input', () => this.onWidthChange?.(Number(this.widthInput.value)));
-    this.gridButton.addEventListener('click', (event) => {
-      event.stopPropagation();
-      this.onGridCycle?.();
-    });
-    this.undoButton.addEventListener('click', (event) => {
-      event.stopPropagation();
-      this.onUndo?.();
-    });
-    this.redoButton.addEventListener('click', (event) => {
-      event.stopPropagation();
-      this.onRedo?.();
-    });
-    this.clearButton.addEventListener('click', (event) => {
-      event.stopPropagation();
-      this.onClear?.();
-    });
+    this.undoButton.addEventListener('click', () => this.onUndo?.());
+    this.redoButton.addEventListener('click', () => this.onRedo?.());
+    this.clearButton.addEventListener('click', () => this.onClear?.());
     this.zenButton.addEventListener('click', () => this.setZen(true));
     this.zenExitButton.addEventListener('click', () => this.setZen(false));
   }
 
   public setTool(tool: BrushTool): void {
     (Object.keys(this.tools) as BrushTool[]).forEach((name) => {
-      this.tools[name].classList.toggle('active', name === tool);
+      const on = name === tool;
+      this.tools[name].classList.toggle('on', on);
+      this.tools[name].setAttribute('aria-pressed', String(on));
     });
   }
 
-  public setWidth(width: number): void {
-    if (width > Number(this.widthInput.max)) this.widthInput.max = String(Math.ceil(width));
-    this.widthInput.value = String(width);
+  public setColor(color: string): void {
+    this.colorInput.value = color;
   }
 
-  public setGridLabel(mode: GridMode): void {
-    const labels: Record<GridMode, string> = {
-      palmer: '📐 Palmer',
-      genkouyoushi: '📐 Genkou',
-      none: '📐 Sin pauta'
-    };
-    this.gridButton.textContent = labels[mode];
+  public setHistory(canUndo: boolean): void {
+    this.undoButton.disabled = !canUndo;
+  }
+
+  public exitZen(): void {
+    if (document.body.classList.contains('zen-mode')) this.setZen(false);
   }
 
   private setZen(enabled: boolean): void {
     document.body.classList.toggle('zen-mode', enabled);
-    this.zenExitButton.style.display = enabled ? 'block' : 'none';
     this.onZen?.(enabled);
+    (enabled ? this.zenExitButton : this.zenButton).focus();
   }
 }

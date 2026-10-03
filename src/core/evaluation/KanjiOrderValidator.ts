@@ -1,5 +1,5 @@
 import { CharGeometry, Point2, Stroke } from '../../types/ink';
-import { dominantBox, genkouyoushiLayout } from '../engine/gridMetrics';
+import { boxIndexFor, dominantBox, genkouyoushiLayout } from '../engine/gridMetrics';
 import {
   classifyEnding,
   directionScore,
@@ -20,6 +20,12 @@ export interface KanjiAssessment {
   feedback: string;
   details: string[];
   liveMessage: string;
+  /** Índices (dentro de los trazos evaluados) que fallaron. */
+  bad: number[];
+}
+
+export interface CopiesAssessment extends KanjiAssessment {
+  copies: number;
 }
 
 function userUnits(strokes: Stroke[], width: number, height: number): Point2[][] {
@@ -45,6 +51,29 @@ function strokeInBox(stroke: Stroke, width: number, height: number): Point2[] | 
     x: (point.x - box.x) / box.size,
     y: (point.y - box.y) / box.size
   }));
+}
+
+/** Trazos agrupados por cuadro, en el orden de los cuadros. Cada copia se califica aparte. */
+export function groupByBox(strokes: Stroke[], width: number, height: number): Array<{ box: number; indices: number[] }> {
+  const layout = genkouyoushiLayout(width, height);
+  const groups = new Map<number, number[]>();
+  strokes.forEach((stroke, index) => {
+    const box = boxIndexFor(stroke.points, layout);
+    if (box < 0) return;
+    const list = groups.get(box) ?? [];
+    list.push(index);
+    groups.set(box, list);
+  });
+  return [...groups.entries()].sort((a, b) => a[0] - b[0]).map(([box, indices]) => ({ box, indices }));
+}
+
+/** Cuadro donde cayó el último trazo y los trazos que ya hay en él. */
+export function lastBox(strokes: Stroke[], width: number, height: number): { box: number; strokes: Stroke[] } | null {
+  if (strokes.length === 0) return null;
+  const layout = genkouyoushiLayout(width, height);
+  const box = boxIndexFor(strokes[strokes.length - 1].points, layout);
+  if (box < 0) return null;
+  return { box, strokes: strokes.filter((stroke) => boxIndexFor(stroke.points, layout) === box) };
 }
 
 /** El último trazo no llega a recorrer el modelo: se puede descartar y repetir. */
@@ -73,6 +102,7 @@ export function lastStrokeIsIncomplete(
 }
 
 export class KanjiOrderValidator {
+  /** Un solo carácter escrito en un cuadro. */
   public static assess(
     strokes: Stroke[],
     geometry: CharGeometry | null,
@@ -88,7 +118,8 @@ export class KanjiOrderValidator {
         accuracy: 0,
         feedback: 'No se pudieron cargar los trazos de referencia. Revisa la conexión y vuelve a abrir el carácter.',
         details: [],
-        liveMessage: 'Sin datos de trazo.'
+        liveMessage: 'Sin datos de trazo.',
+        bad: []
       };
     }
 
@@ -103,6 +134,7 @@ export class KanjiOrderValidator {
     const shapeParts: number[] = [];
     const endingParts: number[] = [];
     const details: string[] = [];
+    const bad: number[] = [];
 
     for (let i = 0; i < compared; i++) {
       const direction = directionScore(user[i], ideal[i]);
@@ -111,12 +143,18 @@ export class KanjiOrderValidator {
       directionParts.push(direction);
       shapeParts.push(shape);
       endingParts.push(ending.score);
-      if (direction < 45) details.push(`Trazo ${i + 1}: la dirección va al revés.`);
-      else if (shape < 55) details.push(`Trazo ${i + 1}: la forma se aleja del modelo.`);
+      if (direction < 45) {
+        details.push(`Trazo ${i + 1}: la dirección va al revés.`);
+        bad.push(i);
+      } else if (shape < 55) {
+        details.push(`Trazo ${i + 1}: la forma se aleja del modelo.`);
+        bad.push(i);
+      }
       if (ending.user !== ending.ideal) {
         details.push(`Trazo ${i + 1}: remate ${ending.user}, el modelo pide ${ending.ideal}.`);
       }
     }
+    for (let i = expected; i < user.length; i++) bad.push(i);
 
     if (user.length > expected) details.push(`Sobran ${user.length - expected} trazo(s).`);
     if (user.length < expected) details.push(`Faltan ${expected - user.length} trazo(s).`);
@@ -156,8 +194,8 @@ export class KanjiOrderValidator {
     let liveMessage = `Trazo ${user.length} de ${expected}.`;
     if (last >= 0 && last < expected) {
       const endingName = classifyEnding(user[last]);
-      const direction = directionScore(user[last], ideal[last]);
-      liveMessage += direction >= 60
+      const lastDirection = directionScore(user[last], ideal[last]);
+      liveMessage += lastDirection >= 60
         ? ` Dirección correcta. Remate: ${endingName}.`
         : ' Ese trazo va en otra dirección.';
     } else if (user.length > expected) {
@@ -172,7 +210,59 @@ export class KanjiOrderValidator {
       accuracy: startedWrong ? Math.max(0, accuracy - 12) : accuracy,
       feedback,
       details,
-      liveMessage
+      liveMessage,
+      bad
+    };
+  }
+
+  /**
+   * Varias copias en varios cuadros. Cada cuadro se califica contra el signo que le toca
+   * (el carácter de la lección, o el signo correspondiente de la palabra) y la nota es la media.
+   */
+  public static assessCopies(
+    strokes: Stroke[],
+    glyphs: Array<CharGeometry | null>,
+    width: number,
+    height: number
+  ): CopiesAssessment {
+    const groups = groupByBox(strokes, width, height);
+    if (groups.length === 0 || glyphs.length === 0) {
+      return { ...this.assess(strokes, glyphs[0] ?? null, width, height), copies: 0 };
+    }
+    const results = groups.map((group) => {
+      // Los cuadros van en orden de lectura: el cuadro k lleva el signo k de la palabra.
+      const geometry = glyphs[group.box % glyphs.length];
+      const result = this.assess(group.indices.map((i) => strokes[i]), geometry, width, height);
+      return { group, result, char: geometry?.char ?? '?' };
+    });
+    const mean = (pick: (r: KanjiAssessment) => number) =>
+      Math.round(results.reduce((sum, entry) => sum + pick(entry.result), 0) / results.length);
+    const accuracy = mean((r) => r.accuracy);
+    const worst = results.reduce((a, b) => (b.result.accuracy < a.result.accuracy ? b : a));
+    const details = [
+      ...results.slice(0, 8).map((entry, index) => `Copia ${index + 1} (${entry.char}): ${entry.result.accuracy}/100.`),
+      ...(results.length > 8 ? [`… y ${results.length - 8} copias más.`] : []),
+      ...(worst.result.details.length ? [`En la copia más floja: ${worst.result.details.slice(0, 3).join(' ')}`] : [])
+    ];
+    const bad = results.flatMap((entry) => entry.result.bad.map((local) => entry.group.indices[local]));
+    const feedback = results.length === 1
+      ? worst.result.feedback
+      : accuracy >= 85
+        ? `${results.length} copias muy parejas: orden, dirección y remates cerca del modelo.`
+        : accuracy >= 65
+          ? `${results.length} copias. La estructura se reconoce; la más floja tiene ${worst.result.accuracy}.`
+          : `${results.length} copias. Vuelve a mirar el orden de trazos antes de seguir copiando.`;
+    return {
+      orderScore: mean((r) => r.orderScore),
+      directionScore: mean((r) => r.directionScore),
+      shapeScore: mean((r) => r.shapeScore),
+      endingScore: mean((r) => r.endingScore),
+      accuracy,
+      feedback,
+      details,
+      liveMessage: results[results.length - 1].result.liveMessage,
+      bad,
+      copies: results.length
     };
   }
 }

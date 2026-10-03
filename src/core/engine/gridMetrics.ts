@@ -7,8 +7,8 @@ export const PALMER_SLANT_DEG = 52;
 /** Grosor del modelo, como fracción de la altura de x. El óvalo se ajusta para que el borde caiga en la pauta. */
 export const PALMER_PEN_RATIO = 0.18;
 
-/** Hueco que ocupan la ficha de arriba y los botones de abajo. */
-let practiceChrome = { top: 132, bottom: 72 };
+/** Hueco que se deja arriba para el aviso flotante y abajo como margen de la hoja. */
+let practiceChrome = { top: 56, bottom: 20 };
 
 export function setPracticeChrome(top: number, bottom: number): boolean {
   const next = {
@@ -159,4 +159,34 @@ export function dominantBox(points: Point2[], layout: GenkouLayout): GuideBox | 
     if (counts[i] > counts[best]) best = i;
   }
   return counts[best] > 0 ? layout.boxes[best] : null;
+}
+
+export function sentenceRowIndexAt(y: number, height: number): number {
+  const { rows, rowHeight, topOffset } = sentenceFrame(height);
+  return Math.max(0, Math.min(rows - 1, Math.floor((y - topOffset) / rowHeight)));
+}
+
+/** Índice del cuadro donde cae la mayor parte del trazo; si no toca ninguno, el más cercano. */
+export function boxIndexFor(points: Point2[], layout: GenkouLayout): number {
+  if (layout.boxes.length === 0 || points.length === 0) return -1;
+  const box = dominantBox(points, layout);
+  if (box) return layout.boxes.indexOf(box);
+  let cx = 0;
+  let cy = 0;
+  for (const point of points) {
+    cx += point.x;
+    cy += point.y;
+  }
+  cx /= points.length;
+  cy /= points.length;
+  let best = 0;
+  let bestDist = Infinity;
+  layout.boxes.forEach((candidate, index) => {
+    const dist = Math.hypot(candidate.x + candidate.size / 2 - cx, candidate.y + candidate.size / 2 - cy);
+    if (dist < bestDist) {
+      bestDist = dist;
+      best = index;
+    }
+  });
+  return best;
 }

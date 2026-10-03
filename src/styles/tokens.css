@@ -1,66 +1,102 @@
 /* ==========================================================================
-   Calligraphy App - Design System & Modern Mockup Styles
+   Calligraphy App - Design tokens
    ========================================================================== */
 
 :root {
-  /* Dark Theme Tokens (Default) */
+  /* Oscuro (valores base) */
   --ui: #1B1A18;
   --ui2: #262421;
   --ut: #EDE8DD;
-  --um: #9A9487;
+  --um: #A39D90;
   --ub: #3A3733;
 
-  /* Accent Colors */
   --accent: #B85A3C;
   --accent-hover: #A24E33;
   --accent-soft: #C9694A;
   --accent-green: #6FA97B;
   --accent-green-bg: #2E4A36;
   --accent-danger: #E08A78;
+  --on-accent: #FFFFFF;
 
-  /* Paper Canvas */
   --paper-bg: #141311;
   --ink-default: #EDE8DD;
+  --tip-bg: #2A2622;
+  --tip-text: #F3EEE3;
 
-  /* Typography */
+  /* Animación de la guía y contorno del modelo */
+  --guide-anim: #E5A93C;
+  --guide-outline: #59616C;
+
+  --heat-0: var(--ub);
+  --heat-1: #4D3A2E;
+  --heat-2: #7A4A33;
+  --heat-3: #A55A3A;
+  --heat-4: #D27350;
+
   --font-sans: 'Outfit', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-serif: 'Noto Serif JP', Georgia, serif;
   --font-voice: 'Caveat', cursive, var(--font-serif);
 
-  /* Borders & Radius */
   --border-radius-sm: 8px;
   --border-radius-md: 12px;
   --border-radius-lg: 16px;
   --border-radius-pill: 999px;
+
+  --focus-ring: 0 0 0 2px var(--ui), 0 0 0 4px var(--accent-soft);
 }
 
 html[data-theme='light'] {
   --ui: #E9E3D6;
   --ui2: #F6F1E7;
   --ut: #2A2622;
-  --um: #6F685C;
+  --um: #5F594E;
   --ub: #D3CBB9;
   --paper-bg: #FBF7EE;
+  --accent: #A84F33;
+  --accent-hover: #8F4229;
+  --guide-anim: #B45309;
+  --guide-outline: #CBD5E1;
+  --heat-1: #EBCDB8;
+  --heat-2: #DDA27F;
+  --heat-3: #C97750;
+  --heat-4: #A84F33;
 }
 
 html[data-theme='kids'] {
   --ui: #8FD4FF;
   --ui2: #E1F2FE;
   --ut: #1A365D;
-  --um: #4A6E9B;
+  --um: #2F527E;
   --ub: #BADEFC;
-  --accent: #FF7043;
-  --accent-hover: #F4511E;
-  --accent-soft: #FFA726;
+  --accent: #D9480F;
+  --accent-hover: #C2410C;
+  --accent-soft: #F08C00;
   --paper-bg: #FFFDF8;
+  --tip-bg: #1A365D;
+  --guide-anim: #E8590C;
+  --guide-outline: #A5C8EE;
+  --heat-1: #FFE8CC;
+  --heat-2: #FFC078;
+  --heat-3: #FF922B;
+  --heat-4: #D9480F;
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+/* En la hoja no se selecciona texto; en los formularios sí. */
+#app {
   user-select: none;
   -webkit-user-select: none;
+}
+
+#app input,
+#app textarea {
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 [hidden] {
@@ -73,22 +109,62 @@ html, body {
   font-family: var(--font-sans);
   font-size: 14px;
   line-height: 1.4;
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
   overflow: hidden;
   touch-action: manipulation;
 }
 
-button, input {
+button, input, select, textarea {
   font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+button:focus-visible,
+input:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 #app {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  width: 100vw;
+  height: 100dvh;
+  width: 100%;
   background: var(--ui);
   overflow: hidden;
   position: relative;
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+.skip-link {
+  position: absolute;
+  left: 8px;
+  top: -48px;
+  z-index: 200;
+  background: var(--accent);
+  color: var(--on-accent);
+  padding: 8px 12px;
+  border-radius: var(--border-radius-sm);
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

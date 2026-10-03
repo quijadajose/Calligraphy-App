@@ -1,719 +1,478 @@
-import HanziWriter from 'hanzi-writer';
-import { DictationService, suggestedSeconds } from './core/audio/DictationService';
-import { loadCharRecord } from './core/evaluation/CharDataLoader';
-import { SlantAnalyzer } from './core/evaluation/SlantAnalyzer';
-import { guideDirection, strokeCoversGuide } from './core/evaluation/geometry';
-import { lastStrokeIsIncomplete } from './core/evaluation/KanjiOrderValidator';
-import { StrokeEvaluator } from './core/evaluation/StrokeEvaluator';
-import { baseWidthMatching } from './core/engine/BrushRenderer';
-import { InkCanvas } from './core/engine/InkCanvas';
-import { LESSONS } from './data/lessons';
-import { CharGeometry, GridMode, Lesson } from './types/ink';
+import '@fontsource/caveat/600.css';
+import '@fontsource/outfit/400.css';
+import '@fontsource/outfit/500.css';
+import '@fontsource/outfit/600.css';
+import './styles/main.css';
+import { Studio } from './app/Studio';
+import { DictationService } from './core/audio/DictationService';
+import { PlanItem, buildDailyPlan, nextLesson } from './core/daily/DailyPlan';
+import { prefetchChars } from './core/evaluation/CharDataLoader';
+import { MASTERY_LABELS, PASSING_SCORE, ProgressStore, masteryLevel } from './core/progress/ProgressStore';
+import { DEFAULT_SETTINGS, SettingsStore, ThemeChoice } from './core/settings/SettingsStore';
+import { browserStore } from './core/storage/safeStorage';
+import { SheetStore } from './core/storage/SheetStore';
+import { allLessons } from './data/lessons';
+import { Lesson, glyphsOf } from './types/ink';
 import { DictationOverlay } from './ui/components/DictationOverlay';
-import { ProgressStore } from './core/progress/ProgressStore';
+import { FinishOverlay } from './ui/components/FinishOverlay';
 import { LessonNavigator } from './ui/components/LessonNavigator';
 import { ProgressDashboard } from './ui/components/ProgressDashboard';
-import { PalmerStrokePreview } from './ui/components/PalmerStrokePreview';
-import { FinishOverlay } from './ui/components/FinishOverlay';
 import { ScoreModal } from './ui/components/ScoreModal';
+import { SettingsPanel } from './ui/components/SettingsPanel';
+import { TodayPanel } from './ui/components/TodayPanel';
+import { toast } from './ui/toast';
 import { Toolbar } from './ui/components/Toolbar';
-import { ScoringEngine } from './core/evaluation/ScoringEngine';
+
+const THEME_KEY = 'calligraphy-theme';
+const INK_BY_THEME: Record<ThemeChoice, string> = { light: '#1a1a1a', dark: '#f3efe6', kids: '#24356b' };
+const PAPER_BY_THEME: Record<ThemeChoice, string> = { light: '#f4efe4', dark: '#1a1e26', kids: '#8fd4ff' };
+
+type Screen = 'home' | 'progress' | 'settings' | 'studio';
+
+function byId<T extends HTMLElement = HTMLElement>(id: string): T {
+  const el = document.getElementById(id);
+  if (!el) throw new Error(`Falta #${id} en index.html`);
+  return el as T;
+}
 
 window.addEventListener('DOMContentLoaded', () => {
-  const canvasWrapper = document.getElementById('canvas-wrapper') as HTMLElement;
-  const inkCanvas = new InkCanvas(canvasWrapper);
+  const kv = browserStore();
+  const settingsStore = new SettingsStore(kv);
+  const progress = new ProgressStore(kv);
+  const sheets = new SheetStore();
   const dictationService = new DictationService();
 
-  const pressureIndicator = document.getElementById('pressure-indicator') as HTMLElement;
-  const pressureText = document.getElementById('pressure-text') as HTMLElement;
-  const guideChar = document.getElementById('guide-char') as HTMLElement;
-  const kanjiAnimatorBox = document.getElementById('kanji-animator-box') as HTMLElement;
-  const btnAnimateStroke = document.getElementById('btn-animate-stroke') as HTMLButtonElement;
-  const guideTitle = document.getElementById('guide-title') as HTMLElement;
-  const guideInstructions = document.getElementById('guide-instructions') as HTMLElement;
-  const liveFeedback = document.getElementById('live-feedback') as HTMLElement;
+  let lessons = allLessons(settingsStore.get().customTexts);
+  let lessonsById = new Map(lessons.map((lesson) => [lesson.id, lesson]));
+  let plan: PlanItem[] = [];
+  let screen: Screen = 'home';
 
-  const strokeSteps = document.getElementById('stroke-steps') as HTMLElement;
+  // ---------------------------------------------------------------- Tema
+  const themeMeta = document.getElementById('theme-color') as HTMLMetaElement | null;
+  const readTheme = (): ThemeChoice => {
+    const saved = kv.getItem(THEME_KEY);
+    if (saved === 'light' || saved === 'dark' || saved === 'kids') return saved;
+    return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
+  };
+  let theme = readTheme();
 
-  const palmerPreview = new PalmerStrokePreview(kanjiAnimatorBox);
-  let kanjiWriter: HanziWriter | null = null;
-  let activeGeometry: CharGeometry | null = null;
-  let lessonToken = 0;
-  let stepIndex = 0;
-  let activeLesson: Lesson = LESSONS[0];
-  let penMatchesModel = true;
-  let stepAdvanced = false;
-
-  const gridCycle: GridMode[] = ['palmer', 'genkouyoushi', 'none'];
-
+  // ---------------------------------------------------------------- Componentes
   const toolbar = new Toolbar(
     {
-      fountain: document.getElementById('tool-fountain') as HTMLButtonElement,
-      fude: document.getElementById('tool-fude') as HTMLButtonElement,
-      pencil: document.getElementById('tool-pencil') as HTMLButtonElement,
-      eraser: document.getElementById('tool-eraser') as HTMLButtonElement
+      fountain: byId<HTMLButtonElement>('tool-fountain'),
+      fude: byId<HTMLButtonElement>('tool-fude'),
+      pencil: byId<HTMLButtonElement>('tool-pencil'),
+      eraser: byId<HTMLButtonElement>('tool-eraser')
     },
-    document.getElementById('ink-color') as HTMLInputElement,
-    document.getElementById('ink-width') as HTMLInputElement,
-    document.getElementById('btn-grid-toggle') as HTMLButtonElement,
-    document.getElementById('btn-undo') as HTMLButtonElement,
-    document.getElementById('btn-redo') as HTMLButtonElement,
-    document.getElementById('btn-clear') as HTMLButtonElement,
-    document.getElementById('zen-mode-btn') as HTMLButtonElement,
-    document.getElementById('zen-exit-btn') as HTMLButtonElement
-  );
-
-  const lessonsNav = new LessonNavigator(
-    LESSONS,
-    document.getElementById('lesson-list-container') as HTMLElement,
-    document.getElementById('lesson-tabs') as HTMLElement,
-    document.getElementById('kanji-levels') as HTMLElement,
-    document.getElementById('lesson-heading') as HTMLElement,
-    document.getElementById('lesson-blurb') as HTMLElement,
-    document.getElementById('lesson-search') as HTMLInputElement,
-    {
-      palmer: document.getElementById('filter-palmer') as HTMLButtonElement,
-      kanji: document.getElementById('filter-kanji') as HTMLButtonElement
-    },
-    document.getElementById('current-category-badge') as HTMLElement
-  );
-
-  const scoreModal = new ScoreModal(
-    document.getElementById('score-modal') as HTMLElement,
-    document.getElementById('modal-score') as HTMLElement,
-    document.getElementById('modal-feedback') as HTMLElement,
-    document.getElementById('modal-details') as HTMLElement,
-    document.getElementById('modal-close-btn') as HTMLButtonElement
+    byId<HTMLInputElement>('ink-color'),
+    byId<HTMLButtonElement>('btn-undo'),
+    byId<HTMLButtonElement>('btn-redo'),
+    byId<HTMLButtonElement>('btn-clear'),
+    byId<HTMLButtonElement>('zen-mode-btn'),
+    byId<HTMLButtonElement>('zen-exit-btn')
   );
 
   const dictation = new DictationOverlay(
-    document.getElementById('dictation-overlay') as HTMLElement,
-    document.getElementById('dictation-prompt') as HTMLElement,
-    document.getElementById('dictation-clock') as HTMLElement,
-    document.getElementById('dictation-listen') as HTMLButtonElement,
-    document.getElementById('dictation-submit') as HTMLButtonElement,
-    document.getElementById('dictation-cancel') as HTMLButtonElement,
+    byId('dictation-overlay'),
+    byId('dictation-prompt'),
+    byId('dictation-clock'),
+    byId<HTMLButtonElement>('dictation-listen'),
+    byId<HTMLButtonElement>('dictation-submit'),
+    byId<HTMLButtonElement>('dictation-cancel'),
     dictationService
   );
 
-  inkCanvas.onPressureUpdate = (pressure) => {
-    const pct = Math.round(pressure * 100);
-    pressureIndicator.style.height = `${pct}%`;
-    pressureIndicator.style.width = `${pct}%`;
-    pressureText.textContent = `${pct}%`;
-    if (pressure > 0.02) {
-      pressureSum += pressure;
-      pressureCount += 1;
-    }
-  };
+  const studio = new Studio(
+    {
+      wrapper: byId('canvas-wrapper'),
+      paper: byId('paper-wrap'),
+      pressureIndicator: byId('pressure-indicator'),
+      pressureText: byId('pressure-text'),
+      glyphMark: byId('practice-glyph-mark'),
+      subLabel: byId('practice-sub-label'),
+      guideChar: byId('guide-char'),
+      animatorBox: byId('kanji-animator-box'),
+      markBox: byId('character-target-container'),
+      animateButton: byId<HTMLButtonElement>('btn-animate-stroke'),
+      liveTip: byId('live-tip'),
+      liveFeedback: byId('live-feedback'),
+      tipToggle: byId<HTMLButtonElement>('btn-tip'),
+      tipClose: byId<HTMLButtonElement>('tip-close'),
+      steps: byId('stroke-steps'),
+      evaluateButton: byId<HTMLButtonElement>('evaluate-btn'),
+      dictationButton: byId<HTMLButtonElement>('dictation-btn'),
+      metronomeButton: byId<HTMLButtonElement>('btn-metronome'),
+      widthButton: byId<HTMLButtonElement>('btn-width-toggle'),
+      widthLabel: byId('dock-width-label'),
+      widthPreview: byId('dock-width-preview'),
+      colorPreview: byId('dock-color-preview'),
+      colorInput: byId<HTMLInputElement>('ink-color'),
+      dock: byId('tool-dock'),
+      toolbar,
+      dictation
+    },
+    settingsStore.get(),
+    sheets,
+    dictationService
+  );
 
-  let retryOnNextStroke = false;
-  let practiceStartedAt = performance.now();
-  let pressureSum = 0;
-  let pressureCount = 0;
-  let celebrated = false;
-  const finish = new FinishOverlay(document.getElementById('finish-layer') as HTMLElement);
+  const catalog = new LessonNavigator(
+    lessons,
+    byId('lesson-list-container'),
+    byId('lesson-tabs'),
+    byId('kanji-levels'),
+    byId('lesson-heading'),
+    byId('lesson-blurb'),
+    byId<HTMLInputElement>('lesson-search'),
+    { palmer: byId<HTMLButtonElement>('filter-palmer'), kanji: byId<HTMLButtonElement>('filter-kanji') }
+  );
+  const today = new TodayPanel(byId('today-panel'));
+  const dashboard = new ProgressDashboard(byId('progress-body'));
+  const settingsPanel = new SettingsPanel(byId('settings-body'), settingsStore);
+  const scoreModal = new ScoreModal(byId('score-modal'));
+  const finish = new FinishOverlay(byId('finish-layer'));
 
-  inkCanvas.onStrokeStart = () => {
-    if (!retryOnNextStroke) return;
-    retryOnNextStroke = false;
-    inkCanvas.clear(false);
-  };
+  // ---------------------------------------------------------------- Progreso y plan del día
+  function refreshPlan(): void {
+    plan = buildDailyPlan(lessons, progress, settingsStore.get().lastLessonId, Date.now());
+  }
 
-  inkCanvas.onStrokeComplete = (strokes) => {
-    if (strokes.length === 0) {
-      retryOnNextStroke = false;
-      liveFeedback.textContent = '';
-      return;
-    }
-    if (activeLesson.category === 'japanese' && activeLesson.characterOrWord.length === 1) {
-      const size = inkCanvas.getSize();
-      if (lastStrokeIsIncomplete(strokes, activeGeometry, size.width, size.height)) {
-        inkCanvas.undo();
-        liveFeedback.textContent = 'Ese trazo quedó a medias. Se borró: hazlo de principio a fin.';
-        return;
-      }
-      liveFeedback.textContent = StrokeEvaluator.liveKanjiMessage(
-        strokes,
-        activeGeometry,
-        size.width,
-        size.height
-      );
-      noteLesson({ practiced: true });
-      return;
-    }
-    if (activeLesson.category === 'palmer') {
-      noteLesson({ practiced: true });
-      const progress = syncPalmerProgress();
-      if (progress) {
-        liveFeedback.textContent = progress;
-        return;
-      }
-      const slant = SlantAnalyzer.analyze(strokes);
-      liveFeedback.textContent = `Inclinación ${slant.avgAngle}° · nota parcial ${slant.slantScore}`;
-    }
-  };
-
-  toolbar.onToolChange = (tool) => {
-    inkCanvas.currentTool = tool;
-    if (penMatchesModel) applyModelPen();
-  };
-  toolbar.onColorChange = (color) => {
-    inkCanvas.currentColor = color;
-  };
-  const themeChoices = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-theme-choice]'));
-  const inkColorInput = document.getElementById('ink-color') as HTMLInputElement;
-  const themeMeta = document.getElementById('theme-color') as HTMLMetaElement | null;
-  const dayInk = '#1a1a1a';
-  const nightInk = '#f3efe6';
-  const kidsInk = '#24356b';
-  const inkDefaults = [dayInk, nightInk, kidsInk, '#000000'];
-  const applyTheme = (theme: 'light' | 'dark' | 'kids'): void => {
-    document.documentElement.dataset.theme = theme;
-    localStorage.setItem('calligraphy-theme', theme);
-    themeChoices.forEach((button) => {
-      const selected = button.dataset.themeChoice === theme;
-      button.classList.toggle('active', selected);
-      button.setAttribute('aria-pressed', String(selected));
-    });
-    if (themeMeta) {
-      themeMeta.content = theme === 'dark' ? '#1a1e26' : theme === 'kids' ? '#8fd4ff' : '#f4efe4';
-    }
-    const current = inkCanvas.currentColor.toLowerCase();
-    const nextInk = theme === 'dark' ? nightInk : theme === 'kids' ? kidsInk : dayInk;
-    if (inkDefaults.includes(current) && current !== nextInk) {
-      inkCanvas.currentColor = nextInk;
-      inkColorInput.value = nextInk;
-    }
-    inkCanvas.redrawAll();
-  };
-  themeChoices.forEach((button) => {
-    button.addEventListener('click', (event) => {
-      event.stopPropagation();
-      const choice = button.dataset.themeChoice;
-      if (choice === 'light' || choice === 'dark' || choice === 'kids') applyTheme(choice);
-    });
-  });
-  const initialTheme = document.documentElement.dataset.theme;
-  applyTheme(initialTheme === 'dark' || initialTheme === 'kids' ? initialTheme : 'light');
-  toolbar.onWidthChange = (width) => {
-    penMatchesModel = false;
-    inkCanvas.currentBaseWidth = width;
-  };
-  toolbar.onUndo = () => {
-    const before = inkCanvas.getStrokes().length;
-    stepAdvanced = false;
-    retryOnNextStroke = false;
-    inkCanvas.undo();
-    if (stepAdvanced || before === 0) return;
-    if (inkCanvas.getStrokes().length === 0) liveFeedback.textContent = '';
-    else if (activeLesson.steps?.length) liveFeedback.textContent = `Sigue con ${activeLesson.steps[stepIndex].title}.`;
-  };
-  toolbar.onClear = () => {
-    retryOnNextStroke = false;
-    inkCanvas.clear();
-  };
-  inkCanvas.onResize = () => {
-    if (penMatchesModel) applyModelPen();
-  };
-  toolbar.onGridCycle = () => {
-    const next = (gridCycle.indexOf(inkCanvas.gridMode) + 1) % gridCycle.length;
-    inkCanvas.setGrid(gridCycle[next]);
-    toolbar.setGridLabel(inkCanvas.gridMode);
-  };
-  toolbar.onRedo = () => {
-    stepAdvanced = false;
-    retryOnNextStroke = false;
-    inkCanvas.redo();
-  };
-
-  const courseHome = document.getElementById('course-home') as HTMLElement;
-  const lessonsPanel = document.getElementById('lessons-panel') as HTMLElement;
-  const progressPanel = document.getElementById('progress-panel') as HTMLElement;
-  const settingsPanel = document.getElementById('settings-panel') as HTMLElement;
-  const backHome = document.getElementById('back-home') as HTMLButtonElement;
-  const progressStore = new ProgressStore();
-  const dashboard = new ProgressDashboard(document.getElementById('progress-body') as HTMLElement);
-  const menuButtons = {
-    lessons: document.getElementById('menu-lessons') as HTMLButtonElement,
-    progress: document.getElementById('menu-progress') as HTMLButtonElement,
-    settings: document.getElementById('menu-settings') as HTMLButtonElement
-  };
-  let screen: 'lessons' | 'progress' | 'settings' | 'studio' = 'lessons';
-  let studioReady = false;
+  function lessonNext(lesson: Lesson): Lesson | null {
+    refreshPlan();
+    return nextLesson(lessons, plan, lesson);
+  }
 
   function publishProgress(): void {
-    if (screen === 'lessons') lessonsNav.setProgress(progressStore.startedIds(), progressStore.completedIds());
-    if (screen === 'progress') dashboard.render(progressStore.view(LESSONS));
+    if (screen === 'home') {
+      const mastery = new Map(lessons.map((lesson) => [lesson.id, masteryLevel(progress.get(lesson.id))]));
+      catalog.setProgress(mastery, new Set(progress.dueIds()));
+      refreshPlan();
+      const resumeId = settingsStore.get().lastLessonId;
+      today.render({
+        streak: progress.streak(),
+        todayMs: progress.todayMs(),
+        goalMinutes: settingsStore.get().dailyGoalMinutes,
+        dueCount: progress.dueIds().filter((id) => lessonsById.has(id)).length,
+        plan,
+        resume: resumeId ? lessonsById.get(resumeId) ?? null : null
+      });
+    } else if (screen === 'progress') {
+      dashboard.render(progress.view(lessons), settingsStore.get().dailyGoalMinutes, lessonsById);
+      void sheets.listSheets().then((list) => {
+        if (screen === 'progress') dashboard.renderSheets(list);
+      });
+    }
   }
 
-  function noteLesson(update: Parameters<ProgressStore['record']>[1]): void {
-    progressStore.record(activeLesson, update);
-    publishProgress();
+  // ---------------------------------------------------------------- Pantallas (con historial: el botón atrás funciona)
+  const courseHome = byId('course-home');
+  const canvasWrapper = byId('canvas-wrapper');
+  const panels: Record<Exclude<Screen, 'studio'>, HTMLElement> = {
+    home: byId('lessons-panel'),
+    progress: byId('progress-panel'),
+    settings: byId('settings-panel')
+  };
+  const menu: Record<Exclude<Screen, 'studio'>, HTMLButtonElement> = {
+    home: byId<HTMLButtonElement>('menu-lessons'),
+    progress: byId<HTMLButtonElement>('menu-progress'),
+    settings: byId<HTMLButtonElement>('menu-settings')
+  };
+
+  function routeFromHash(): { screen: Screen; lesson?: Lesson } {
+    const hash = decodeURIComponent(location.hash.replace(/^#\/?/, ''));
+    if (hash === 'progreso') return { screen: 'progress' };
+    if (hash === 'ajustes') return { screen: 'settings' };
+    if (hash.startsWith('leccion/')) {
+      const lesson = lessonsById.get(hash.slice('leccion/'.length));
+      if (lesson) return { screen: 'studio', lesson };
+    }
+    return { screen: 'home' };
   }
 
-  function noteScore(score: number): void {
-    noteLesson({ practiced: true, bestScore: score, complete: score >= 70 });
+  function go(target: Screen, lesson?: Lesson): void {
+    const hash = target === 'progress' ? '#/progreso' : target === 'settings' ? '#/ajustes' : target === 'studio' && lesson ? `#/leccion/${encodeURIComponent(lesson.id)}` : '#/';
+    if (location.hash === hash) applyRoute();
+    else location.hash = hash;
   }
 
-  function showDashboard(which: 'lessons' | 'progress' | 'settings'): void {
-    screen = which;
+  function applyRoute(): void {
+    const route = routeFromHash();
+    scoreModal.hide();
+    finish.hide();
+    if (route.screen === 'studio' && route.lesson) {
+      openStudio(route.lesson);
+      return;
+    }
+    if (screen === 'studio') studio.leave();
+    screen = route.screen;
     document.body.classList.remove('is-notebook');
     courseHome.hidden = false;
     canvasWrapper.hidden = true;
-    lessonsPanel.hidden = which !== 'lessons';
-    progressPanel.hidden = which !== 'progress';
-    if (settingsPanel) settingsPanel.hidden = which !== 'settings';
-
-    menuButtons.lessons.classList.toggle('is-open', which === 'lessons');
-    menuButtons.progress.classList.toggle('is-open', which === 'progress');
-    menuButtons.settings.classList.toggle('is-open', which === 'settings');
-
-    if (which === 'lessons') lessonsNav.setProgress(progressStore.startedIds(), progressStore.completedIds());
-    else if (which === 'progress') dashboard.render(progressStore.view(LESSONS));
-    finish.hide();
+    for (const key of Object.keys(panels) as Array<keyof typeof panels>) {
+      panels[key].hidden = key !== screen;
+      menu[key].classList.toggle('is-open', key === screen);
+      menu[key].setAttribute('aria-current', key === screen ? 'page' : 'false');
+    }
+    if (screen === 'settings') settingsPanel.render();
+    publishProgress();
   }
 
-  finish.onHome = () => showDashboard('lessons');
-  finish.onStay = () => {
-    // Permite al usuario seguir practicando en la hoja
-    ensureStudio();
-  };
-
-  function enterStudio(): void {
+  function openStudio(lesson: Lesson): void {
     screen = 'studio';
     document.body.classList.add('is-notebook');
     courseHome.hidden = true;
     canvasWrapper.hidden = false;
-    menuButtons.lessons.classList.remove('is-open');
-    menuButtons.progress.classList.remove('is-open');
-    menuButtons.settings.classList.remove('is-open');
-    inkCanvas.resizeCanvas();
-    [50, 120, 240].forEach((ms) => setTimeout(() => inkCanvas.resizeCanvas(), ms));
-    studioReady = true;
+    for (const key of Object.keys(menu) as Array<keyof typeof menu>) {
+      menu[key].classList.remove('is-open');
+      menu[key].setAttribute('aria-current', 'false');
+    }
+    if (settingsStore.get().lastLessonId !== lesson.id) settingsStore.set({ lastLessonId: lesson.id });
+    catalog.focus(lesson);
+    studio.resize();
+    // Abrir espera un frame para que la hoja ya tenga su tamaño real.
+    requestAnimationFrame(() => void studio.open(lesson));
   }
 
-  function ensureStudio(): void {
-    if (studioReady) return;
-    enterStudio();
-    void openLesson(activeLesson);
+  window.addEventListener('hashchange', applyRoute);
+  menu.home.addEventListener('click', () => go('home'));
+  menu.progress.addEventListener('click', () => go('progress'));
+  menu.settings.addEventListener('click', () => go('settings'));
+  byId('back-home').addEventListener('click', () => go('home'));
+
+  catalog.onSelect = (lesson) => go('studio', lesson);
+  today.onOpen = (lesson) => go('studio', lesson);
+  dashboard.onOpenLesson = (lesson) => go('studio', lesson);
+  dashboard.onOpenGroup = (category, group) => {
+    catalog.showGroup(category, group);
+    go('home');
+  };
+
+  // ---------------------------------------------------------------- Resultados
+  function reviewStatus(lesson: Lesson): string {
+    const record = progress.get(lesson.id);
+    const level = MASTERY_LABELS[masteryLevel(record)];
+    if (!record?.dueAt) return level;
+    const days = Math.round((record.dueAt - Date.now()) / 86_400_000);
+    const when = days <= 0 ? 'hoy' : days === 1 ? 'mañana' : `en ${days} días`;
+    return `${level} · próximo repaso ${when}`;
   }
 
-  menuButtons.lessons.addEventListener('click', (event) => {
-    event.stopPropagation();
-    showDashboard('lessons');
+  studio.onScored = (lesson, result, snapshot) => {
+    progress.recordReview(lesson, result.score);
+    if (result.score > 0) {
+      const thumb = snapshot.toDataURL('image/webp', 0.72);
+      void sheets.saveSheet({ lessonId: lesson.id, title: lesson.title, at: Date.now(), score: result.score, thumb });
+    }
+    const next = result.score >= PASSING_SCORE ? lessonNext(lesson) : null;
+    scoreModal.onNext = next ? () => go('studio', next) : undefined;
+    scoreModal.show(result, reviewStatus(lesson), next?.title ?? null);
+  };
+  scoreModal.onDownload = () => {
+    const lesson = studio.current();
+    const canvas = studio.ink.snapshot(2400);
+    const a = document.createElement('a');
+    a.href = canvas.toDataURL('image/png');
+    a.download = `calligraphy-${(lesson?.title ?? 'hoja').replace(/[^\p{L}\p{N}]+/gu, '-').slice(0, 40)}-${new Date().toISOString().slice(0, 10)}.png`;
+    a.click();
+  };
+  scoreModal.onRetry = () => {
+    const lesson = studio.current();
+    if (lesson) void studio.open(lesson);
+  };
+
+  studio.onStepsCompleted = (info) => {
+    progress.recordReview(info.lesson, null);
+    const next = lessonNext(info.lesson);
+    finish.onNext = next ? () => go('studio', next) : undefined;
+    finish.show({ title: info.lesson.title, elapsedMs: info.elapsedMs, averagePressure: info.averagePressure, nextTitle: next?.title ?? null });
+  };
+  finish.onHome = () => go('home');
+  finish.onStay = () => undefined;
+
+  studio.onStepProgress = (lesson, done, total) => progress.record(lesson, { practiced: true, stepsDone: done, stepsTotal: total });
+  studio.onPracticed = (lesson) => {
+    if (!progress.practicedToday(lesson.id) || !progress.get(lesson.id)?.practiced) progress.record(lesson, { practiced: true });
+  };
+  studio.onActivity = (lesson, ms, strokes) => progress.addActivity(lesson.id, ms, strokes);
+  studio.onPenSeen = () => {
+    if (!settingsStore.get().penSeen) settingsStore.set({ penSeen: true });
+  };
+
+  // ---------------------------------------------------------------- Ajustes
+  function applyTheme(next: ThemeChoice): void {
+    const before = theme;
+    theme = next;
+    document.documentElement.dataset.theme = next;
+    kv.setItem(THEME_KEY, next);
+    if (themeMeta) themeMeta.content = PAPER_BY_THEME[next];
+    const custom = settingsStore.get().inkColor;
+    if (!custom) {
+      studio.setInkColor(INK_BY_THEME[next]);
+      studio.ink.recolor((color) => (color.toLowerCase() === INK_BY_THEME[before] ? INK_BY_THEME[next] : null));
+    }
+    studio.ink.redrawAll();
+    settingsPanel.setTheme(next);
+  }
+
+  settingsPanel.onTheme = applyTheme;
+  settingsStore.onChange((settings) => {
+    studio.applySettings(settings);
+    const texts = settings.customTexts.join('\n');
+    if (texts !== lessons.filter((lesson) => lesson.custom).map((lesson) => lesson.characterOrWord).join('\n')) {
+      lessons = allLessons(settings.customTexts);
+      lessonsById = new Map(lessons.map((lesson) => [lesson.id, lesson]));
+      catalog.setLessons(lessons);
+    }
+    publishProgress();
   });
-  menuButtons.progress.addEventListener('click', (event) => {
-    event.stopPropagation();
-    showDashboard('progress');
-  });
-  menuButtons.settings.addEventListener('click', (event) => {
-    event.stopPropagation();
-    showDashboard('settings');
-  });
-  backHome.addEventListener('click', (event) => {
-    event.stopPropagation();
-    showDashboard('lessons');
+  byId<HTMLInputElement>('ink-color').addEventListener('change', (event) => {
+    settingsStore.set({ inkColor: (event.target as HTMLInputElement).value });
   });
 
-  // Dock extra: selector de grosor directo
-  const dockWidthBtn = document.getElementById('btn-width-toggle');
-  const dockWidthLabel = document.getElementById('dock-width-label');
-  const dockWidthPreview = document.getElementById('dock-width-preview');
-  const dockColorPreview = document.getElementById('dock-color-preview');
-  const dockWidthSteps = [2, 3, 4, 6, 8, 12];
-  let dockWidthIndex = 2; // 4.0
-
-  dockWidthBtn?.addEventListener('click', (event) => {
-    event.stopPropagation();
-    dockWidthIndex = (dockWidthIndex + 1) % dockWidthSteps.length;
-    const w = dockWidthSteps[dockWidthIndex];
-    inkCanvas.currentBaseWidth = w;
-    penMatchesModel = false;
-    if (dockWidthLabel) dockWidthLabel.textContent = w.toFixed(1);
-    if (dockWidthPreview) dockWidthPreview.style.height = `${Math.min(10, Math.max(2, w))}px`;
-  });
-
-  inkColorInput.addEventListener('input', () => {
-    if (dockColorPreview) dockColorPreview.style.background = inkColorInput.value;
-  });
-
-  // Exportar / Importar datos (Local-first)
-  function handleExport(): void {
-    const json = progressStore.exportJSON();
-    const blob = new Blob([json], { type: 'application/json' });
+  // ---------------------------------------------------------------- Respaldo
+  async function handleExport(): Promise<void> {
+    const payload = {
+      app: 'calligraphy',
+      version: 2,
+      exportedAt: new Date().toISOString(),
+      progress: progress.exportData(),
+      settings: settingsStore.get(),
+      theme,
+      sheets: (await sheets.listSheets()).map(({ id: _id, ...sheet }) => sheet)
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 1)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = `calligraphy-respaldo-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
   function handleImport(): void {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'application/json';
-    input.onchange = () => {
+    input.accept = 'application/json,.json';
+    input.onchange = async () => {
       const file = input.files?.[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        const text = String(reader.result ?? '');
-        if (progressStore.importJSON(text)) {
-          alert('¡Respaldo importado correctamente!');
-          publishProgress();
-        } else {
-          alert('Archivo de respaldo no válido.');
+      let data: unknown;
+      try {
+        data = JSON.parse(await file.text());
+      } catch {
+        toast('El archivo no es un respaldo válido.', 'error');
+        return;
+      }
+      const wrapped = data && typeof data === 'object' && (data as { app?: string }).app === 'calligraphy';
+      const body = data as { progress?: unknown; settings?: unknown; theme?: unknown; sheets?: unknown };
+      const result = progress.importData(wrapped ? body.progress : data);
+      if (!result.ok) {
+        toast('El archivo no es un respaldo válido.', 'error');
+        return;
+      }
+      if (wrapped && body.settings) settingsStore.replace({ ...settingsStore.get(), ...(body.settings as object), penSeen: settingsStore.get().penSeen });
+      if (wrapped && (body.theme === 'light' || body.theme === 'dark' || body.theme === 'kids')) applyTheme(body.theme);
+      let sheetCount = 0;
+      if (wrapped && Array.isArray(body.sheets)) {
+        const known = new Set((await sheets.listSheets()).map((sheet) => `${sheet.lessonId}@${sheet.at}`));
+        for (const raw of body.sheets as Array<Record<string, unknown>>) {
+          const valid = typeof raw?.lessonId === 'string' && typeof raw.title === 'string' && Number.isFinite(raw.at) &&
+            Number.isFinite(raw.score) && typeof raw.thumb === 'string' && raw.thumb.startsWith('data:image/');
+          if (!valid || known.has(`${raw.lessonId}@${raw.at}`)) continue;
+          await sheets.saveSheet({ lessonId: raw.lessonId as string, title: raw.title as string, at: raw.at as number, score: raw.score as number, thumb: raw.thumb as string });
+          sheetCount += 1;
         }
-      };
-      reader.readAsText(file);
+      }
+      toast(`Respaldo importado: ${result.lessons} lecciones, ${result.days} días y ${sheetCount} hojas.`);
+      publishProgress();
     };
     input.click();
   }
 
-  document.getElementById('btn-export-data')?.addEventListener('click', handleExport);
-  document.getElementById('btn-import-data')?.addEventListener('click', handleImport);
-  document.addEventListener('click', (e) => {
-    const target = e.target as HTMLElement;
-    if (target.id === 'dash-export-btn') handleExport();
-    if (target.id === 'dash-import-btn') handleImport();
-  });
-
-  // Toggle de cuadrícula desde ajustes
-  document.getElementById('opt-grid-palmer')?.addEventListener('click', () => {
-    inkCanvas.setGrid('palmer');
-    toolbar.setGridLabel('palmer');
-  });
-  document.getElementById('opt-grid-genkou')?.addEventListener('click', () => {
-    inkCanvas.setGrid('genkouyoushi');
-    toolbar.setGridLabel('genkouyoushi');
-  });
-  document.getElementById('opt-grid-none')?.addEventListener('click', () => {
-    inkCanvas.setGrid('none');
-    toolbar.setGridLabel('none');
-  });
-
-  dashboard.onOpenGroup = (category, group) => {
-    lessonsNav.showGroup(category, group);
-    showDashboard('lessons');
-  };
-  dashboard.onOpenLesson = (lesson) => {
-    lessonsNav.select(lesson);
-  };
-
-  toolbar.onZen = (enabled) => {
-    if (enabled) ensureStudio();
-    inkCanvas.resizeCanvas();
-    [50, 100, 200, 320].forEach((ms) => setTimeout(() => inkCanvas.resizeCanvas(), ms));
-  };
-
-  function applyTool(lesson: Lesson): void {
-    inkCanvas.currentTool = lesson.recommendedTool;
-    toolbar.setTool(lesson.recommendedTool);
-    inkCanvas.setGrid(lesson.suggestedGrid);
-    toolbar.setGridLabel(lesson.suggestedGrid);
+  async function handleClear(): Promise<void> {
+    if (!confirm('¿Borrar todo el progreso, las hojas guardadas y los ajustes de este dispositivo? No se puede deshacer.')) return;
+    progress.clearAll();
+    await sheets.clearAll();
+    settingsStore.replace(DEFAULT_SETTINGS);
+    publishProgress();
   }
 
-  function renderStepButtons(lesson: Lesson): void {
-    const steps = lesson.steps ?? [];
-    strokeSteps.innerHTML = '';
-    if (steps.length === 0) {
-      strokeSteps.hidden = true;
-      return;
-    }
-    strokeSteps.hidden = false;
-    steps.forEach((step, index) => {
-      const button = document.createElement('button');
-      button.type = 'button';
-      const isCurrent = index === stepIndex;
-      const isDone = index < stepIndex;
-      button.className = `chip${isCurrent ? ' on' : isDone ? ' done' : ''}`;
-      button.textContent = `${index + 1} ${step.title}`;
-      button.addEventListener('click', (event) => {
-        event.stopPropagation();
-        stepIndex = index;
-        retryOnNextStroke = false;
-        inkCanvas.clear(false);
-        applyPalmerStep(lesson);
-        liveFeedback.textContent = '';
-      });
-      strokeSteps.appendChild(button);
+  settingsPanel.onExport = () => void handleExport();
+  settingsPanel.onImport = handleImport;
+  settingsPanel.onClear = () => void handleClear();
+  dashboard.onExport = () => void handleExport();
+  dashboard.onImport = handleImport;
+
+  settingsPanel.onPrefetch = (report) => {
+    const chars = lessons
+      .filter((lesson) => lesson.category === 'japanese' && (['Hiragana', 'Katakana', 'N5', 'Vocabulario'].includes(lesson.group)))
+      .flatMap((lesson) => glyphsOf(lesson.characterOrWord));
+    void prefetchChars(chars, (done, total) => report(`Descargando… ${done}/${total}`)).then((ok) => {
+      report(ok === new Set(chars).size ? `Listo: ${ok} signos disponibles sin conexión.` : `Descargados ${ok} de ${new Set(chars).size}. Los demás necesitan conexión.`);
     });
-  }
-
-  function applyModelPen(): void {
-    const model = inkCanvas.modelStrokeWidth();
-    if (model == null) return;
-    const width = Math.max(1.5, Math.round(baseWidthMatching(inkCanvas.currentTool, model) * 2) / 2);
-    inkCanvas.currentBaseWidth = width;
-    toolbar.setWidth(width);
-  }
-
-  function syncPalmerProgress(): string | null {
-    stepAdvanced = false;
-    const steps = activeLesson.steps;
-    if (!steps?.length || activeLesson.category !== 'palmer') return null;
-    const guide = inkCanvas.guideStroke(stepIndex);
-    if (!guide) return null;
-    let covered = false;
-    let reversed = false;
-    let ambiguous = false;
-    for (const stroke of inkCanvas.getStrokes()) {
-      const drawn = stroke.points.map((point) => ({ x: point.x, y: point.y }));
-      if (!strokeCoversGuide(drawn, guide.points, guide.width * 1.5)) continue;
-      const direction = guideDirection(drawn, guide.points);
-      if (direction === 'reverse') {
-        reversed = true;
-        continue;
-      }
-      if (direction !== 'forward') {
-        ambiguous = true;
-        continue;
-      }
-      covered = true;
-      break;
-    }
-    if (!covered) {
-      retryOnNextStroke = true;
-      inkCanvas.animateCurrentStep();
-      if (reversed) return 'El trazo va al revés. Mira la flecha y toca la hoja para intentarlo de nuevo.';
-      if (ambiguous) return 'No se distingue el sentido. Sigue la flecha y toca la hoja para intentarlo de nuevo.';
-      return 'Ese trazo no sigue la guía. Mira cómo va y toca la hoja para intentarlo de nuevo.';
-    }
-    retryOnNextStroke = false;
-    const doneTitle = steps[stepIndex].title;
-    if (stepIndex >= steps.length - 1) {
-      noteLesson({ practiced: true, stepsDone: steps.length, stepsTotal: steps.length, complete: true });
-      if (!celebrated) {
-        celebrated = true;
-        finish.show({
-          title: activeLesson.title,
-          elapsedMs: performance.now() - practiceStartedAt,
-          averagePressure: pressureCount > 0 ? pressureSum / pressureCount : null
-        });
-      }
-      return `${doneTitle} listo. La letra está completa.`;
-    }
-    stepIndex += 1;
-    stepAdvanced = true;
-    inkCanvas.clear(false);
-    applyPalmerStep(activeLesson);
-    noteLesson({ practiced: true, stepsDone: stepIndex, stepsTotal: steps.length });
-    return `${doneTitle} listo. Sigue con ${steps[stepIndex].title}.`;
-  }
-
-  function applyPalmerStep(lesson: Lesson): void {
-    const steps = lesson.steps;
-    if (!steps?.length) {
-      inkCanvas.setGhost(lesson.idealStrokes?.map((stroke) => stroke.points) ?? []);
-      return;
-    }
-    stepIndex = Math.max(0, Math.min(steps.length - 1, stepIndex));
-    guideInstructions.textContent = steps[stepIndex].hint;
-    renderStepButtons(lesson);
-    if (isPalmerGlyph(lesson)) {
-      palmerPreview.attach();
-      palmerPreview.show(
-        (lesson.idealStrokes ?? []).map((stroke) => stroke.points),
-        stepIndex + 1
-      );
-    }
-    inkCanvas.setPalmerGuide(
-      steps.map((step) => step.strokes.map((stroke) => stroke.points)),
-      stepIndex
-    );
-    if (penMatchesModel) applyModelPen();
-    if (isPalmerGlyph(lesson)) palmerPreview.animate();
-    inkCanvas.animateCurrentStep();
-  }
-
-  function lessonForScore(lesson: Lesson): Lesson {
-    const step = lesson.steps?.[stepIndex];
-    if (!step) return lesson;
-    return {
-      ...lesson,
-      idealStrokes: step.strokes,
-      idealMode: step.mode,
-      strokesExpected: step.strokes.length
-    };
-  }
-
-  function showGuide(lesson: Lesson): void {
-    guideTitle.textContent = lesson.title;
-    guideInstructions.textContent = lesson.instructions;
-    const singleJp = lesson.category === 'japanese' && lesson.characterOrWord.length === 1;
-    const palmerGlyph = isPalmerGlyph(lesson);
-    const animated = singleJp || palmerGlyph;
-    const mark = lesson.dictation ? '' : lesson.characterOrWord.trim();
-    const showMark = !animated && !lesson.sheet && Array.from(mark).length === 1;
-    const markBox = document.getElementById('character-target-container') as HTMLElement;
-    markBox.hidden = !animated && !showMark;
-    guideChar.style.display = showMark ? 'block' : 'none';
-    kanjiAnimatorBox.style.display = palmerGlyph ? 'block' : 'none';
-    btnAnimateStroke.style.display = animated ? 'inline-flex' : 'none';
-    guideChar.textContent = showMark ? mark : '';
-
-    const glyphMarkEl = document.getElementById('practice-glyph-mark');
-    const subLabelEl = document.getElementById('practice-sub-label');
-    if (glyphMarkEl) glyphMarkEl.textContent = lesson.characterOrWord.trim() || lesson.title;
-    if (subLabelEl) {
-      subLabelEl.textContent = lesson.category === 'palmer' ? 'Palmer cursiva' : `${lesson.group} · ${lesson.subTitle || lesson.title}`;
-    }
-
-    liveFeedback.textContent = singleJp ? 'Cargando orden de trazos…' : (lesson.instructions || 'Sigue la guía y escribe.');
-    const liveTip = document.getElementById('live-tip');
-    if (liveTip) liveTip.style.display = 'flex';
-
-    if (!lesson.steps?.length) {
-      strokeSteps.hidden = true;
-      strokeSteps.innerHTML = '';
-    }
-  }
-
-  function mountWriter(char: string, raw: unknown): void {
-    kanjiAnimatorBox.innerHTML = '';
-    kanjiWriter = HanziWriter.create(kanjiAnimatorBox, char, {
-      width: 72,
-      height: 72,
-      padding: 5,
-      strokeAnimationSpeed: 1.2,
-      delayBetweenStrokes: 180,
-      strokeColor: '#b45309',
-      radicalColor: '#e5a93c',
-      showOutline: true,
-      outlineColor: '#cbd5e1',
-      charDataLoader: (_character, onComplete) => {
-        if (raw) onComplete(raw as never);
-      }
-    });
-  }
-
-  async function openLesson(lesson: Lesson): Promise<void> {
-    const token = ++lessonToken;
-    activeLesson = lesson;
-    stepIndex = 0;
-    penMatchesModel = true;
-    practiceStartedAt = performance.now();
-    pressureSum = 0;
-    pressureCount = 0;
-    celebrated = false;
-    finish.hide();
-    activeGeometry = null;
-    palmerPreview.stop();
-    if (!isPalmerGlyph(lesson)) kanjiAnimatorBox.replaceChildren();
-    if (dictation.isOpen()) dictation.dismiss();
-    showGuide(lesson);
-    applyTool(lesson);
-    inkCanvas.clear();
-    inkCanvas.setGhost([]);
-
-    if (lesson.category === 'japanese' && lesson.characterOrWord.length === 1) {
-      liveFeedback.textContent = 'Cargando orden de trazos…';
-      const record = await loadCharRecord(lesson.characterOrWord);
-      if (token !== lessonToken) return;
-      activeGeometry = record.geometry;
-      btnAnimateStroke.style.display = record.geometry ? 'inline-flex' : 'none';
-      if (record.raw) {
-        mountWriter(lesson.characterOrWord, record.raw);
-        kanjiAnimatorBox.style.display = 'block';
-        guideChar.style.display = 'none';
-        kanjiWriter?.animateCharacter();
-      } else {
-        kanjiAnimatorBox.style.display = 'none';
-        guideChar.style.display = 'block';
-        guideChar.textContent = lesson.characterOrWord;
-      }
-      inkCanvas.setGhost(record.geometry?.strokes ?? []);
-      if (penMatchesModel) applyModelPen();
-      if (record.geometry) inkCanvas.animateGuide();
-      liveFeedback.textContent = record.geometry
-        ? `${record.geometry.strokes.length} trazos. El ejemplo está arriba; copia la letra en los demás cuadrados.`
-        : 'No hay datos de trazo para este carácter.';
-      return;
-    }
-
-    if (lesson.steps?.length) {
-      applyPalmerStep(lesson);
-      return;
-    }
-
-    if (lesson.sheet) {
-      inkCanvas.setSheet(lesson.characterOrWord);
-      if (penMatchesModel) applyModelPen();
-      return;
-    }
-
-    if (lesson.idealStrokes?.length) {
-      inkCanvas.setGhost(lesson.idealStrokes.map((stroke) => stroke.points));
-      if (penMatchesModel) applyModelPen();
-    }
-  }
-
-  lessonsNav.onSelect = (lesson) => {
-    enterStudio();
-    void openLesson(lesson);
   };
 
-  btnAnimateStroke.addEventListener('click', (event) => {
-    event.stopPropagation();
-    if (isPalmerGlyph(activeLesson)) palmerPreview.animate();
-    else if (kanjiWriter) {
-      kanjiAnimatorBox.style.display = 'block';
-      kanjiWriter.animateCharacter();
-    }
-    inkCanvas.animateGuide();
-  });
-
-  function isPalmerGlyph(lesson: Lesson): boolean {
-    return lesson.category === 'palmer' && lesson.characterOrWord.length === 1 && (lesson.steps?.length ?? 0) > 0;
+  // ---------------------------------------------------------------- Recordatorio diario
+  let reminderTimer = 0;
+  function scheduleReminder(time: string | null): void {
+    window.clearTimeout(reminderTimer);
+    if (!time) return;
+    const [hours, minutes] = time.split(':').map(Number);
+    const target = new Date();
+    target.setHours(hours, minutes, 0, 0);
+    if (target.getTime() <= Date.now()) target.setDate(target.getDate() + 1);
+    reminderTimer = window.setTimeout(() => {
+      if (progress.todayMs() < 60_000 && 'Notification' in window && Notification.permission === 'granted') {
+        void swReady()?.then((registration) =>
+          registration.active?.postMessage({ type: 'remind', body: `Racha de ${progress.streak()} días. Unos minutos bastan para no perderla.` })
+        );
+      }
+      scheduleReminder(settingsStore.get().reminderTime);
+    }, target.getTime() - Date.now());
   }
-
-  document.getElementById('evaluate-btn')?.addEventListener('click', () => {
-    ensureStudio();
-    const size = inkCanvas.getSize();
-    const result = StrokeEvaluator.evaluateSession({
-      strokes: inkCanvas.getStrokes(),
-      lesson: lessonForScore(activeLesson),
-      width: size.width,
-      height: size.height,
-      charGeometry: activeGeometry
-    });
-    noteScore(result.score);
-    scoreModal.show(result);
-  });
-
-  dictation.onFinish = (finish) => {
-    const size = inkCanvas.getSize();
-    const base = StrokeEvaluator.evaluateSession({
-      strokes: inkCanvas.getStrokes(),
-      lesson: lessonForScore(finish.lesson),
-      width: size.width,
-      height: size.height,
-      charGeometry: activeGeometry
-    });
-    const result = ScoringEngine.applyDictation(base, finish.timedOut, finish.wpm);
-    result.details = [`Texto: ${finish.lesson.characterOrWord}`, ...(result.details ?? [])];
-    noteScore(result.score);
-    scoreModal.show(result);
+  function swReady(): Promise<ServiceWorkerRegistration> | null {
+    return 'serviceWorker' in window.navigator ? window.navigator.serviceWorker.ready : null;
+  }
+  settingsPanel.onReminder = (time) => {
+    if (time && 'Notification' in window && Notification.permission === 'default') void Notification.requestPermission();
+    scheduleReminder(time);
   };
 
-  document.getElementById('dictation-btn')?.addEventListener('click', () => {
-    ensureStudio();
-    const lesson = activeLesson.dictation
-      ? activeLesson
-      : {
-          ...activeLesson,
-          dictation: true,
-          dictationSeconds: activeLesson.dictationSeconds ?? suggestedSeconds(activeLesson.characterOrWord)
-        };
-    dictation.start(lesson);
+  // ---------------------------------------------------------------- Instalación
+  const installButton = byId<HTMLButtonElement>('btn-install');
+  let installPrompt: (Event & { prompt: () => Promise<void> }) | null = null;
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    installPrompt = event as Event & { prompt: () => Promise<void> };
+    installButton.hidden = false;
   });
+  installButton.addEventListener('click', () => {
+    void installPrompt?.prompt();
+    installPrompt = null;
+    installButton.hidden = true;
+  });
+
+  // ---------------------------------------------------------------- Guardado al salir
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') progress.flush();
+    else publishProgress();
+  });
+  window.addEventListener('pagehide', () => progress.flush());
+
+  // Pide al navegador que no purgue los datos de práctica cuando falte espacio.
+  void window.navigator.storage?.persist?.().catch(() => false);
 
   if (import.meta.env.PROD && 'serviceWorker' in window.navigator) {
     window.navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`).catch(() => undefined);
   }
 
-  showDashboard('lessons');
-  publishProgress();
+  // ---------------------------------------------------------------- Arranque
+  const initial = settingsStore.get();
+  studio.applySettings(initial);
+  applyTheme(theme);
+  if (initial.inkColor) studio.setInkColor(initial.inkColor);
+  const last = initial.lastLessonId ? lessonsById.get(initial.lastLessonId) : undefined;
+  if (last) catalog.focus(last);
+  scheduleReminder(initial.reminderTime);
+  applyRoute();
 });

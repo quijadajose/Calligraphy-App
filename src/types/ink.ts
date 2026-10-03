@@ -58,6 +58,23 @@ export interface Lesson {
   sheet?: boolean;
   dictation?: boolean;
   dictationSeconds?: number;
+  /** Japonés: lectura y significado, para practicar de memoria. */
+  reading?: string;
+  meaning?: string;
+  /** Texto escrito por el usuario. */
+  custom?: boolean;
+}
+
+export type GuideLevel = 'full' | 'faint' | 'none';
+
+/** Lo que se toma por un solo signo: cuenta puntos de código, no unidades UTF-16. */
+export function isSingleGlyph(text: string): boolean {
+  return Array.from(text.trim()).length === 1;
+}
+
+/** Los signos de un texto japonés, sin espacios: uno por cuadro. */
+export function glyphsOf(text: string): string[] {
+  return Array.from(text).filter((char) => char.trim().length > 0);
 }
 
 export interface EvaluationResult {
@@ -72,6 +89,8 @@ export interface EvaluationResult {
   wpm?: number;
   feedback: string;
   details?: string[];
+  /** Índices de los trazos que fallaron, para marcarlos sobre la hoja. */
+  badStrokes?: number[];
 }
 
 export interface CharGeometry {

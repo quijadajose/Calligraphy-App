@@ -5,6 +5,10 @@ const VIEW = 72;
 const BASE_Y = PALMER_ASCENDER_RATIO + PALMER_XHEIGHT_RATIO;
 const SLANT = (PALMER_SLANT_DEG * Math.PI) / 180;
 
+function themeColor(name: string, fallback: string): string {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+}
+
 /**
  * Misma idea que el animador de kanji: la letra queda en contorno gris
  * y cada parte se rellena en ámbar, en el orden de los pasos.
@@ -21,6 +25,7 @@ export class PalmerStrokePreview {
   constructor(private readonly host: HTMLElement) {
     this.canvas = document.createElement('canvas');
     this.canvas.className = 'stroke-preview';
+    this.canvas.setAttribute('aria-hidden', 'true');
     const ctx = this.canvas.getContext('2d');
     if (!ctx) throw new Error('No se pudo crear el lienzo de la letra');
     this.ctx = ctx;
@@ -93,14 +98,14 @@ export class PalmerStrokePreview {
     this.ctx.lineJoin = 'round';
 
     this.ctx.lineWidth = placed.width;
-    this.ctx.strokeStyle = '#b45309';
+    this.ctx.strokeStyle = themeColor('--guide-anim', '#b45309');
     for (let i = 0; i < whole && i < placed.strokes.length; i++) this.trace(placed.strokes[i]);
     if (fraction > 0 && whole < placed.strokes.length) {
       this.trace(this.slice(placed.strokes[whole], 0, fraction));
     }
 
     this.ctx.lineWidth = Math.max(2.4, placed.width * 0.42);
-    this.ctx.strokeStyle = '#b7c0cb';
+    this.ctx.strokeStyle = themeColor('--guide-outline', '#b7c0cb');
     for (let i = whole; i < placed.strokes.length; i++) {
       const stroke = placed.strokes[i];
       if (i === whole && fraction > 0) this.trace(this.slice(stroke, fraction, 1));

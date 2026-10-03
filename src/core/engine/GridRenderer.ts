@@ -11,9 +11,13 @@ import {
   sentenceFrame,
   sentenceRowGeometry
 } from './gridMetrics';
+import { SHEET_TEXT_X, sentenceFont, sentenceFontSize, sentenceSkew } from './sentenceLayout';
 
 export class GridRenderer {
   private sheetCache: { key: string; canvas: HTMLCanvasElement } | null = null;
+
+  /** Líneas de inclinación a 52° en la pauta Palmer. */
+  public showSlant = true;
 
   public drawGrid(ctx: CanvasRenderingContext2D, width: number, height: number, mode: GridMode): void {
     if (mode === 'none') return;
@@ -34,10 +38,7 @@ export class GridRenderer {
     ctx.save();
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    const mood = this.paperMood();
-    ctx.strokeStyle = mode === 'genkouyoushi'
-      ? (mood === 'dark' ? 'rgba(220, 150, 130, 0.7)' : mood === 'kids' ? 'rgba(232, 112, 138, 0.55)' : 'rgba(180, 80, 60, 0.45)')
-      : (mood === 'dark' ? 'rgba(168, 186, 204, 0.62)' : mood === 'kids' ? 'rgba(70, 120, 190, 0.5)' : 'rgba(70, 90, 120, 0.4)');
+    ctx.strokeStyle = this.ghostColor(mode);
     ctx.lineWidth = mode === 'genkouyoushi'
       ? Math.max(8, exampleBox(genkouyoushiLayout(width, height)).size * 0.07)
       : 2.4;
@@ -52,6 +53,32 @@ export class GridRenderer {
       });
       ctx.stroke();
     }
+    ctx.restore();
+  }
+
+  /** Palabra japonesa: cada signo en su cuadro, desde el primero. Los siguientes quedan para copiar. */
+  public drawGhostGlyphs(ctx: CanvasRenderingContext2D, width: number, height: number, glyphs: Point2[][][]): void {
+    const layout = genkouyoushiLayout(width, height);
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = this.ghostColor('genkouyoushi');
+    glyphs.forEach((strokes, index) => {
+      const box = layout.boxes[index];
+      if (!box) return;
+      ctx.lineWidth = Math.max(8, box.size * 0.07);
+      for (const stroke of strokes) {
+        if (stroke.length === 0) continue;
+        ctx.beginPath();
+        stroke.forEach((point, i) => {
+          const x = box.x + point.x * box.size;
+          const y = box.y + point.y * box.size;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+      }
+    });
     ctx.restore();
   }
 
@@ -151,7 +178,7 @@ export class GridRenderer {
     ctx.save();
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    ctx.strokeStyle = '#b45309';
+    ctx.strokeStyle = this.token('--guide-anim', '#b45309');
     ctx.lineWidth = lineWidth;
     ctx.setLineDash([]);
     for (let i = 0; i < whole && i < strokes.length; i++) this.strokePolyline(ctx, strokes[i]);
@@ -161,6 +188,20 @@ export class GridRenderer {
       this.strokePolyline(ctx, this.slicePolyline(stroke, 0, distance));
     }
     ctx.restore();
+  }
+
+  private ghostColor(mode: GridMode): string {
+    const mood = this.paperMood();
+    return mode === 'genkouyoushi'
+      ? (mood === 'dark' ? 'rgba(220, 150, 130, 0.7)' : mood === 'kids' ? 'rgba(232, 112, 138, 0.55)' : 'rgba(180, 80, 60, 0.45)')
+      : (mood === 'dark' ? 'rgba(168, 186, 204, 0.62)' : mood === 'kids' ? 'rgba(70, 120, 190, 0.5)' : 'rgba(70, 90, 120, 0.4)');
+  }
+
+  /** Color de un token CSS del tema, con respaldo si el documento no lo define. */
+  private token(name: string, fallback: string): string {
+    if (typeof document === 'undefined') return fallback;
+    const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    return value || fallback;
   }
 
   private strokePolyline(ctx: CanvasRenderingContext2D, points: Point2[]): void {
@@ -279,13 +320,23 @@ export class GridRenderer {
   }
 
   /** La primera línea lleva la oración punteada. Las demás quedan en blanco. */
-  public drawSentenceSheet(ctx: CanvasRenderingContext2D, width: number, height: number, text: string): void {
+  public drawSentenceSheet(
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    text: string,
+    guideAlpha = 1
+  ): void {
     this.drawPalmerLines(ctx, width, height, 'sentence');
-    this.drawSheetLabels(ctx, height);
+    this.drawSheetLabels(ctx, height, guideAlpha > 0);
+    if (guideAlpha <= 0) return;
+    ctx.save();
+    ctx.globalAlpha = guideAlpha;
     this.drawDottedSentence(ctx, width, height, text);
+    ctx.restore();
   }
 
-  private drawSheetLabels(ctx: CanvasRenderingContext2D, height: number): void {
+  private drawSheetLabels(ctx: CanvasRenderingContext2D, height: number, guided: boolean): void {
     const { rows } = sentenceFrame(height);
     ctx.save();
     ctx.font = '600 11px Outfit, sans-serif';
@@ -298,7 +349,7 @@ export class GridRenderer {
     ctx.textBaseline = 'middle';
     for (let rowIndex = 0; rowIndex < rows; rowIndex++) {
       const row = sentenceRowGeometry(rowIndex, height);
-      ctx.fillText(rowIndex === 0 ? 'Con guías' : 'Sin guías', 14, (row.waistY + row.baseY) / 2);
+      ctx.fillText(rowIndex === 0 && guided ? 'Con guías' : 'Sin guías', 14, (row.waistY + row.baseY) / 2);
     }
     ctx.restore();
   }
@@ -322,20 +373,7 @@ export class GridRenderer {
         : mood === 'kids'
           ? 'rgba(61, 122, 196, 0.9)'
           : 'rgba(62, 68, 80, 0.9)';
-      const fit = (px: number): { ascent: number; width: number } => {
-        off.font = `600 ${px}px Caveat, cursive`;
-        const sample = off.measureText('x');
-        return {
-          ascent: sample.actualBoundingBoxAscent || px * 0.46,
-          width: off.measureText(text).width
-        };
-      };
-      let size = 80;
-      let measured = fit(size);
-      if (measured.ascent > 0) size *= (row.xHeight * 0.9) / measured.ascent;
-      measured = fit(size);
-      const maxWidth = Math.max(40, width - 118);
-      if (measured.width > maxWidth) size *= maxWidth / measured.width;
+      const size = sentenceFontSize(off, text, row.xHeight, width);
       const gap = Math.max(3.4, row.xHeight * 0.07);
       const radius = Math.max(0.9, gap * 0.34);
       const tile = document.createElement('canvas');
@@ -350,12 +388,11 @@ export class GridRenderer {
         dots.fill();
       }
       off.clearRect(0, 0, width, height);
-      off.font = `600 ${Math.max(12, size)}px Caveat, cursive`;
+      off.font = sentenceFont(size);
       off.fillStyle = dots ? off.createPattern(tile, 'repeat') ?? color : color;
       off.textBaseline = 'alphabetic';
-      const slant = -1 / Math.tan((PALMER_SLANT_DEG * Math.PI) / 180);
-      off.translate(100, row.baseY);
-      off.transform(1, 0, slant, 1, 0, 0);
+      off.translate(SHEET_TEXT_X, row.baseY);
+      off.transform(1, 0, sentenceSkew(), 1, 0, 0);
       off.fillText(text, 0, 0);
       this.sheetCache = { key, canvas };
     }
@@ -419,6 +456,7 @@ export class GridRenderer {
         : mood === 'kids'
           ? 'rgba(120, 190, 90, 0.22)'
           : 'rgba(230, 126, 34, 0.18)';
+      if (!this.showSlant) continue;
       ctx.lineWidth = 0.8;
       const spacing = 50;
       const deltaX = (descenderY - ascenderY) / Math.tan(slantAngleRad);

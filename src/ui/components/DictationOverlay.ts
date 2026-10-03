@@ -8,11 +8,13 @@ export interface DictationFinish {
   wpm: number;
 }
 
+/** Barra de dictado: lee la frase, cuenta el tiempo y entrega. No tapa la hoja. */
 export class DictationOverlay {
   private active: Lesson | null = null;
   private finished = false;
 
   public onFinish?: (result: DictationFinish) => void;
+  public onCancel?: () => void;
 
   constructor(
     private root: HTMLElement,
@@ -33,22 +35,24 @@ export class DictationOverlay {
     this.finished = false;
     const seconds = lesson.dictationSeconds ?? suggestedSeconds(lesson.characterOrWord);
     const lang = lesson.category === 'palmer' ? 'es-ES' : 'ja-JP';
-    this.prompt.textContent = 'Escucha y escribe. El texto aparece al entregar.';
-    this.root.style.display = 'flex';
+    this.prompt.textContent = this.service.canSpeak()
+      ? 'Escucha y escribe. El texto aparece al entregar.'
+      : 'Este navegador no puede leer en voz alta. Pide a alguien que te dicte la frase.';
+    this.root.hidden = false;
     this.service.speak(lesson.characterOrWord, lang);
     this.service.startTimer(seconds, (tick) => {
-      this.clock.textContent = `${tick.remaining}s`;
+      this.clock.textContent = `${tick.remaining} s`;
     }, () => this.complete(true));
+    this.submitButton.focus();
   }
 
   public isOpen(): boolean {
-    return this.root.style.display === 'flex';
+    return !this.root.hidden;
   }
 
   public dismiss(): void {
-    this.finished = true;
     this.service.stop();
-    this.root.style.display = 'none';
+    this.root.hidden = true;
     this.active = null;
     this.finished = false;
   }
@@ -65,8 +69,7 @@ export class DictationOverlay {
     const lesson = this.active;
     const elapsedMs = Math.max(1, this.service.elapsedMs());
     this.service.stop();
-    this.root.style.display = 'none';
-    this.prompt.textContent = lesson.characterOrWord;
+    this.root.hidden = true;
     this.onFinish?.({
       lesson,
       elapsedMs,
@@ -77,10 +80,7 @@ export class DictationOverlay {
   }
 
   private cancel(): void {
-    this.finished = true;
-    this.service.stop();
-    this.root.style.display = 'none';
-    this.active = null;
-    this.finished = false;
+    this.dismiss();
+    this.onCancel?.();
   }
 }

@@ -6,10 +6,11 @@ export interface PerformanceStats {
   predictedTotal: number;
 }
 
+/** HUD de rendimiento. Nace oculto: solo se ve si se activa en Ajustes. */
 export class PerformanceOverlay {
   private container: HTMLElement;
   private el: HTMLElement;
-  private enabled: boolean = true;
+  private enabled = false;
   private frameTimes: number[] = [];
   private lastTime = performance.now();
   private lastFpsUpdate = performance.now();
@@ -23,17 +24,20 @@ export class PerformanceOverlay {
     this.container = parent;
     this.el = document.createElement('div');
     this.el.className = 'perf-overlay';
+    this.el.setAttribute('aria-hidden', 'true');
     this.el.innerHTML = `
-      <div class="perf-metric"><span class="perf-label">FPS:</span> <span id="perf-fps" class="perf-val">60</span></div>
-      <div class="perf-metric"><span class="perf-label">Frame:</span> <span id="perf-ms" class="perf-val">0.0 ms</span></div>
-      <div class="perf-metric"><span class="perf-label">Puntos:</span> <span id="perf-pts" class="perf-val">0</span></div>
-      <div class="perf-metric"><span class="perf-label">Coalesced:</span> <span id="perf-coalesced" class="perf-val">0</span></div>
-      <div class="perf-metric"><span class="perf-label">Predicted:</span> <span id="perf-predicted" class="perf-val">0</span></div>
+      <div class="perf-metric"><span class="perf-label">FPS:</span> <span data-perf="fps" class="perf-val">60</span></div>
+      <div class="perf-metric"><span class="perf-label">Frame:</span> <span data-perf="ms" class="perf-val">0.0 ms</span></div>
+      <div class="perf-metric"><span class="perf-label">Puntos:</span> <span data-perf="pts" class="perf-val">0</span></div>
+      <div class="perf-metric"><span class="perf-label">Coalesced:</span> <span data-perf="coalesced" class="perf-val">0</span></div>
+      <div class="perf-metric"><span class="perf-label">Predicted:</span> <span data-perf="predicted" class="perf-val">0</span></div>
     `;
+    this.el.style.display = 'none';
     this.container.appendChild(this.el);
   }
 
   public recordFrame(renderMs: number, pointCount: number): void {
+    if (!this.enabled) return;
     const now = performance.now();
     const delta = now - this.lastTime;
     this.lastTime = now;
@@ -76,19 +80,20 @@ export class PerformanceOverlay {
 
   private render(): void {
     if (!this.enabled) return;
-    const fpsEl = this.el.querySelector('#perf-fps');
-    const msEl = this.el.querySelector('#perf-ms');
-    const ptsEl = this.el.querySelector('#perf-pts');
-    const coalEl = this.el.querySelector('#perf-coalesced');
-    const predEl = this.el.querySelector('#perf-predicted');
+    const get = (name: string) => this.el.querySelector<HTMLElement>(`[data-perf="${name}"]`);
+    const fpsEl = get('fps');
+    const msEl = get('ms');
+    const ptsEl = get('pts');
+    const coalEl = get('coalesced');
+    const predEl = get('predicted');
 
     if (fpsEl) {
       fpsEl.textContent = `${this.currentFps}`;
-      (fpsEl as HTMLElement).style.color = this.currentFps >= 55 ? '#4ade80' : this.currentFps >= 30 ? '#facc15' : '#f87171';
+      fpsEl.dataset.level = this.currentFps >= 55 ? 'good' : this.currentFps >= 30 ? 'warn' : 'bad';
     }
     if (msEl) {
       msEl.textContent = `${this.currentFrameMs.toFixed(1)} ms`;
-      (msEl as HTMLElement).style.color = this.currentFrameMs <= 8 ? '#4ade80' : this.currentFrameMs <= 16 ? '#facc15' : '#f87171';
+      msEl.dataset.level = this.currentFrameMs <= 8 ? 'good' : this.currentFrameMs <= 16 ? 'warn' : 'bad';
     }
     if (ptsEl) ptsEl.textContent = `${this.currentPointCount}`;
     if (coalEl) coalEl.textContent = `${this.coalescedCount}`;

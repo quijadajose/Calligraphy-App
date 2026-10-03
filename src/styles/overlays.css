@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Modals & Overlays (Mockup Style)
+   Modales y capas
    ========================================================================== */
 
 .score-modal-backdrop {
@@ -15,16 +15,15 @@
   padding: 16px;
 }
 
-.score-modal-backdrop[hidden] {
-  display: none !important;
-}
-
 .box {
+  position: relative;
   background: var(--ui2);
   border-radius: var(--border-radius-lg);
   padding: 20px 24px;
-  width: 320px;
-  max-width: 90vw;
+  width: 380px;
+  max-width: 100%;
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
   text-align: center;
   box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45), 0 0 0 0.5px var(--ub);
   color: var(--ut);
@@ -34,6 +33,44 @@
   display: flex;
   justify-content: center;
   margin-bottom: 8px;
+}
+
+.score-track {
+  fill: none;
+  stroke: var(--ub);
+  stroke-width: 8;
+}
+
+.score-arc {
+  fill: none;
+  stroke: var(--accent-green);
+  stroke-width: 8;
+  stroke-linecap: round;
+}
+
+.score-arc[data-level='mid'] { stroke: var(--accent-soft); }
+.score-arc[data-level='low'] { stroke: var(--accent-danger); }
+
+.score-number {
+  font-size: 32px;
+  font-weight: 700;
+  fill: var(--ut);
+}
+
+.score-title {
+  font-weight: 600;
+  margin: 6px 0 2px;
+  font-size: 17px;
+}
+
+.score-status {
+  font-size: 12px;
+  color: var(--accent-soft);
+  margin-bottom: 6px;
+}
+
+.score-feedback {
+  margin-bottom: 12px;
 }
 
 .score-details-list {
@@ -60,6 +97,48 @@
   color: var(--accent-soft);
 }
 
+.modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.finish-badge {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--accent-green-bg);
+  color: var(--accent-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  margin: 0 auto 10px;
+}
+
+.finish-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.finish-stats {
+  display: flex;
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.finish-stats .card {
+  flex: 1;
+}
+
+.finish-value {
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
 .finish-confetti {
   position: absolute;
   inset: 0;
@@ -68,24 +147,33 @@
   pointer-events: none;
 }
 
-/* Dictation overlay */
+/* Dictado: barra sobre la hoja que no tapa lo que se escribe. */
 .dictation-overlay {
   position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  background: var(--ui2);
+  border: 0.5px solid var(--ub);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   z-index: 30;
   display: flex;
-  flex-direction: column;
   align-items: center;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 12px;
+  padding: 10px 16px;
   color: var(--ut);
+  max-width: calc(100% - 24px);
 }
 
 .dictation-clock {
-  font-size: 32px;
+  font-size: 24px;
   font-weight: 700;
   color: var(--accent-soft);
+  min-width: 60px;
+  text-align: center;
 }
 
 .dictation-actions {
@@ -93,8 +181,7 @@
   gap: 8px;
 }
 
-/* Zen mode exit button */
-#zen-exit-btn {
+.zen-exit {
   display: none;
   position: fixed;
   top: 14px;
@@ -107,10 +194,10 @@
   padding: 8px 16px;
   font-size: 13px;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-body.zen-mode #zen-exit-btn {
+body.zen-mode .zen-exit {
   display: block;
 }
 
@@ -119,23 +206,22 @@ body.zen-mode .practice-bar {
 }
 
 body.zen-mode .dock {
-  opacity: 0.2;
+  opacity: 0.25;
   transition: opacity 0.2s ease;
 }
 
-body.zen-mode .dock:hover {
+body.zen-mode .dock:hover,
+body.zen-mode .dock:focus-within {
   opacity: 1;
 }
 
-/* Performance HUD Overlay */
+/* HUD de rendimiento (solo si se activa en Ajustes) */
 .perf-overlay {
   position: absolute;
-  top: 10px;
+  top: 56px;
   right: 12px;
   z-index: 45;
-  background: rgba(27, 26, 24, 0.85);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: color-mix(in srgb, var(--ui) 88%, transparent);
   border: 0.5px solid var(--ub);
   border-radius: var(--border-radius-sm);
   padding: 6px 10px;
@@ -154,7 +240,6 @@ body.zen-mode .dock:hover {
 }
 
 .perf-label {
-  color: var(--um);
   text-transform: uppercase;
   font-size: 10px;
 }
@@ -162,4 +247,37 @@ body.zen-mode .dock:hover {
 .perf-val {
   font-weight: 700;
   color: var(--accent-green);
+}
+
+.perf-val[data-level='warn'] { color: var(--accent-soft); }
+.perf-val[data-level='bad'] { color: var(--accent-danger); }
+
+/* Avisos breves */
+.toast-host {
+  position: fixed;
+  left: 50%;
+  bottom: max(18px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  pointer-events: none;
+  width: min(92vw, 420px);
+}
+
+.toast {
+  background: var(--tip-bg);
+  color: var(--tip-text);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+  animation: slideDownTip 0.2s ease-out;
+}
+
+.toast-error {
+  background: var(--accent-danger);
+  color: #1b1a18;
 }

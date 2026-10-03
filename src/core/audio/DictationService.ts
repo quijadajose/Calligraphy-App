@@ -29,6 +29,10 @@ export class DictationService {
     }
   }
 
+  public canSpeak(): boolean {
+    return this.synth !== null;
+  }
+
   public speak(text: string, lang: 'es-ES' | 'ja-JP' = 'es-ES'): void {
     if (!this.synth) return;
     this.synth.cancel();

@@ -7,2231 +7,2251 @@ export interface KanjiEntry {
   r: string;
 }
 
-export const N5: KanjiEntry[] = [
-  { c: "日", s: 4, m: "Day", r: "ひ" },
-  { c: "一", s: 1, m: "One", r: "ひと" },
-  { c: "国", s: 8, m: "Country", r: "くに" },
-  { c: "人", s: 2, m: "Person", r: "ひと" },
-  { c: "年", s: 6, m: "Year", r: "とし" },
-  { c: "大", s: 3, m: "Large", r: "おお" },
-  { c: "十", s: 2, m: "Ten", r: "とお" },
-  { c: "二", s: 2, m: "Two", r: "ふた" },
-  { c: "本", s: 5, m: "Book", r: "もと" },
-  { c: "中", s: 4, m: "In", r: "なか" },
-  { c: "長", s: 8, m: "Long", r: "ながい" },
-  { c: "出", s: 5, m: "Exit", r: "でる" },
-  { c: "三", s: 3, m: "Three", r: "み" },
-  { c: "時", s: 10, m: "Time", r: "とき" },
-  { c: "行", s: 6, m: "Going", r: "いく" },
-  { c: "見", s: 7, m: "See", r: "みる" },
-  { c: "月", s: 4, m: "Month", r: "つき" },
-  { c: "後", s: 9, m: "Behind", r: "のち" },
-  { c: "前", s: 9, m: "In Front", r: "まえ" },
-  { c: "生", s: 5, m: "Life", r: "いきる" },
-  { c: "五", s: 4, m: "Five", r: "いつ" },
-  { c: "間", s: 12, m: "Interval", r: "あいだ" },
-  { c: "上", s: 3, m: "Above", r: "うえ" },
-  { c: "東", s: 8, m: "East", r: "ひがし" },
-  { c: "四", s: 5, m: "Four", r: "よ" },
-  { c: "今", s: 4, m: "Now", r: "いま" },
-  { c: "金", s: 8, m: "Gold", r: "かね" },
-  { c: "九", s: 2, m: "Nine", r: "ここの" },
-  { c: "入", s: 2, m: "Enter", r: "いる" },
-  { c: "学", s: 8, m: "Study", r: "まなぶ" },
-  { c: "高", s: 10, m: "Tall", r: "たかい" },
-  { c: "円", s: 4, m: "Circle", r: "まるい" },
-  { c: "子", s: 3, m: "Child", r: "こ" },
-  { c: "外", s: 5, m: "Outside", r: "そと" },
-  { c: "八", s: 2, m: "Eight", r: "や" },
-  { c: "六", s: 4, m: "Six", r: "む" },
-  { c: "下", s: 3, m: "Below", r: "した" },
-  { c: "来", s: 7, m: "Come", r: "くる" },
-  { c: "気", s: 6, m: "Spirit", r: "いき" },
-  { c: "小", s: 3, m: "Little", r: "ちいさい" },
-  { c: "七", s: 2, m: "Seven", r: "なな" },
-  { c: "山", s: 3, m: "Mountain", r: "やま" },
-  { c: "話", s: 13, m: "Tale", r: "はなす" },
-  { c: "女", s: 3, m: "Woman", r: "おんな" },
-  { c: "北", s: 5, m: "North", r: "きた" },
-  { c: "午", s: 4, m: "Noon", r: "うま" },
-  { c: "百", s: 6, m: "Hundred", r: "もも" },
-  { c: "書", s: 10, m: "Write", r: "かく" },
-  { c: "先", s: 6, m: "Before", r: "さき" },
-  { c: "名", s: 6, m: "Name", r: "な" },
-  { c: "川", s: 3, m: "Stream", r: "かわ" },
-  { c: "千", s: 3, m: "Thousand", r: "ち" },
-  { c: "水", s: 4, m: "Water", r: "みず" },
-  { c: "半", s: 5, m: "Half", r: "なかば" },
-  { c: "男", s: 7, m: "Male", r: "おとこ" },
-  { c: "西", s: 6, m: "West", r: "にし" },
-  { c: "電", s: 13, m: "Electricity", r: "でん" },
-  { c: "校", s: 10, m: "Exam", r: "こう" },
-  { c: "語", s: 14, m: "Word", r: "かたる" },
-  { c: "土", s: 3, m: "Soil", r: "つち" },
-  { c: "木", s: 4, m: "Tree", r: "き" },
-  { c: "聞", s: 14, m: "Hear", r: "きく" },
-  { c: "食", s: 9, m: "Eat", r: "くう" },
-  { c: "車", s: 7, m: "Car", r: "くるま" },
-  { c: "何", s: 7, m: "What", r: "なに" },
-  { c: "南", s: 9, m: "South", r: "みなみ" },
-  { c: "万", s: 3, m: "Ten Thousand", r: "よろず" },
-  { c: "毎", s: 6, m: "Every", r: "ごと" },
-  { c: "白", s: 5, m: "White", r: "しろ" },
-  { c: "天", s: 4, m: "Heavens", r: "あまつ" },
-  { c: "母", s: 5, m: "Mother", r: "はは" },
-  { c: "火", s: 4, m: "Fire", r: "ひ" },
-  { c: "右", s: 5, m: "Right", r: "みぎ" },
-  { c: "読", s: 14, m: "Read", r: "よむ" },
-  { c: "友", s: 4, m: "Friend", r: "とも" },
-  { c: "左", s: 5, m: "Left", r: "ひだり" },
-  { c: "休", s: 6, m: "Rest", r: "やすむ" },
-  { c: "父", s: 4, m: "Father", r: "ちち" },
-  { c: "雨", s: 8, m: "Rain", r: "あめ" },
-];
+/**
+ * Una entrada por línea: kanji|trazos|lectura|significado.
+ * N5 lleva el significado en español; los demás niveles conservan el de la fuente (inglés).
+ */
+function parse(table: string): KanjiEntry[] {
+  return table
+    .trim()
+    .split('\n')
+    .map((line) => {
+      const [c, s, r, m] = line.split('|');
+      return { c, s: Number(s), r, m };
+    });
+}
 
-export const N4: KanjiEntry[] = [
-  { c: "会", s: 6, m: "Meeting", r: "あう" },
-  { c: "同", s: 6, m: "Same", r: "おなじ" },
-  { c: "事", s: 8, m: "Matter", r: "こと" },
-  { c: "自", s: 6, m: "Oneself", r: "みずから" },
-  { c: "社", s: 7, m: "Company", r: "やしろ" },
-  { c: "発", s: 9, m: "Departure", r: "たつ" },
-  { c: "者", s: 8, m: "Someone", r: "もの" },
-  { c: "地", s: 6, m: "Ground", r: "ち" },
-  { c: "業", s: 13, m: "Business", r: "わざ" },
-  { c: "方", s: 4, m: "Direction", r: "かた" },
-  { c: "新", s: 13, m: "New", r: "あたらしい" },
-  { c: "場", s: 12, m: "Location", r: "ば" },
-  { c: "員", s: 10, m: "Employee", r: "いん" },
-  { c: "立", s: 5, m: "Stand Up", r: "たつ" },
-  { c: "開", s: 12, m: "Open", r: "ひらく" },
-  { c: "手", s: 4, m: "Hand", r: "て" },
-  { c: "力", s: 2, m: "Power", r: "ちから" },
-  { c: "問", s: 11, m: "Question", r: "とう" },
-  { c: "代", s: 5, m: "Substitute", r: "かわる" },
-  { c: "明", s: 8, m: "Bright", r: "あかり" },
-  { c: "動", s: 11, m: "Move", r: "うごく" },
-  { c: "京", s: 8, m: "Capital", r: "みやこ" },
-  { c: "目", s: 5, m: "Eye", r: "め" },
-  { c: "通", s: 10, m: "Traffic", r: "とおる" },
-  { c: "言", s: 7, m: "Say", r: "いう" },
-  { c: "理", s: 11, m: "Logic", r: "ことわり" },
-  { c: "体", s: 7, m: "Body", r: "からだ" },
-  { c: "田", s: 5, m: "Rice Field", r: "た" },
-  { c: "主", s: 5, m: "Lord", r: "ぬし" },
-  { c: "題", s: 18, m: "Topic", r: "だい" },
-  { c: "意", s: 13, m: "Idea", r: "い" },
-  { c: "不", s: 4, m: "Negative", r: "ふ" },
-  { c: "作", s: 7, m: "Make", r: "つくる" },
-  { c: "用", s: 5, m: "Utilize", r: "もちいる" },
-  { c: "度", s: 9, m: "Degrees", r: "たび" },
-  { c: "強", s: 11, m: "Strong", r: "つよい" },
-  { c: "公", s: 4, m: "Public", r: "おおやけ" },
-  { c: "持", s: 9, m: "Hold", r: "もつ" },
-  { c: "野", s: 11, m: "Plains", r: "の" },
-  { c: "以", s: 5, m: "By Means Of", r: "もって" },
-  { c: "思", s: 9, m: "Think", r: "おもう" },
-  { c: "家", s: 10, m: "House", r: "いえ" },
-  { c: "世", s: 5, m: "Generation", r: "よ" },
-  { c: "多", s: 6, m: "Many", r: "おおい" },
-  { c: "正", s: 5, m: "Correct", r: "ただしい" },
-  { c: "安", s: 6, m: "Relax", r: "やすい" },
-  { c: "院", s: 10, m: "Inst.", r: "いん" },
-  { c: "心", s: 4, m: "Heart", r: "こころ" },
-  { c: "界", s: 9, m: "World", r: "かい" },
-  { c: "教", s: 11, m: "Teach", r: "おしえる" },
-  { c: "文", s: 4, m: "Sentence", r: "ふみ" },
-  { c: "元", s: 4, m: "Beginning", r: "もと" },
-  { c: "重", s: 9, m: "Heavy", r: "え" },
-  { c: "近", s: 7, m: "Near", r: "ちかい" },
-  { c: "考", s: 6, m: "Consider", r: "かんがえる" },
-  { c: "画", s: 8, m: "Brush-stroke", r: "えがく" },
-  { c: "海", s: 9, m: "Sea", r: "うみ" },
-  { c: "売", s: 7, m: "Sell", r: "うる" },
-  { c: "知", s: 8, m: "Know", r: "しる" },
-  { c: "道", s: 12, m: "Road-way", r: "みち" },
-  { c: "集", s: 12, m: "Gather", r: "あつまる" },
-  { c: "別", s: 7, m: "Separate", r: "わかれる" },
-  { c: "物", s: 8, m: "Thing", r: "もの" },
-  { c: "使", s: 8, m: "Use", r: "つかう" },
-  { c: "品", s: 9, m: "Goods", r: "しな" },
-  { c: "計", s: 9, m: "Plot", r: "はかる" },
-  { c: "死", s: 6, m: "Death", r: "しぬ" },
-  { c: "特", s: 10, m: "Special", r: "とく" },
-  { c: "私", s: 7, m: "Private", r: "わたくし" },
-  { c: "始", s: 8, m: "Commence", r: "はじめる" },
-  { c: "朝", s: 12, m: "Morning", r: "あさ" },
-  { c: "運", s: 12, m: "Carry", r: "はこぶ" },
-  { c: "終", s: 11, m: "End", r: "おわる" },
-  { c: "台", s: 5, m: "Pedestal", r: "うてな" },
-  { c: "広", s: 5, m: "Wide", r: "ひろい" },
-  { c: "住", s: 7, m: "Dwell", r: "すむ" },
-  { c: "真", s: 10, m: "True", r: "ま" },
-  { c: "有", s: 6, m: "Possess", r: "ある" },
-  { c: "口", s: 3, m: "Mouth", r: "くち" },
-  { c: "少", s: 4, m: "Few", r: "すくない" },
-  { c: "町", s: 7, m: "Town", r: "まち" },
-  { c: "料", s: 10, m: "Fee", r: "りょう" },
-  { c: "工", s: 3, m: "Craft", r: "こう" },
-  { c: "建", s: 9, m: "Build", r: "たてる" },
-  { c: "空", s: 8, m: "Empty", r: "そら" },
-  { c: "急", s: 9, m: "Hurry", r: "いそぐ" },
-  { c: "止", s: 4, m: "Stop", r: "とまる" },
-  { c: "送", s: 9, m: "Escort", r: "おくる" },
-  { c: "切", s: 4, m: "Cut", r: "きる" },
-  { c: "転", s: 11, m: "Revolve", r: "ころがる" },
-  { c: "研", s: 9, m: "Polish", r: "とぐ" },
-  { c: "足", s: 7, m: "Leg", r: "あし" },
-  { c: "究", s: 7, m: "Research", r: "きわめる" },
-  { c: "楽", s: 13, m: "Music", r: "たのしい" },
-  { c: "起", s: 10, m: "Rouse", r: "おきる" },
-  { c: "着", s: 12, m: "Don", r: "きる" },
-  { c: "店", s: 8, m: "Store", r: "みせ" },
-  { c: "病", s: 10, m: "Ill", r: "やむ" },
-  { c: "質", s: 15, m: "Substance", r: "たち" },
-  { c: "待", s: 9, m: "Wait", r: "まつ" },
-  { c: "試", s: 13, m: "Test", r: "こころみる" },
-  { c: "族", s: 11, m: "Tribe", r: "ぞく" },
-  { c: "銀", s: 14, m: "Silver", r: "しろがね" },
-  { c: "早", s: 6, m: "Early", r: "はやい" },
-  { c: "映", s: 9, m: "Reflect", r: "うつる" },
-  { c: "親", s: 16, m: "Parent", r: "おや" },
-  { c: "験", s: 18, m: "Verification", r: "あかし" },
-  { c: "英", s: 8, m: "England", r: "はなぶさ" },
-  { c: "医", s: 7, m: "Doctor", r: "いやす" },
-  { c: "仕", s: 5, m: "Attend", r: "つかえる" },
-  { c: "去", s: 5, m: "Gone", r: "さる" },
-  { c: "味", s: 8, m: "Flavor", r: "あじ" },
-  { c: "写", s: 5, m: "Copy", r: "うつす" },
-  { c: "字", s: 6, m: "Character", r: "あざ" },
-  { c: "答", s: 12, m: "Solution", r: "こたえる" },
-  { c: "夜", s: 8, m: "Night", r: "よ" },
-  { c: "音", s: 9, m: "Sound", r: "おと" },
-  { c: "注", s: 8, m: "Pour", r: "そそぐ" },
-  { c: "帰", s: 10, m: "Homecoming", r: "かえる" },
-  { c: "古", s: 5, m: "Old", r: "ふるい" },
-  { c: "歌", s: 14, m: "Song", r: "うた" },
-  { c: "買", s: 12, m: "Buy", r: "かう" },
-  { c: "悪", s: 11, m: "Bad", r: "わるい" },
-  { c: "図", s: 7, m: "Map", r: "え" },
-  { c: "週", s: 11, m: "Week", r: "しゅう" },
-  { c: "室", s: 9, m: "Room", r: "むろ" },
-  { c: "歩", s: 8, m: "Walk", r: "あるく" },
-  { c: "風", s: 9, m: "Wind", r: "かぜ" },
-  { c: "紙", s: 10, m: "Paper", r: "かみ" },
-  { c: "黒", s: 11, m: "Black", r: "くろ" },
-  { c: "花", s: 7, m: "Flower", r: "はな" },
-  { c: "春", s: 9, m: "Springtime", r: "はる" },
-  { c: "赤", s: 7, m: "Red", r: "あか" },
-  { c: "青", s: 8, m: "Blue", r: "あお" },
-  { c: "館", s: 16, m: "Building", r: "やかた" },
-  { c: "屋", s: 9, m: "Roof", r: "や" },
-  { c: "色", s: 6, m: "Color", r: "いろ" },
-  { c: "走", s: 7, m: "Run", r: "はしる" },
-  { c: "秋", s: 9, m: "Autumn", r: "あき" },
-  { c: "夏", s: 10, m: "Summer", r: "なつ" },
-  { c: "習", s: 11, m: "Learn", r: "ならう" },
-  { c: "駅", s: 14, m: "Station", r: "えき" },
-  { c: "洋", s: 9, m: "Ocean", r: "よう" },
-  { c: "旅", s: 10, m: "Trip", r: "たび" },
-  { c: "服", s: 8, m: "Clothing", r: "ふく" },
-  { c: "夕", s: 3, m: "Evening", r: "ゆう" },
-  { c: "借", s: 10, m: "Borrow", r: "かりる" },
-  { c: "曜", s: 18, m: "Weekday", r: "よう" },
-  { c: "飲", s: 12, m: "Drink", r: "のむ" },
-  { c: "肉", s: 6, m: "Meat", r: "しし" },
-  { c: "貸", s: 12, m: "Lend", r: "かす" },
-  { c: "堂", s: 11, m: "Public Chamber", r: "どう" },
-  { c: "鳥", s: 11, m: "Bird", r: "とり" },
-  { c: "飯", s: 12, m: "Meal", r: "めし" },
-  { c: "勉", s: 10, m: "Exertion", r: "つとめる" },
-  { c: "冬", s: 5, m: "Winter", r: "ふゆ" },
-  { c: "昼", s: 9, m: "Daytime", r: "ひる" },
-  { c: "茶", s: 9, m: "Tea", r: "ちゃ" },
-  { c: "弟", s: 7, m: "Younger Brother", r: "おとうと" },
-  { c: "牛", s: 4, m: "Cow", r: "うし" },
-  { c: "魚", s: 11, m: "Fish", r: "うお" },
-  { c: "兄", s: 5, m: "Elder Brother", r: "あに" },
-  { c: "犬", s: 4, m: "Dog", r: "いぬ" },
-  { c: "妹", s: 8, m: "Younger Sister", r: "いもうと" },
-  { c: "姉", s: 8, m: "Elder Sister", r: "あね" },
-  { c: "漢", s: 13, m: "Sino-", r: "かん" },
-];
+const N5_TABLE = `
+日|4|ひ|día, sol
+一|1|ひと|uno
+国|8|くに|país
+人|2|ひと|persona
+年|6|とし|año
+大|3|おお|grande
+十|2|とお|diez
+二|2|ふた|dos
+本|5|もと|libro, origen
+中|4|なか|dentro, medio
+長|8|ながい|largo
+出|5|でる|salir
+三|3|み|tres
+時|10|とき|hora, tiempo
+行|6|いく|ir
+見|7|みる|ver
+月|4|つき|luna, mes
+後|9|のち|después, detrás
+前|9|まえ|delante, antes
+生|5|いきる|vida, nacer
+五|4|いつ|cinco
+間|12|あいだ|intervalo, entre
+上|3|うえ|arriba
+東|8|ひがし|este
+四|5|よ|cuatro
+今|4|いま|ahora
+金|8|かね|oro, dinero
+九|2|ここの|nueve
+入|2|いる|entrar
+学|8|まなぶ|estudiar
+高|10|たかい|alto, caro
+円|4|まるい|círculo, yen
+子|3|こ|niño
+外|5|そと|fuera
+八|2|や|ocho
+六|4|む|seis
+下|3|した|abajo
+来|7|くる|venir
+気|6|いき|espíritu, ánimo
+小|3|ちいさい|pequeño
+七|2|なな|siete
+山|3|やま|montaña
+話|13|はなす|hablar
+女|3|おんな|mujer
+北|5|きた|norte
+午|4|うま|mediodía
+百|6|もも|cien
+書|10|かく|escribir
+先|6|さき|antes, punta
+名|6|な|nombre
+川|3|かわ|río
+千|3|ち|mil
+水|4|みず|agua
+半|5|なかば|mitad
+男|7|おとこ|hombre
+西|6|にし|oeste
+電|13|でん|electricidad
+校|10|こう|escuela
+語|14|かたる|idioma, palabra
+土|3|つち|tierra
+木|4|き|árbol
+聞|14|きく|oír, preguntar
+食|9|くう|comer
+車|7|くるま|coche
+何|7|なに|qué
+南|9|みなみ|sur
+万|3|よろず|diez mil
+毎|6|ごと|cada
+白|5|しろ|blanco
+天|4|あまつ|cielo
+母|5|はは|madre
+火|4|ひ|fuego
+右|5|みぎ|derecha
+読|14|よむ|leer
+友|4|とも|amigo
+左|5|ひだり|izquierda
+休|6|やすむ|descansar
+父|4|ちち|padre
+雨|8|あめ|lluvia
+`;
 
-export const N3: KanjiEntry[] = [
-  { c: "政", s: 9, m: "Politics", r: "まつりごと" },
-  { c: "議", s: 20, m: "Deliberation", r: "ぎ" },
-  { c: "民", s: 5, m: "People", r: "たみ" },
-  { c: "連", s: 10, m: "Take Along", r: "つらなる" },
-  { c: "対", s: 7, m: "Vis-a-vis", r: "あいて" },
-  { c: "部", s: 11, m: "Section", r: "べ" },
-  { c: "合", s: 6, m: "Fit", r: "あう" },
-  { c: "市", s: 5, m: "Market", r: "いち" },
-  { c: "内", s: 4, m: "Inside", r: "うち" },
-  { c: "相", s: 9, m: "Inter-", r: "あい" },
-  { c: "定", s: 8, m: "Determine", r: "さだめる" },
-  { c: "回", s: 6, m: "-times", r: "まわる" },
-  { c: "選", s: 15, m: "Elect", r: "えらぶ" },
-  { c: "米", s: 6, m: "Rice", r: "こめ" },
-  { c: "実", s: 8, m: "Reality", r: "み" },
-  { c: "関", s: 14, m: "Connection", r: "せき" },
-  { c: "決", s: 7, m: "Decide", r: "きめる" },
-  { c: "全", s: 6, m: "Whole", r: "まったく" },
-  { c: "表", s: 8, m: "Surface", r: "おもて" },
-  { c: "戦", s: 13, m: "War", r: "いくさ" },
-  { c: "経", s: 11, m: "Sutra", r: "へる" },
-  { c: "最", s: 12, m: "Utmost", r: "もっとも" },
-  { c: "現", s: 11, m: "Present", r: "あらわれる" },
-  { c: "調", s: 15, m: "Tune", r: "しらべる" },
-  { c: "化", s: 4, m: "Change", r: "ばける" },
-  { c: "当", s: 6, m: "Hit", r: "あたる" },
-  { c: "約", s: 9, m: "Promise", r: "つづまる" },
-  { c: "首", s: 9, m: "Neck", r: "くび" },
-  { c: "法", s: 8, m: "Method", r: "のり" },
-  { c: "性", s: 8, m: "Sex", r: "さが" },
-  { c: "要", s: 9, m: "Need", r: "いる" },
-  { c: "制", s: 8, m: "System", r: "せい" },
-  { c: "治", s: 8, m: "Reign", r: "おさめる" },
-  { c: "務", s: 11, m: "Task", r: "つとめる" },
-  { c: "成", s: 6, m: "Turn Into", r: "なる" },
-  { c: "期", s: 12, m: "Period", r: "き" },
-  { c: "取", s: 8, m: "Take", r: "とる" },
-  { c: "都", s: 11, m: "Metropolis", r: "みやこ" },
-  { c: "和", s: 8, m: "Harmony", r: "やわらぐ" },
-  { c: "機", s: 16, m: "Loom", r: "はた" },
-  { c: "平", s: 5, m: "Even", r: "たいら" },
-  { c: "加", s: 5, m: "Add", r: "くわえる" },
-  { c: "受", s: 8, m: "Accept", r: "うける" },
-  { c: "続", s: 13, m: "Continue", r: "つづく" },
-  { c: "進", s: 11, m: "Advance", r: "すすむ" },
-  { c: "数", s: 13, m: "Number", r: "かず" },
-  { c: "記", s: 10, m: "Scribe", r: "しるす" },
-  { c: "初", s: 7, m: "First Time", r: "はじめ" },
-  { c: "指", s: 9, m: "Finger", r: "ゆび" },
-  { c: "権", s: 15, m: "Authority", r: "おもり" },
-  { c: "支", s: 4, m: "Branch", r: "ささえる" },
-  { c: "産", s: 11, m: "Products", r: "うむ" },
-  { c: "点", s: 9, m: "Spot", r: "つける" },
-  { c: "報", s: 12, m: "Report", r: "むくいる" },
-  { c: "済", s: 11, m: "Settle (debt, Etc.)", r: "すむ" },
-  { c: "活", s: 9, m: "Lively", r: "いきる" },
-  { c: "原", s: 10, m: "Meadow", r: "はら" },
-  { c: "共", s: 6, m: "Together", r: "とも" },
-  { c: "得", s: 11, m: "Gain", r: "える" },
-  { c: "解", s: 13, m: "Unravel", r: "とく" },
-  { c: "交", s: 6, m: "Mingle", r: "まじわる" },
-  { c: "資", s: 13, m: "Assets", r: "し" },
-  { c: "予", s: 4, m: "Beforehand", r: "あらかじめ" },
-  { c: "向", s: 6, m: "Yonder", r: "むく" },
-  { c: "際", s: 14, m: "Occasion", r: "きわ" },
-  { c: "勝", s: 12, m: "Victory", r: "かつ" },
-  { c: "面", s: 9, m: "Mask", r: "おも" },
-  { c: "告", s: 7, m: "Revelation", r: "つげる" },
-  { c: "反", s: 4, m: "Anti-", r: "そる" },
-  { c: "判", s: 7, m: "Judgement", r: "わかる" },
-  { c: "認", s: 14, m: "Acknowledge", r: "みとめる" },
-  { c: "参", s: 8, m: "Nonplussed", r: "まいる" },
-  { c: "利", s: 7, m: "Profit", r: "きく" },
-  { c: "組", s: 11, m: "Association", r: "くむ" },
-  { c: "信", s: 9, m: "Faith", r: "しん" },
-  { c: "在", s: 6, m: "Exist", r: "ある" },
-  { c: "件", s: 6, m: "Affair", r: "くだん" },
-  { c: "側", s: 11, m: "Side", r: "かわ" },
-  { c: "任", s: 6, m: "Responsibility", r: "まかせる" },
-  { c: "引", s: 4, m: "Pull", r: "ひく" },
-  { c: "求", s: 7, m: "Request", r: "もとめる" },
-  { c: "所", s: 8, m: "Place", r: "ところ" },
-  { c: "次", s: 6, m: "Next", r: "つぐ" },
-  { c: "昨", s: 9, m: "Yesterday", r: "さく" },
-  { c: "論", s: 15, m: "Argument", r: "ろん" },
-  { c: "官", s: 8, m: "Bureaucrat", r: "かん" },
-  { c: "増", s: 14, m: "Increase", r: "ます" },
-  { c: "係", s: 9, m: "Person In Charge", r: "かかる" },
-  { c: "感", s: 13, m: "Emotion", r: "かん" },
-  { c: "情", s: 11, m: "Feelings", r: "なさけ" },
-  { c: "投", s: 7, m: "Throw", r: "なげる" },
-  { c: "示", s: 5, m: "Show", r: "しめす" },
-  { c: "変", s: 9, m: "Unusual", r: "かわる" },
-  { c: "打", s: 5, m: "Strike", r: "うつ" },
-  { c: "直", s: 8, m: "Straightaway", r: "ただちに" },
-  { c: "両", s: 6, m: "Both", r: "てる" },
-  { c: "式", s: 6, m: "Style", r: "しき" },
-  { c: "確", s: 15, m: "Assurance", r: "たしか" },
-  { c: "果", s: 8, m: "Fruit", r: "はたす" },
-  { c: "容", s: 10, m: "Contain", r: "いれる" },
-  { c: "必", s: 5, m: "Invariably", r: "かならず" },
-  { c: "演", s: 14, m: "Performance", r: "えん" },
-  { c: "歳", s: 13, m: "Year-end", r: "とし" },
-  { c: "争", s: 6, m: "Contend", r: "あらそう" },
-  { c: "談", s: 15, m: "Discuss", r: "だん" },
-  { c: "能", s: 10, m: "Ability", r: "よく" },
-  { c: "位", s: 7, m: "Rank", r: "くらい" },
-  { c: "置", s: 13, m: "Placement", r: "おく" },
-  { c: "流", s: 10, m: "Current", r: "ながれる" },
-  { c: "格", s: 10, m: "Status", r: "かく" },
-  { c: "疑", s: 14, m: "Doubt", r: "うたがう" },
-  { c: "過", s: 12, m: "Overdo", r: "すぎる" },
-  { c: "局", s: 7, m: "Bureau", r: "つぼね" },
-  { c: "放", s: 8, m: "Set Free", r: "はなす" },
-  { c: "常", s: 11, m: "Usual", r: "つね" },
-  { c: "状", s: 7, m: "Status Quo", r: "じょう" },
-  { c: "球", s: 11, m: "Ball", r: "たま" },
-  { c: "職", s: 18, m: "Post", r: "しょく" },
-  { c: "与", s: 3, m: "Bestow", r: "あたえる" },
-  { c: "供", s: 8, m: "Submit", r: "そなえる" },
-  { c: "役", s: 7, m: "Duty", r: "やく" },
-  { c: "構", s: 14, m: "Posture", r: "かまえる" },
-  { c: "割", s: 12, m: "Proportion", r: "わる" },
-  { c: "費", s: 12, m: "Expense", r: "ついやす" },
-  { c: "付", s: 5, m: "Adhere", r: "つける" },
-  { c: "由", s: 5, m: "Wherefore", r: "よし" },
-  { c: "説", s: 14, m: "Opinion", r: "とく" },
-  { c: "難", s: 18, m: "Difficult", r: "かたい" },
-  { c: "優", s: 17, m: "Tenderness", r: "やさしい" },
-  { c: "夫", s: 4, m: "Husband", r: "おっと" },
-  { c: "収", s: 4, m: "Income", r: "おさめる" },
-  { c: "断", s: 11, m: "Severance", r: "たつ" },
-  { c: "石", s: 5, m: "Stone", r: "いし" },
-  { c: "違", s: 13, m: "Difference", r: "ちがう" },
-  { c: "消", s: 10, m: "Extinguish", r: "きえる" },
-  { c: "神", s: 9, m: "Gods", r: "かみ" },
-  { c: "番", s: 12, m: "Turn", r: "つがい" },
-  { c: "規", s: 11, m: "Standard", r: "き" },
-  { c: "術", s: 11, m: "Art", r: "すべ" },
-  { c: "備", s: 12, m: "Equip", r: "そなえる" },
-  { c: "宅", s: 6, m: "Home", r: "たく" },
-  { c: "害", s: 10, m: "Harm", r: "がい" },
-  { c: "配", s: 10, m: "Distribute", r: "くばる" },
-  { c: "警", s: 19, m: "Admonish", r: "いましめる" },
-  { c: "育", s: 8, m: "Bring Up", r: "そだつ" },
-  { c: "席", s: 10, m: "Seat", r: "むしろ" },
-  { c: "訪", s: 11, m: "Call On", r: "おとずれる" },
-  { c: "乗", s: 9, m: "Ride", r: "のる" },
-  { c: "残", s: 10, m: "Remainder", r: "のこる" },
-  { c: "想", s: 13, m: "Concept", r: "おもう" },
-  { c: "声", s: 7, m: "Voice", r: "こえ" },
-  { c: "念", s: 8, m: "Wish", r: "ねん" },
-  { c: "助", s: 7, m: "Help", r: "たすける" },
-  { c: "労", s: 7, m: "Labor", r: "ろうする" },
-  { c: "例", s: 8, m: "Example", r: "たとえる" },
-  { c: "然", s: 12, m: "Sort Of Thing", r: "しか" },
-  { c: "限", s: 9, m: "Limit", r: "かぎる" },
-  { c: "追", s: 9, m: "Chase", r: "おう" },
-  { c: "商", s: 11, m: "Make A Deal", r: "あきなう" },
-  { c: "葉", s: 12, m: "Leaf", r: "は" },
-  { c: "伝", s: 6, m: "Transmit", r: "つたわる" },
-  { c: "働", s: 13, m: "Work", r: "はたらく" },
-  { c: "形", s: 7, m: "Shape", r: "かた" },
-  { c: "景", s: 12, m: "Scenery", r: "けい" },
-  { c: "落", s: 12, m: "Fall", r: "おちる" },
-  { c: "好", s: 6, m: "Fond", r: "このむ" },
-  { c: "退", s: 9, m: "Retreat", r: "しりぞく" },
-  { c: "頭", s: 16, m: "Head", r: "あたま" },
-  { c: "負", s: 9, m: "Defeat", r: "まける" },
-  { c: "渡", s: 12, m: "Transit", r: "わたる" },
-  { c: "失", s: 5, m: "Lose", r: "うしなう" },
-  { c: "差", s: 10, m: "Distinction", r: "さす" },
-  { c: "末", s: 5, m: "End", r: "すえ" },
-  { c: "守", s: 6, m: "Guard", r: "まもる" },
-  { c: "若", s: 8, m: "Young", r: "わかい" },
-  { c: "種", s: 14, m: "Species", r: "たね" },
-  { c: "美", s: 9, m: "Beauty", r: "うつくしい" },
-  { c: "命", s: 8, m: "Fate", r: "いのち" },
-  { c: "福", s: 13, m: "Blessing", r: "ふく" },
-  { c: "望", s: 11, m: "Ambition", r: "のぞむ" },
-  { c: "非", s: 8, m: "Un-", r: "あらず" },
-  { c: "観", s: 18, m: "Outlook", r: "みる" },
-  { c: "察", s: 14, m: "Guess", r: "さつ" },
-  { c: "段", s: 9, m: "Grade", r: "だん" },
-  { c: "横", s: 15, m: "Sideways", r: "よこ" },
-  { c: "深", s: 11, m: "Deep", r: "ふかい" },
-  { c: "申", s: 5, m: "Have The Honor To", r: "もうす" },
-  { c: "様", s: 14, m: "Esq.", r: "さま" },
-  { c: "財", s: 10, m: "Property", r: "たから" },
-  { c: "港", s: 12, m: "Harbor", r: "みなと" },
-  { c: "識", s: 19, m: "Discriminating", r: "しる" },
-  { c: "呼", s: 8, m: "Call", r: "よぶ" },
-  { c: "達", s: 12, m: "Accomplished", r: "たち" },
-  { c: "良", s: 7, m: "Good", r: "よい" },
-  { c: "候", s: 10, m: "Climate", r: "そうろう" },
-  { c: "程", s: 12, m: "Extent", r: "ほど" },
-  { c: "満", s: 12, m: "Full", r: "みちる" },
-  { c: "敗", s: 11, m: "Failure", r: "やぶれる" },
-  { c: "値", s: 10, m: "Price", r: "ね" },
-  { c: "突", s: 8, m: "Stab", r: "つく" },
-  { c: "光", s: 6, m: "Ray", r: "ひかる" },
-  { c: "路", s: 13, m: "Path", r: "じ" },
-  { c: "科", s: 9, m: "Department", r: "か" },
-  { c: "積", s: 16, m: "Volume", r: "つむ" },
-  { c: "他", s: 5, m: "Other", r: "ほか" },
-  { c: "処", s: 5, m: "Dispose", r: "ところ" },
-  { c: "太", s: 4, m: "Plump", r: "ふとい" },
-  { c: "客", s: 9, m: "Guest", r: "きゃく" },
-  { c: "否", s: 7, m: "Negate", r: "いな" },
-  { c: "師", s: 10, m: "Expert", r: "いくさ" },
-  { c: "登", s: 12, m: "Ascend", r: "のぼる" },
-  { c: "易", s: 8, m: "Easy", r: "やさしい" },
-  { c: "速", s: 10, m: "Quick", r: "はやい" },
-  { c: "存", s: 6, m: "Exist", r: "ながらえる" },
-  { c: "飛", s: 9, m: "Fly", r: "とぶ" },
-  { c: "殺", s: 10, m: "Kill", r: "ころす" },
-  { c: "号", s: 5, m: "Nickname", r: "さけぶ" },
-  { c: "単", s: 9, m: "Simple", r: "ひとえ" },
-  { c: "座", s: 10, m: "Squat", r: "すわる" },
-  { c: "破", s: 10, m: "Rend", r: "やぶる" },
-  { c: "除", s: 10, m: "Exclude", r: "のぞく" },
-  { c: "完", s: 7, m: "Perfect", r: "かん" },
-  { c: "降", s: 10, m: "Descend", r: "おりる" },
-  { c: "責", s: 11, m: "Blame", r: "せめる" },
-  { c: "捕", s: 10, m: "Catch", r: "とらえる" },
-  { c: "危", s: 6, m: "Dangerous", r: "あぶない" },
-  { c: "給", s: 12, m: "Salary", r: "たまう" },
-  { c: "苦", s: 8, m: "Suffering", r: "くるしい" },
-  { c: "迎", s: 7, m: "Welcome", r: "むかえる" },
-  { c: "園", s: 13, m: "Park", r: "その" },
-  { c: "具", s: 8, m: "Tool", r: "そなえる" },
-  { c: "辞", s: 13, m: "Resign", r: "やめる" },
-  { c: "因", s: 6, m: "Cause", r: "よる" },
-  { c: "馬", s: 10, m: "Horse", r: "うま" },
-  { c: "愛", s: 13, m: "Love", r: "いとしい" },
-  { c: "富", s: 12, m: "Wealth", r: "とむ" },
-  { c: "彼", s: 8, m: "He", r: "かれ" },
-  { c: "未", s: 5, m: "Un-", r: "いまだ" },
-  { c: "舞", s: 15, m: "Dance", r: "まう" },
-  { c: "亡", s: 3, m: "Deceased", r: "ない" },
-  { c: "冷", s: 7, m: "Cool", r: "つめたい" },
-  { c: "適", s: 14, m: "Suitable", r: "かなう" },
-  { c: "婦", s: 11, m: "Lady", r: "よめ" },
-  { c: "寄", s: 11, m: "Draw Near", r: "よる" },
-  { c: "込", s: 5, m: "Crowded", r: "こむ" },
-  { c: "顔", s: 18, m: "Face", r: "かお" },
-  { c: "類", s: 18, m: "Sort", r: "たぐい" },
-  { c: "余", s: 7, m: "Too Much", r: "あまる" },
-  { c: "王", s: 4, m: "King", r: "おう" },
-  { c: "返", s: 7, m: "Return", r: "かえす" },
-  { c: "妻", s: 8, m: "Wife", r: "つま" },
-  { c: "背", s: 9, m: "Stature", r: "せ" },
-  { c: "熱", s: 15, m: "Heat", r: "あつい" },
-  { c: "宿", s: 11, m: "Inn", r: "やど" },
-  { c: "薬", s: 16, m: "Medicine", r: "くすり" },
-  { c: "険", s: 11, m: "Precipitous", r: "けわしい" },
-  { c: "頼", s: 16, m: "Trust", r: "たのむ" },
-  { c: "覚", s: 12, m: "Memorize", r: "おぼえる" },
-  { c: "船", s: 11, m: "Ship", r: "ふね" },
-  { c: "途", s: 10, m: "Route", r: "みち" },
-  { c: "許", s: 11, m: "Permit", r: "ゆるす" },
-  { c: "抜", s: 7, m: "Slip Out", r: "ぬく" },
-  { c: "便", s: 9, m: "Convenience", r: "たより" },
-  { c: "留", s: 10, m: "Detain", r: "とめる" },
-  { c: "罪", s: 13, m: "Guilt", r: "つみ" },
-  { c: "努", s: 7, m: "Toil", r: "つとめる" },
-  { c: "精", s: 14, m: "Refined", r: "しらげる" },
-  { c: "散", s: 12, m: "Scatter", r: "ちる" },
-  { c: "静", s: 14, m: "Quiet", r: "しず" },
-  { c: "婚", s: 11, m: "Marriage", r: "こん" },
-  { c: "喜", s: 12, m: "Rejoice", r: "よろこぶ" },
-  { c: "浮", s: 10, m: "Floating", r: "うく" },
-  { c: "絶", s: 12, m: "Discontinue", r: "たえる" },
-  { c: "幸", s: 8, m: "Happiness", r: "さいわい" },
-  { c: "押", s: 8, m: "Push", r: "おす" },
-  { c: "倒", s: 10, m: "Overthrow", r: "たおれる" },
-  { c: "等", s: 12, m: "Etc.", r: "ひとしい" },
-  { c: "老", s: 6, m: "Old Man", r: "おいる" },
-  { c: "曲", s: 6, m: "Bend", r: "まがる" },
-  { c: "払", s: 5, m: "Pay", r: "はらう" },
-  { c: "庭", s: 10, m: "Courtyard", r: "にわ" },
-  { c: "徒", s: 10, m: "On Foot", r: "いたずら" },
-  { c: "勤", s: 12, m: "Diligence", r: "つとめる" },
-  { c: "遅", s: 12, m: "Slow", r: "おくれる" },
-  { c: "居", s: 8, m: "Reside", r: "いる" },
-  { c: "雑", s: 14, m: "Miscellaneous", r: "まじえる" },
-  { c: "招", s: 8, m: "Beckon", r: "まねく" },
-  { c: "困", s: 7, m: "Quandary", r: "こまる" },
-  { c: "欠", s: 4, m: "Lack", r: "かける" },
-  { c: "更", s: 7, m: "Grow Late", r: "さら" },
-  { c: "刻", s: 8, m: "Engrave", r: "きざむ" },
-  { c: "賛", s: 15, m: "Approve", r: "たすける" },
-  { c: "抱", s: 8, m: "Embrace", r: "だく" },
-  { c: "犯", s: 5, m: "Crime", r: "おかす" },
-  { c: "恐", s: 10, m: "Fear", r: "おそれる" },
-  { c: "息", s: 10, m: "Breath", r: "いき" },
-  { c: "遠", s: 13, m: "Distant", r: "とおい" },
-  { c: "戻", s: 7, m: "Re-", r: "もどす" },
-  { c: "願", s: 19, m: "Petition", r: "ねがう" },
-  { c: "絵", s: 12, m: "Picture", r: "かい" },
-  { c: "越", s: 12, m: "Surpass", r: "こす" },
-  { c: "欲", s: 11, m: "Longing", r: "ほっする" },
-  { c: "痛", s: 12, m: "Pain", r: "いたい" },
-  { c: "笑", s: 10, m: "Laugh", r: "わらう" },
-  { c: "互", s: 4, m: "Mutually", r: "たがい" },
-  { c: "束", s: 7, m: "Bundle", r: "たば" },
-  { c: "似", s: 7, m: "Becoming", r: "にる" },
-  { c: "列", s: 6, m: "File", r: "れつ" },
-  { c: "探", s: 11, m: "Grope", r: "さぐる" },
-  { c: "逃", s: 9, m: "Escape", r: "にげる" },
-  { c: "遊", s: 12, m: "Play", r: "あそぶ" },
-  { c: "迷", s: 9, m: "Astray", r: "まよう" },
-  { c: "夢", s: 13, m: "Dream", r: "ゆめ" },
-  { c: "君", s: 7, m: "Mister", r: "きみ" },
-  { c: "閉", s: 11, m: "Closed", r: "とじる" },
-  { c: "緒", s: 14, m: "Thong", r: "お" },
-  { c: "折", s: 7, m: "Fold", r: "おる" },
-  { c: "草", s: 9, m: "Grass", r: "くさ" },
-  { c: "暮", s: 14, m: "Evening", r: "くれる" },
-  { c: "酒", s: 10, m: "Sake", r: "さけ" },
-  { c: "悲", s: 12, m: "Grieve", r: "かなしい" },
-  { c: "晴", s: 12, m: "Clear Up", r: "はれる" },
-  { c: "掛", s: 11, m: "Hang", r: "かける" },
-  { c: "到", s: 8, m: "Arrival", r: "いたる" },
-  { c: "寝", s: 13, m: "Lie Down", r: "ねる" },
-  { c: "暗", s: 13, m: "Darkness", r: "くらい" },
-  { c: "盗", s: 11, m: "Steal", r: "ぬすむ" },
-  { c: "吸", s: 6, m: "Suck", r: "すう" },
-  { c: "陽", s: 12, m: "Sunshine", r: "ひ" },
-  { c: "御", s: 12, m: "Honorable", r: "おん" },
-  { c: "歯", s: 12, m: "Tooth", r: "よわい" },
-  { c: "忘", s: 7, m: "Forget", r: "わすれる" },
-  { c: "雪", s: 11, m: "Snow", r: "ゆき" },
-  { c: "吹", s: 7, m: "Blow", r: "ふく" },
-  { c: "娘", s: 10, m: "Daughter", r: "むすめ" },
-  { c: "誤", s: 14, m: "Mistake", r: "あやまる" },
-  { c: "洗", s: 9, m: "Wash", r: "あらう" },
-  { c: "慣", s: 14, m: "Accustomed", r: "なれる" },
-  { c: "礼", s: 5, m: "Salute", r: "れい" },
-  { c: "窓", s: 11, m: "Window", r: "まど" },
-  { c: "昔", s: 8, m: "Once Upon A Time", r: "むかし" },
-  { c: "貧", s: 11, m: "Poverty", r: "まずしい" },
-  { c: "怒", s: 9, m: "Angry", r: "いかる" },
-  { c: "泳", s: 8, m: "Swim", r: "およぐ" },
-  { c: "祖", s: 9, m: "Ancestor", r: "そ" },
-  { c: "杯", s: 8, m: "Counter For Cupfuls", r: "さかずき" },
-  { c: "疲", s: 10, m: "Exhausted", r: "つかれる" },
-  { c: "皆", s: 9, m: "All", r: "みな" },
-  { c: "鳴", s: 14, m: "Chirp", r: "なく" },
-  { c: "腹", s: 13, m: "Abdomen", r: "はら" },
-  { c: "煙", s: 13, m: "Smoke", r: "けむる" },
-  { c: "眠", s: 10, m: "Sleep", r: "ねむる" },
-  { c: "怖", s: 8, m: "Dreadful", r: "こわい" },
-  { c: "耳", s: 6, m: "Ear", r: "みみ" },
-  { c: "頂", s: 11, m: "Place On The Head", r: "いただく" },
-  { c: "箱", s: 15, m: "Box", r: "はこ" },
-  { c: "晩", s: 12, m: "Nightfall", r: "ばん" },
-  { c: "寒", s: 12, m: "Cold", r: "さむい" },
-  { c: "髪", s: 14, m: "Hair Of The Head", r: "かみ" },
-  { c: "忙", s: 6, m: "Busy", r: "いそがしい" },
-  { c: "才", s: 3, m: "Genius", r: "さい" },
-  { c: "靴", s: 13, m: "Shoes", r: "くつ" },
-  { c: "恥", s: 10, m: "Shame", r: "はじる" },
-  { c: "偶", s: 11, m: "Accidentally", r: "たま" },
-  { c: "偉", s: 12, m: "Admirable", r: "えらい" },
-  { c: "猫", s: 11, m: "Cat", r: "ねこ" },
-  { c: "幾", s: 12, m: "How Many", r: "いく" },
-];
+const N4_TABLE = `
+会|6|あう|Meeting
+同|6|おなじ|Same
+事|8|こと|Matter
+自|6|みずから|Oneself
+社|7|やしろ|Company
+発|9|たつ|Departure
+者|8|もの|Someone
+地|6|ち|Ground
+業|13|わざ|Business
+方|4|かた|Direction
+新|13|あたらしい|New
+場|12|ば|Location
+員|10|いん|Employee
+立|5|たつ|Stand Up
+開|12|ひらく|Open
+手|4|て|Hand
+力|2|ちから|Power
+問|11|とう|Question
+代|5|かわる|Substitute
+明|8|あかり|Bright
+動|11|うごく|Move
+京|8|みやこ|Capital
+目|5|め|Eye
+通|10|とおる|Traffic
+言|7|いう|Say
+理|11|ことわり|Logic
+体|7|からだ|Body
+田|5|た|Rice Field
+主|5|ぬし|Lord
+題|18|だい|Topic
+意|13|い|Idea
+不|4|ふ|Negative
+作|7|つくる|Make
+用|5|もちいる|Utilize
+度|9|たび|Degrees
+強|11|つよい|Strong
+公|4|おおやけ|Public
+持|9|もつ|Hold
+野|11|の|Plains
+以|5|もって|By Means Of
+思|9|おもう|Think
+家|10|いえ|House
+世|5|よ|Generation
+多|6|おおい|Many
+正|5|ただしい|Correct
+安|6|やすい|Relax
+院|10|いん|Inst.
+心|4|こころ|Heart
+界|9|かい|World
+教|11|おしえる|Teach
+文|4|ふみ|Sentence
+元|4|もと|Beginning
+重|9|え|Heavy
+近|7|ちかい|Near
+考|6|かんがえる|Consider
+画|8|えがく|Brush-stroke
+海|9|うみ|Sea
+売|7|うる|Sell
+知|8|しる|Know
+道|12|みち|Road-way
+集|12|あつまる|Gather
+別|7|わかれる|Separate
+物|8|もの|Thing
+使|8|つかう|Use
+品|9|しな|Goods
+計|9|はかる|Plot
+死|6|しぬ|Death
+特|10|とく|Special
+私|7|わたくし|Private
+始|8|はじめる|Commence
+朝|12|あさ|Morning
+運|12|はこぶ|Carry
+終|11|おわる|End
+台|5|うてな|Pedestal
+広|5|ひろい|Wide
+住|7|すむ|Dwell
+真|10|ま|True
+有|6|ある|Possess
+口|3|くち|Mouth
+少|4|すくない|Few
+町|7|まち|Town
+料|10|りょう|Fee
+工|3|こう|Craft
+建|9|たてる|Build
+空|8|そら|Empty
+急|9|いそぐ|Hurry
+止|4|とまる|Stop
+送|9|おくる|Escort
+切|4|きる|Cut
+転|11|ころがる|Revolve
+研|9|とぐ|Polish
+足|7|あし|Leg
+究|7|きわめる|Research
+楽|13|たのしい|Music
+起|10|おきる|Rouse
+着|12|きる|Don
+店|8|みせ|Store
+病|10|やむ|Ill
+質|15|たち|Substance
+待|9|まつ|Wait
+試|13|こころみる|Test
+族|11|ぞく|Tribe
+銀|14|しろがね|Silver
+早|6|はやい|Early
+映|9|うつる|Reflect
+親|16|おや|Parent
+験|18|あかし|Verification
+英|8|はなぶさ|England
+医|7|いやす|Doctor
+仕|5|つかえる|Attend
+去|5|さる|Gone
+味|8|あじ|Flavor
+写|5|うつす|Copy
+字|6|あざ|Character
+答|12|こたえる|Solution
+夜|8|よ|Night
+音|9|おと|Sound
+注|8|そそぐ|Pour
+帰|10|かえる|Homecoming
+古|5|ふるい|Old
+歌|14|うた|Song
+買|12|かう|Buy
+悪|11|わるい|Bad
+図|7|え|Map
+週|11|しゅう|Week
+室|9|むろ|Room
+歩|8|あるく|Walk
+風|9|かぜ|Wind
+紙|10|かみ|Paper
+黒|11|くろ|Black
+花|7|はな|Flower
+春|9|はる|Springtime
+赤|7|あか|Red
+青|8|あお|Blue
+館|16|やかた|Building
+屋|9|や|Roof
+色|6|いろ|Color
+走|7|はしる|Run
+秋|9|あき|Autumn
+夏|10|なつ|Summer
+習|11|ならう|Learn
+駅|14|えき|Station
+洋|9|よう|Ocean
+旅|10|たび|Trip
+服|8|ふく|Clothing
+夕|3|ゆう|Evening
+借|10|かりる|Borrow
+曜|18|よう|Weekday
+飲|12|のむ|Drink
+肉|6|しし|Meat
+貸|12|かす|Lend
+堂|11|どう|Public Chamber
+鳥|11|とり|Bird
+飯|12|めし|Meal
+勉|10|つとめる|Exertion
+冬|5|ふゆ|Winter
+昼|9|ひる|Daytime
+茶|9|ちゃ|Tea
+弟|7|おとうと|Younger Brother
+牛|4|うし|Cow
+魚|11|うお|Fish
+兄|5|あに|Elder Brother
+犬|4|いぬ|Dog
+妹|8|いもうと|Younger Sister
+姉|8|あね|Elder Sister
+漢|13|かん|Sino-
+`;
 
-export const N2: KanjiEntry[] = [
-  { c: "党", s: 10, m: "Party", r: "なかま" },
-  { c: "協", s: 8, m: "Co-", r: "きょう" },
-  { c: "総", s: 14, m: "General", r: "すべて" },
-  { c: "区", s: 4, m: "Ward", r: "く" },
-  { c: "領", s: 14, m: "Jurisdiction", r: "えり" },
-  { c: "県", s: 9, m: "Prefecture", r: "かける" },
-  { c: "設", s: 11, m: "Establishment", r: "もうける" },
-  { c: "改", s: 7, m: "Reformation", r: "あらためる" },
-  { c: "府", s: 8, m: "Borough", r: "ふ" },
-  { c: "査", s: 9, m: "Investigate", r: "さ" },
-  { c: "委", s: 8, m: "Committee", r: "ゆだねる" },
-  { c: "軍", s: 9, m: "Army", r: "いくさ" },
-  { c: "団", s: 6, m: "Group", r: "かたまり" },
-  { c: "各", s: 6, m: "Each", r: "おのおの" },
-  { c: "島", s: 10, m: "Island", r: "しま" },
-  { c: "革", s: 9, m: "Leather", r: "かわ" },
-  { c: "村", s: 7, m: "Village", r: "むら" },
-  { c: "勢", s: 13, m: "Forces", r: "いきおい" },
-  { c: "減", s: 12, m: "Dwindle", r: "へる" },
-  { c: "再", s: 6, m: "Again", r: "ふたたび" },
-  { c: "税", s: 12, m: "Tax", r: "ぜい" },
-  { c: "営", s: 12, m: "Occupation", r: "いとなむ" },
-  { c: "比", s: 4, m: "Compare", r: "くらべる" },
-  { c: "防", s: 7, m: "Ward Off", r: "ふせぐ" },
-  { c: "補", s: 12, m: "Supplement", r: "おぎなう" },
-  { c: "境", s: 14, m: "Boundary", r: "さかい" },
-  { c: "導", s: 15, m: "Guidance", r: "みちびく" },
-  { c: "副", s: 11, m: "Vice-", r: "ふく" },
-  { c: "算", s: 14, m: "Calculate", r: "そろ" },
-  { c: "輸", s: 16, m: "Transport", r: "ゆ" },
-  { c: "述", s: 8, m: "Mention", r: "のべる" },
-  { c: "線", s: 15, m: "Line", r: "すじ" },
-  { c: "農", s: 13, m: "Agriculture", r: "のう" },
-  { c: "州", s: 6, m: "State", r: "す" },
-  { c: "武", s: 8, m: "Warrior", r: "たけ" },
-  { c: "象", s: 12, m: "Elephant", r: "かたどる" },
-  { c: "域", s: 11, m: "Range", r: "いき" },
-  { c: "額", s: 18, m: "Forehead", r: "ひたい" },
-  { c: "欧", s: 8, m: "Europe", r: "うたう" },
-  { c: "担", s: 8, m: "Shouldering", r: "かつぐ" },
-  { c: "準", s: 13, m: "Semi-", r: "じゅんじる" },
-  { c: "賞", s: 15, m: "Prize", r: "ほめる" },
-  { c: "辺", s: 5, m: "Environs", r: "あたり" },
-  { c: "造", s: 10, m: "Create", r: "つくる" },
-  { c: "被", s: 10, m: "Incur", r: "こうむる" },
-  { c: "技", s: 7, m: "Skill", r: "わざ" },
-  { c: "低", s: 7, m: "Lower", r: "ひくい" },
-  { c: "復", s: 12, m: "Restore", r: "また" },
-  { c: "移", s: 11, m: "Shift", r: "うつる" },
-  { c: "個", s: 10, m: "Individual", r: "こ" },
-  { c: "門", s: 8, m: "Gate", r: "かど" },
-  { c: "課", s: 15, m: "Chapter", r: "か" },
-  { c: "脳", s: 11, m: "Brain", r: "のうずる" },
-  { c: "極", s: 12, m: "Poles", r: "きわめる" },
-  { c: "含", s: 7, m: "Contain", r: "ふくむ" },
-  { c: "蔵", s: 15, m: "Storehouse", r: "くら" },
-  { c: "量", s: 12, m: "Quantity", r: "はかる" },
-  { c: "型", s: 9, m: "Mould", r: "かた" },
-  { c: "況", s: 8, m: "Condition", r: "まして" },
-  { c: "針", s: 10, m: "Needle", r: "はり" },
-  { c: "専", s: 9, m: "Specialty", r: "もっぱら" },
-  { c: "谷", s: 7, m: "Valley", r: "たに" },
-  { c: "史", s: 5, m: "History", r: "し" },
-  { c: "階", s: 12, m: "Storey", r: "きざはし" },
-  { c: "管", s: 14, m: "Pipe", r: "くだ" },
-  { c: "兵", s: 7, m: "Soldier", r: "つわもの" },
-  { c: "接", s: 11, m: "Touch", r: "つぐ" },
-  { c: "細", s: 11, m: "Dainty", r: "ほそい" },
-  { c: "効", s: 8, m: "Merit", r: "きく" },
-  { c: "丸", s: 3, m: "Round", r: "まる" },
-  { c: "湾", s: 12, m: "Gulf", r: "いりえ" },
-  { c: "録", s: 16, m: "Record", r: "しるす" },
-  { c: "省", s: 9, m: "Focus", r: "かえりみる" },
-  { c: "旧", s: 5, m: "Old Times", r: "ふるい" },
-  { c: "橋", s: 16, m: "Bridge", r: "はし" },
-  { c: "岸", s: 8, m: "Beach", r: "きし" },
-  { c: "周", s: 8, m: "Circumference", r: "まわり" },
-  { c: "材", s: 7, m: "Lumber", r: "ざい" },
-  { c: "戸", s: 4, m: "Door", r: "と" },
-  { c: "央", s: 5, m: "Center", r: "おう" },
-  { c: "券", s: 8, m: "Ticket", r: "けん" },
-  { c: "編", s: 15, m: "Compilation", r: "あむ" },
-  { c: "捜", s: 10, m: "Search", r: "さがす" },
-  { c: "竹", s: 6, m: "Bamboo", r: "たけ" },
-  { c: "超", s: 12, m: "Transcend", r: "こえる" },
-  { c: "並", s: 8, m: "Row", r: "なみ" },
-  { c: "療", s: 17, m: "Heal", r: "りょう" },
-  { c: "採", s: 11, m: "Pick", r: "とる" },
-  { c: "森", s: 12, m: "Forest", r: "もり" },
-  { c: "競", s: 20, m: "Emulate", r: "きそう" },
-  { c: "介", s: 4, m: "Jammed In", r: "かい" },
-  { c: "根", s: 10, m: "Root", r: "ね" },
-  { c: "販", s: 11, m: "Marketing", r: "はん" },
-  { c: "歴", s: 14, m: "Curriculum", r: "れき" },
-  { c: "将", s: 10, m: "Leader", r: "まさに" },
-  { c: "幅", s: 12, m: "Hanging Scroll", r: "はば" },
-  { c: "般", s: 10, m: "Carrier", r: "はん" },
-  { c: "貿", s: 12, m: "Trade", r: "ぼう" },
-  { c: "講", s: 17, m: "Lecture", r: "こう" },
-  { c: "林", s: 8, m: "Grove", r: "はやし" },
-  { c: "装", s: 12, m: "Attire", r: "よそおう" },
-  { c: "諸", s: 15, m: "Various", r: "もろ" },
-  { c: "劇", s: 15, m: "Drama", r: "げき" },
-  { c: "河", s: 8, m: "River", r: "かわ" },
-  { c: "航", s: 10, m: "Navigate", r: "こう" },
-  { c: "鉄", s: 13, m: "Iron", r: "くろがね" },
-  { c: "児", s: 7, m: "Newborn Babe", r: "こ" },
-  { c: "禁", s: 13, m: "Prohibition", r: "きん" },
-  { c: "印", s: 6, m: "Stamp", r: "しるし" },
-  { c: "逆", s: 9, m: "Inverted", r: "さか" },
-  { c: "換", s: 12, m: "Interchange", r: "かえる" },
-  { c: "久", s: 3, m: "Long Time", r: "ひさしい" },
-  { c: "短", s: 12, m: "Short", r: "みじかい" },
-  { c: "油", s: 8, m: "Oil", r: "あぶら" },
-  { c: "暴", s: 15, m: "Outburst", r: "あばく" },
-  { c: "輪", s: 15, m: "Wheel", r: "わ" },
-  { c: "占", s: 5, m: "Fortune-telling", r: "しめる" },
-  { c: "植", s: 12, m: "Plant", r: "うえる" },
-  { c: "清", s: 11, m: "Pure", r: "きよい" },
-  { c: "倍", s: 10, m: "Double", r: "ばい" },
-  { c: "均", s: 7, m: "Level", r: "ならす" },
-  { c: "億", s: 15, m: "Hundred Million", r: "おく" },
-  { c: "圧", s: 5, m: "Pressure", r: "おす" },
-  { c: "芸", s: 7, m: "Technique", r: "うえる" },
-  { c: "署", s: 13, m: "Signature", r: "しょ" },
-  { c: "伸", s: 7, m: "Expand", r: "のびる" },
-  { c: "停", s: 11, m: "Halt", r: "とめる" },
-  { c: "爆", s: 19, m: "Bomb", r: "はぜる" },
-  { c: "陸", s: 11, m: "Land", r: "おか" },
-  { c: "玉", s: 5, m: "Jewel", r: "たま" },
-  { c: "波", s: 8, m: "Waves", r: "なみ" },
-  { c: "帯", s: 10, m: "Sash", r: "おびる" },
-  { c: "延", s: 8, m: "Prolong", r: "のびる" },
-  { c: "羽", s: 6, m: "Feathers", r: "は" },
-  { c: "固", s: 8, m: "Harden", r: "かためる" },
-  { c: "則", s: 9, m: "Rule", r: "のっとる" },
-  { c: "乱", s: 7, m: "Riot", r: "みだれる" },
-  { c: "普", s: 12, m: "Universal", r: "あまねく" },
-  { c: "測", s: 12, m: "Fathom", r: "はかる" },
-  { c: "豊", s: 13, m: "Bountiful", r: "ゆたか" },
-  { c: "厚", s: 9, m: "Thick", r: "あつい" },
-  { c: "齢", s: 17, m: "Age", r: "よわい" },
-  { c: "囲", s: 7, m: "Surround", r: "かこむ" },
-  { c: "卒", s: 8, m: "Graduate", r: "そっする" },
-  { c: "略", s: 11, m: "Abbreviation", r: "ほぼ" },
-  { c: "承", s: 8, m: "Acquiesce", r: "うけたまわる" },
-  { c: "順", s: 12, m: "Obey", r: "じゅん" },
-  { c: "岩", s: 8, m: "Boulder", r: "いわ" },
-  { c: "練", s: 14, m: "Practice", r: "ねる" },
-  { c: "軽", s: 12, m: "Lightly", r: "かるい" },
-  { c: "了", s: 2, m: "Complete", r: "りょう" },
-  { c: "庁", s: 5, m: "Government Office", r: "やくしょ" },
-  { c: "城", s: 9, m: "Castle", r: "しろ" },
-  { c: "患", s: 11, m: "Afflicted", r: "わずらう" },
-  { c: "層", s: 14, m: "Stratum", r: "そう" },
-  { c: "版", s: 8, m: "Printing Block", r: "はん" },
-  { c: "令", s: 5, m: "Orders", r: "れい" },
-  { c: "角", s: 7, m: "Angle", r: "かど" },
-  { c: "絡", s: 12, m: "Entwine", r: "からむ" },
-  { c: "損", s: 13, m: "Damage", r: "そこなう" },
-  { c: "募", s: 12, m: "Recruit", r: "つのる" },
-  { c: "裏", s: 13, m: "Back", r: "うら" },
-  { c: "仏", s: 4, m: "Buddha", r: "ほとけ" },
-  { c: "績", s: 17, m: "Exploits", r: "せき" },
-  { c: "築", s: 16, m: "Fabricate", r: "きずく" },
-  { c: "貨", s: 11, m: "Freight", r: "たから" },
-  { c: "混", s: 11, m: "Mix", r: "まじる" },
-  { c: "昇", s: 8, m: "Rise Up", r: "のぼる" },
-  { c: "池", s: 6, m: "Pond", r: "いけ" },
-  { c: "血", s: 6, m: "Blood", r: "ち" },
-  { c: "温", s: 12, m: "Warm", r: "あたたか" },
-  { c: "季", s: 8, m: "Seasons", r: "き" },
-  { c: "星", s: 9, m: "Star", r: "ほし" },
-  { c: "永", s: 5, m: "Eternity", r: "ながい" },
-  { c: "著", s: 11, m: "Renowned", r: "あらわす" },
-  { c: "誌", s: 14, m: "Document", r: "し" },
-  { c: "庫", s: 10, m: "Warehouse", r: "くら" },
-  { c: "刊", s: 5, m: "Publish", r: "かん" },
-  { c: "像", s: 14, m: "Statue", r: "ぞう" },
-  { c: "香", s: 9, m: "Incense", r: "か" },
-  { c: "坂", s: 7, m: "Slope", r: "さか" },
-  { c: "底", s: 8, m: "Bottom", r: "そこ" },
-  { c: "布", s: 5, m: "Linen", r: "ぬの" },
-  { c: "寺", s: 6, m: "Buddhist Temple", r: "てら" },
-  { c: "宇", s: 6, m: "Eaves", r: "う" },
-  { c: "巨", s: 5, m: "Gigantic", r: "きょ" },
-  { c: "震", s: 15, m: "Quake", r: "ふるう" },
-  { c: "希", s: 7, m: "Hope", r: "まれ" },
-  { c: "触", s: 13, m: "Contact", r: "ふれる" },
-  { c: "依", s: 8, m: "Reliant", r: "よる" },
-  { c: "籍", s: 20, m: "Enroll", r: "せき" },
-  { c: "汚", s: 6, m: "Dirty", r: "けがす" },
-  { c: "枚", s: 8, m: "Sheet Of...", r: "まい" },
-  { c: "複", s: 14, m: "Duplicate", r: "ふく" },
-  { c: "郵", s: 11, m: "Mail", r: "ゆう" },
-  { c: "仲", s: 6, m: "Go-between", r: "なか" },
-  { c: "栄", s: 9, m: "Flourish", r: "さかえる" },
-  { c: "札", s: 5, m: "Tag", r: "ふだ" },
-  { c: "板", s: 8, m: "Plank", r: "いた" },
-  { c: "骨", s: 10, m: "Skeleton", r: "ほね" },
-  { c: "傾", s: 13, m: "Lean", r: "かたむく" },
-  { c: "届", s: 8, m: "Deliver", r: "とどける" },
-  { c: "巻", s: 9, m: "Scroll", r: "まく" },
-  { c: "燃", s: 16, m: "Burn", r: "もえる" },
-  { c: "跡", s: 13, m: "Tracks", r: "あと" },
-  { c: "包", s: 5, m: "Wrap", r: "つつむ" },
-  { c: "駐", s: 15, m: "Stop-over", r: "ちゅう" },
-  { c: "弱", s: 10, m: "Weak", r: "よわい" },
-  { c: "紹", s: 11, m: "Introduce", r: "しょう" },
-  { c: "雇", s: 12, m: "Employ", r: "やとう" },
-  { c: "替", s: 12, m: "Exchange", r: "かえる" },
-  { c: "預", s: 13, m: "Deposit", r: "あずける" },
-  { c: "焼", s: 12, m: "Bake", r: "やく" },
-  { c: "簡", s: 18, m: "Simplicity", r: "えらぶ" },
-  { c: "章", s: 11, m: "Badge", r: "しょう" },
-  { c: "臓", s: 19, m: "Entrails", r: "はらわた" },
-  { c: "律", s: 9, m: "Rhythm", r: "りつ" },
-  { c: "贈", s: 18, m: "Presents", r: "おくる" },
-  { c: "照", s: 13, m: "Illuminate", r: "てる" },
-  { c: "薄", s: 16, m: "Dilute", r: "うすい" },
-  { c: "群", s: 13, m: "Flock", r: "むれる" },
-  { c: "秒", s: 9, m: "Second (1/60 Minute)", r: "びょう" },
-  { c: "奥", s: 12, m: "Heart", r: "おく" },
-  { c: "詰", s: 13, m: "Packed", r: "つめる" },
-  { c: "双", s: 4, m: "Pair", r: "ふた" },
-  { c: "刺", s: 8, m: "Thorn", r: "さす" },
-  { c: "純", s: 10, m: "Genuine", r: "じゅん" },
-  { c: "翌", s: 11, m: "The Following", r: "よく" },
-  { c: "快", s: 7, m: "Cheerful", r: "こころよい" },
-  { c: "片", s: 4, m: "One-sided", r: "かた" },
-  { c: "敬", s: 12, m: "Awe", r: "うやまう" },
-  { c: "悩", s: 10, m: "Trouble", r: "なやむ" },
-  { c: "泉", s: 9, m: "Spring", r: "いずみ" },
-  { c: "皮", s: 5, m: "Pelt", r: "かわ" },
-  { c: "漁", s: 14, m: "Fishing", r: "あさる" },
-  { c: "荒", s: 9, m: "Laid Waste", r: "あらい" },
-  { c: "貯", s: 12, m: "Savings", r: "ためる" },
-  { c: "硬", s: 12, m: "Stiff", r: "かたい" },
-  { c: "埋", s: 10, m: "Bury", r: "うめる" },
-  { c: "柱", s: 9, m: "Pillar", r: "はしら" },
-  { c: "祭", s: 11, m: "Ritual", r: "まつる" },
-  { c: "袋", s: 11, m: "Sack", r: "ふくろ" },
-  { c: "筆", s: 12, m: "Writing Brush", r: "ふで" },
-  { c: "訓", s: 10, m: "Instruction", r: "おしえる" },
-  { c: "浴", s: 10, m: "Bathe", r: "あびる" },
-  { c: "童", s: 12, m: "Juvenile", r: "わらべ" },
-  { c: "宝", s: 8, m: "Treasure", r: "たから" },
-  { c: "封", s: 9, m: "Seal", r: "ふう" },
-  { c: "胸", s: 10, m: "Bosom", r: "むね" },
-  { c: "砂", s: 9, m: "Sand", r: "すな" },
-  { c: "塩", s: 13, m: "Salt", r: "しお" },
-  { c: "賢", s: 16, m: "Intelligent", r: "かしこい" },
-  { c: "腕", s: 12, m: "Arm", r: "うで" },
-  { c: "兆", s: 6, m: "Portent", r: "きざす" },
-  { c: "床", s: 7, m: "Bed", r: "とこ" },
-  { c: "毛", s: 4, m: "Fur", r: "け" },
-  { c: "緑", s: 14, m: "Green", r: "みどり" },
-  { c: "尊", s: 12, m: "Revered", r: "たっとい" },
-  { c: "祝", s: 9, m: "Celebrate", r: "いわう" },
-  { c: "柔", s: 9, m: "Tender", r: "やわらか" },
-  { c: "殿", s: 13, m: "Mr.", r: "との" },
-  { c: "濃", s: 16, m: "Concentrated", r: "こい" },
-  { c: "液", s: 11, m: "Fluid", r: "えき" },
-  { c: "衣", s: 6, m: "Garment", r: "ころも" },
-  { c: "肩", s: 8, m: "Shoulder", r: "かた" },
-  { c: "零", s: 13, m: "Zero", r: "ぜろ" },
-  { c: "幼", s: 5, m: "Infancy", r: "おさない" },
-  { c: "荷", s: 10, m: "Baggage", r: "に" },
-  { c: "泊", s: 8, m: "Overnight Stay", r: "とまる" },
-  { c: "黄", s: 11, m: "Yellow", r: "き" },
-  { c: "甘", s: 5, m: "Sweet", r: "あまい" },
-  { c: "臣", s: 7, m: "Retainer", r: "しん" },
-  { c: "浅", s: 9, m: "Shallow", r: "あさい" },
-  { c: "掃", s: 11, m: "Sweep", r: "はく" },
-  { c: "雲", s: 12, m: "Cloud", r: "くも" },
-  { c: "掘", s: 11, m: "Dig", r: "ほる" },
-  { c: "捨", s: 11, m: "Discard", r: "すてる" },
-  { c: "軟", s: 11, m: "Soft", r: "やわらか" },
-  { c: "沈", s: 7, m: "Sink", r: "しずむ" },
-  { c: "凍", s: 10, m: "Frozen", r: "こおる" },
-  { c: "乳", s: 8, m: "Milk", r: "ちち" },
-  { c: "恋", s: 10, m: "Romance", r: "こう" },
-  { c: "紅", s: 9, m: "Crimson", r: "べに" },
-  { c: "郊", s: 9, m: "Outskirts", r: "こう" },
-  { c: "腰", s: 13, m: "Loins", r: "こし" },
-  { c: "炭", s: 9, m: "Charcoal", r: "すみ" },
-  { c: "踊", s: 14, m: "Jump", r: "おどる" },
-  { c: "冊", s: 5, m: "Tome", r: "ふみ" },
-  { c: "勇", s: 9, m: "Courage", r: "いさむ" },
-  { c: "械", s: 11, m: "Contraption", r: "かせ" },
-  { c: "菜", s: 11, m: "Vegetable", r: "な" },
-  { c: "珍", s: 9, m: "Rare", r: "めずらしい" },
-  { c: "卵", s: 7, m: "Egg", r: "たまご" },
-  { c: "湖", s: 12, m: "Lake", r: "みずうみ" },
-  { c: "喫", s: 12, m: "Consume", r: "のむ" },
-  { c: "干", s: 3, m: "Dry", r: "ほす" },
-  { c: "虫", s: 6, m: "Insect", r: "むし" },
-  { c: "刷", s: 8, m: "Printing", r: "する" },
-  { c: "湯", s: 12, m: "Hot Water", r: "ゆ" },
-  { c: "溶", s: 13, m: "Melt", r: "とける" },
-  { c: "鉱", s: 13, m: "Mineral", r: "あらがね" },
-  { c: "涙", s: 10, m: "Tears", r: "なみだ" },
-  { c: "匹", s: 4, m: "Equal", r: "ひき" },
-  { c: "孫", s: 10, m: "Grandchild", r: "まご" },
-  { c: "鋭", s: 15, m: "Pointed", r: "するどい" },
-  { c: "枝", s: 8, m: "Bough", r: "えだ" },
-  { c: "塗", s: 13, m: "Paint", r: "ぬる" },
-  { c: "軒", s: 10, m: "Flats", r: "のき" },
-  { c: "毒", s: 8, m: "Poison", r: "どく" },
-  { c: "叫", s: 6, m: "Shout", r: "さけぶ" },
-  { c: "拝", s: 8, m: "Worship", r: "おがむ" },
-  { c: "氷", s: 5, m: "Icicle", r: "こおり" },
-  { c: "乾", s: 11, m: "Drought", r: "かわく" },
-  { c: "棒", s: 12, m: "Rod", r: "ぼう" },
-  { c: "祈", s: 8, m: "Pray", r: "いのる" },
-  { c: "拾", s: 9, m: "Pick Up", r: "ひろう" },
-  { c: "粉", s: 10, m: "Flour", r: "デシメートル" },
-  { c: "糸", s: 6, m: "Thread", r: "いと" },
-  { c: "綿", s: 14, m: "Cotton", r: "わた" },
-  { c: "汗", s: 6, m: "Sweat", r: "あせ" },
-  { c: "銅", s: 14, m: "Copper", r: "あかがね" },
-  { c: "湿", s: 12, m: "Damp", r: "しめる" },
-  { c: "瓶", s: 11, m: "Bottle", r: "かめ" },
-  { c: "咲", s: 9, m: "Blossom", r: "さく" },
-  { c: "召", s: 5, m: "Seduce", r: "めす" },
-  { c: "缶", s: 6, m: "Tin Can", r: "かま" },
-  { c: "隻", s: 10, m: "Vessels", r: "せき" },
-  { c: "脂", s: 10, m: "Fat", r: "あぶら" },
-  { c: "蒸", s: 13, m: "Steam", r: "むす" },
-  { c: "肌", s: 6, m: "Texture", r: "はだ" },
-  { c: "耕", s: 10, m: "Till", r: "たがやす" },
-  { c: "鈍", s: 12, m: "Dull", r: "にぶい" },
-  { c: "泥", s: 8, m: "Mud", r: "どろ" },
-  { c: "隅", s: 12, m: "Corner", r: "すみ" },
-  { c: "灯", s: 6, m: "Lamp", r: "ひ" },
-  { c: "辛", s: 7, m: "Spicy", r: "からい" },
-  { c: "磨", s: 16, m: "Grind", r: "みがく" },
-  { c: "麦", s: 7, m: "Barley", r: "むぎ" },
-  { c: "姓", s: 8, m: "Surname", r: "せい" },
-  { c: "筒", s: 12, m: "Cylinder", r: "つつ" },
-  { c: "鼻", s: 14, m: "Nose", r: "はな" },
-  { c: "粒", s: 11, m: "Grains", r: "つぶ" },
-  { c: "詞", s: 12, m: "Part Of Speech", r: "ことば" },
-  { c: "胃", s: 9, m: "Stomach", r: "い" },
-  { c: "畳", s: 12, m: "Tatami Mat", r: "たたむ" },
-  { c: "机", s: 6, m: "Desk", r: "つくえ" },
-  { c: "膚", s: 15, m: "Skin", r: "はだ" },
-  { c: "濯", s: 17, m: "Laundry", r: "すすぐ" },
-  { c: "塔", s: 12, m: "Pagoda", r: "とう" },
-  { c: "沸", s: 8, m: "Seethe", r: "わく" },
-  { c: "灰", s: 6, m: "Ashes", r: "はい" },
-  { c: "菓", s: 11, m: "Candy", r: "か" },
-  { c: "帽", s: 12, m: "Cap", r: "ずきん" },
-  { c: "枯", s: 9, m: "Wither", r: "かれる" },
-  { c: "涼", s: 11, m: "Refreshing", r: "すずしい" },
-  { c: "舟", s: 6, m: "Boat", r: "ふね" },
-  { c: "貝", s: 7, m: "Shellfish", r: "かい" },
-  { c: "符", s: 11, m: "Token", r: "ふ" },
-  { c: "憎", s: 14, m: "Hate", r: "にくむ" },
-  { c: "皿", s: 5, m: "Dish", r: "さら" },
-  { c: "肯", s: 8, m: "Agreement", r: "がえんじる" },
-  { c: "燥", s: 17, m: "Parch", r: "はしゃぐ" },
-  { c: "畜", s: 10, m: "Livestock", r: "ちく" },
-  { c: "挟", s: 9, m: "Pinch", r: "はさむ" },
-  { c: "曇", s: 16, m: "Cloudy Weather", r: "くもる" },
-  { c: "滴", s: 14, m: "Drip", r: "しずく" },
-  { c: "伺", s: 7, m: "Pay Respects", r: "うかがう" },
-];
+const N3_TABLE = `
+政|9|まつりごと|Politics
+議|20|ぎ|Deliberation
+民|5|たみ|People
+連|10|つらなる|Take Along
+対|7|あいて|Vis-a-vis
+部|11|べ|Section
+合|6|あう|Fit
+市|5|いち|Market
+内|4|うち|Inside
+相|9|あい|Inter-
+定|8|さだめる|Determine
+回|6|まわる|-times
+選|15|えらぶ|Elect
+米|6|こめ|Rice
+実|8|み|Reality
+関|14|せき|Connection
+決|7|きめる|Decide
+全|6|まったく|Whole
+表|8|おもて|Surface
+戦|13|いくさ|War
+経|11|へる|Sutra
+最|12|もっとも|Utmost
+現|11|あらわれる|Present
+調|15|しらべる|Tune
+化|4|ばける|Change
+当|6|あたる|Hit
+約|9|つづまる|Promise
+首|9|くび|Neck
+法|8|のり|Method
+性|8|さが|Sex
+要|9|いる|Need
+制|8|せい|System
+治|8|おさめる|Reign
+務|11|つとめる|Task
+成|6|なる|Turn Into
+期|12|き|Period
+取|8|とる|Take
+都|11|みやこ|Metropolis
+和|8|やわらぐ|Harmony
+機|16|はた|Loom
+平|5|たいら|Even
+加|5|くわえる|Add
+受|8|うける|Accept
+続|13|つづく|Continue
+進|11|すすむ|Advance
+数|13|かず|Number
+記|10|しるす|Scribe
+初|7|はじめ|First Time
+指|9|ゆび|Finger
+権|15|おもり|Authority
+支|4|ささえる|Branch
+産|11|うむ|Products
+点|9|つける|Spot
+報|12|むくいる|Report
+済|11|すむ|Settle (debt, Etc.)
+活|9|いきる|Lively
+原|10|はら|Meadow
+共|6|とも|Together
+得|11|える|Gain
+解|13|とく|Unravel
+交|6|まじわる|Mingle
+資|13|し|Assets
+予|4|あらかじめ|Beforehand
+向|6|むく|Yonder
+際|14|きわ|Occasion
+勝|12|かつ|Victory
+面|9|おも|Mask
+告|7|つげる|Revelation
+反|4|そる|Anti-
+判|7|わかる|Judgement
+認|14|みとめる|Acknowledge
+参|8|まいる|Nonplussed
+利|7|きく|Profit
+組|11|くむ|Association
+信|9|しん|Faith
+在|6|ある|Exist
+件|6|くだん|Affair
+側|11|かわ|Side
+任|6|まかせる|Responsibility
+引|4|ひく|Pull
+求|7|もとめる|Request
+所|8|ところ|Place
+次|6|つぐ|Next
+昨|9|さく|Yesterday
+論|15|ろん|Argument
+官|8|かん|Bureaucrat
+増|14|ます|Increase
+係|9|かかる|Person In Charge
+感|13|かん|Emotion
+情|11|なさけ|Feelings
+投|7|なげる|Throw
+示|5|しめす|Show
+変|9|かわる|Unusual
+打|5|うつ|Strike
+直|8|ただちに|Straightaway
+両|6|てる|Both
+式|6|しき|Style
+確|15|たしか|Assurance
+果|8|はたす|Fruit
+容|10|いれる|Contain
+必|5|かならず|Invariably
+演|14|えん|Performance
+歳|13|とし|Year-end
+争|6|あらそう|Contend
+談|15|だん|Discuss
+能|10|よく|Ability
+位|7|くらい|Rank
+置|13|おく|Placement
+流|10|ながれる|Current
+格|10|かく|Status
+疑|14|うたがう|Doubt
+過|12|すぎる|Overdo
+局|7|つぼね|Bureau
+放|8|はなす|Set Free
+常|11|つね|Usual
+状|7|じょう|Status Quo
+球|11|たま|Ball
+職|18|しょく|Post
+与|3|あたえる|Bestow
+供|8|そなえる|Submit
+役|7|やく|Duty
+構|14|かまえる|Posture
+割|12|わる|Proportion
+費|12|ついやす|Expense
+付|5|つける|Adhere
+由|5|よし|Wherefore
+説|14|とく|Opinion
+難|18|かたい|Difficult
+優|17|やさしい|Tenderness
+夫|4|おっと|Husband
+収|4|おさめる|Income
+断|11|たつ|Severance
+石|5|いし|Stone
+違|13|ちがう|Difference
+消|10|きえる|Extinguish
+神|9|かみ|Gods
+番|12|つがい|Turn
+規|11|き|Standard
+術|11|すべ|Art
+備|12|そなえる|Equip
+宅|6|たく|Home
+害|10|がい|Harm
+配|10|くばる|Distribute
+警|19|いましめる|Admonish
+育|8|そだつ|Bring Up
+席|10|むしろ|Seat
+訪|11|おとずれる|Call On
+乗|9|のる|Ride
+残|10|のこる|Remainder
+想|13|おもう|Concept
+声|7|こえ|Voice
+念|8|ねん|Wish
+助|7|たすける|Help
+労|7|ろうする|Labor
+例|8|たとえる|Example
+然|12|しか|Sort Of Thing
+限|9|かぎる|Limit
+追|9|おう|Chase
+商|11|あきなう|Make A Deal
+葉|12|は|Leaf
+伝|6|つたわる|Transmit
+働|13|はたらく|Work
+形|7|かた|Shape
+景|12|けい|Scenery
+落|12|おちる|Fall
+好|6|このむ|Fond
+退|9|しりぞく|Retreat
+頭|16|あたま|Head
+負|9|まける|Defeat
+渡|12|わたる|Transit
+失|5|うしなう|Lose
+差|10|さす|Distinction
+末|5|すえ|End
+守|6|まもる|Guard
+若|8|わかい|Young
+種|14|たね|Species
+美|9|うつくしい|Beauty
+命|8|いのち|Fate
+福|13|ふく|Blessing
+望|11|のぞむ|Ambition
+非|8|あらず|Un-
+観|18|みる|Outlook
+察|14|さつ|Guess
+段|9|だん|Grade
+横|15|よこ|Sideways
+深|11|ふかい|Deep
+申|5|もうす|Have The Honor To
+様|14|さま|Esq.
+財|10|たから|Property
+港|12|みなと|Harbor
+識|19|しる|Discriminating
+呼|8|よぶ|Call
+達|12|たち|Accomplished
+良|7|よい|Good
+候|10|そうろう|Climate
+程|12|ほど|Extent
+満|12|みちる|Full
+敗|11|やぶれる|Failure
+値|10|ね|Price
+突|8|つく|Stab
+光|6|ひかる|Ray
+路|13|じ|Path
+科|9|か|Department
+積|16|つむ|Volume
+他|5|ほか|Other
+処|5|ところ|Dispose
+太|4|ふとい|Plump
+客|9|きゃく|Guest
+否|7|いな|Negate
+師|10|いくさ|Expert
+登|12|のぼる|Ascend
+易|8|やさしい|Easy
+速|10|はやい|Quick
+存|6|ながらえる|Exist
+飛|9|とぶ|Fly
+殺|10|ころす|Kill
+号|5|さけぶ|Nickname
+単|9|ひとえ|Simple
+座|10|すわる|Squat
+破|10|やぶる|Rend
+除|10|のぞく|Exclude
+完|7|かん|Perfect
+降|10|おりる|Descend
+責|11|せめる|Blame
+捕|10|とらえる|Catch
+危|6|あぶない|Dangerous
+給|12|たまう|Salary
+苦|8|くるしい|Suffering
+迎|7|むかえる|Welcome
+園|13|その|Park
+具|8|そなえる|Tool
+辞|13|やめる|Resign
+因|6|よる|Cause
+馬|10|うま|Horse
+愛|13|いとしい|Love
+富|12|とむ|Wealth
+彼|8|かれ|He
+未|5|いまだ|Un-
+舞|15|まう|Dance
+亡|3|ない|Deceased
+冷|7|つめたい|Cool
+適|14|かなう|Suitable
+婦|11|よめ|Lady
+寄|11|よる|Draw Near
+込|5|こむ|Crowded
+顔|18|かお|Face
+類|18|たぐい|Sort
+余|7|あまる|Too Much
+王|4|おう|King
+返|7|かえす|Return
+妻|8|つま|Wife
+背|9|せ|Stature
+熱|15|あつい|Heat
+宿|11|やど|Inn
+薬|16|くすり|Medicine
+険|11|けわしい|Precipitous
+頼|16|たのむ|Trust
+覚|12|おぼえる|Memorize
+船|11|ふね|Ship
+途|10|みち|Route
+許|11|ゆるす|Permit
+抜|7|ぬく|Slip Out
+便|9|たより|Convenience
+留|10|とめる|Detain
+罪|13|つみ|Guilt
+努|7|つとめる|Toil
+精|14|しらげる|Refined
+散|12|ちる|Scatter
+静|14|しず|Quiet
+婚|11|こん|Marriage
+喜|12|よろこぶ|Rejoice
+浮|10|うく|Floating
+絶|12|たえる|Discontinue
+幸|8|さいわい|Happiness
+押|8|おす|Push
+倒|10|たおれる|Overthrow
+等|12|ひとしい|Etc.
+老|6|おいる|Old Man
+曲|6|まがる|Bend
+払|5|はらう|Pay
+庭|10|にわ|Courtyard
+徒|10|いたずら|On Foot
+勤|12|つとめる|Diligence
+遅|12|おくれる|Slow
+居|8|いる|Reside
+雑|14|まじえる|Miscellaneous
+招|8|まねく|Beckon
+困|7|こまる|Quandary
+欠|4|かける|Lack
+更|7|さら|Grow Late
+刻|8|きざむ|Engrave
+賛|15|たすける|Approve
+抱|8|だく|Embrace
+犯|5|おかす|Crime
+恐|10|おそれる|Fear
+息|10|いき|Breath
+遠|13|とおい|Distant
+戻|7|もどす|Re-
+願|19|ねがう|Petition
+絵|12|かい|Picture
+越|12|こす|Surpass
+欲|11|ほっする|Longing
+痛|12|いたい|Pain
+笑|10|わらう|Laugh
+互|4|たがい|Mutually
+束|7|たば|Bundle
+似|7|にる|Becoming
+列|6|れつ|File
+探|11|さぐる|Grope
+逃|9|にげる|Escape
+遊|12|あそぶ|Play
+迷|9|まよう|Astray
+夢|13|ゆめ|Dream
+君|7|きみ|Mister
+閉|11|とじる|Closed
+緒|14|お|Thong
+折|7|おる|Fold
+草|9|くさ|Grass
+暮|14|くれる|Evening
+酒|10|さけ|Sake
+悲|12|かなしい|Grieve
+晴|12|はれる|Clear Up
+掛|11|かける|Hang
+到|8|いたる|Arrival
+寝|13|ねる|Lie Down
+暗|13|くらい|Darkness
+盗|11|ぬすむ|Steal
+吸|6|すう|Suck
+陽|12|ひ|Sunshine
+御|12|おん|Honorable
+歯|12|よわい|Tooth
+忘|7|わすれる|Forget
+雪|11|ゆき|Snow
+吹|7|ふく|Blow
+娘|10|むすめ|Daughter
+誤|14|あやまる|Mistake
+洗|9|あらう|Wash
+慣|14|なれる|Accustomed
+礼|5|れい|Salute
+窓|11|まど|Window
+昔|8|むかし|Once Upon A Time
+貧|11|まずしい|Poverty
+怒|9|いかる|Angry
+泳|8|およぐ|Swim
+祖|9|そ|Ancestor
+杯|8|さかずき|Counter For Cupfuls
+疲|10|つかれる|Exhausted
+皆|9|みな|All
+鳴|14|なく|Chirp
+腹|13|はら|Abdomen
+煙|13|けむる|Smoke
+眠|10|ねむる|Sleep
+怖|8|こわい|Dreadful
+耳|6|みみ|Ear
+頂|11|いただく|Place On The Head
+箱|15|はこ|Box
+晩|12|ばん|Nightfall
+寒|12|さむい|Cold
+髪|14|かみ|Hair Of The Head
+忙|6|いそがしい|Busy
+才|3|さい|Genius
+靴|13|くつ|Shoes
+恥|10|はじる|Shame
+偶|11|たま|Accidentally
+偉|12|えらい|Admirable
+猫|11|ねこ|Cat
+幾|12|いく|How Many
+`;
 
-export const N1: KanjiEntry[] = [
-  { c: "氏", s: 4, m: "Family Name", r: "うじ" },
-  { c: "統", s: 12, m: "Overall", r: "すべる" },
-  { c: "保", s: 9, m: "Protect", r: "たもつ" },
-  { c: "第", s: 11, m: "No.", r: "だい" },
-  { c: "結", s: 12, m: "Tie", r: "むすぶ" },
-  { c: "派", s: 9, m: "Faction", r: "は" },
-  { c: "案", s: 10, m: "Plan", r: "つくえ" },
-  { c: "策", s: 12, m: "Scheme", r: "さく" },
-  { c: "基", s: 11, m: "Fundamentals", r: "もと" },
-  { c: "価", s: 8, m: "Value", r: "あたい" },
-  { c: "提", s: 12, m: "Propose", r: "さげる" },
-  { c: "挙", s: 10, m: "Raise", r: "あげる" },
-  { c: "応", s: 7, m: "Apply", r: "あたる" },
-  { c: "企", s: 6, m: "Undertake", r: "くわだてる" },
-  { c: "検", s: 12, m: "Examination", r: "しらべる" },
-  { c: "藤", s: 18, m: "Wisteria", r: "ふじ" },
-  { c: "沢", s: 7, m: "Swamp", r: "さわ" },
-  { c: "裁", s: 12, m: "Tailor", r: "たつ" },
-  { c: "証", s: 12, m: "Evidence", r: "あかし" },
-  { c: "援", s: 12, m: "Abet", r: "えん" },
-  { c: "施", s: 9, m: "Give", r: "ほどこす" },
-  { c: "井", s: 4, m: "Well", r: "い" },
-  { c: "護", s: 20, m: "Safeguard", r: "まもる" },
-  { c: "展", s: 10, m: "Unfold", r: "てん" },
-  { c: "態", s: 14, m: "Attitude", r: "わざと" },
-  { c: "鮮", s: 17, m: "Fresh", r: "あざやか" },
-  { c: "視", s: 11, m: "Inspection", r: "みる" },
-  { c: "条", s: 7, m: "Article", r: "えだ" },
-  { c: "幹", s: 13, m: "Tree Trunk", r: "みき" },
-  { c: "独", s: 9, m: "Single", r: "ひとり" },
-  { c: "宮", s: 10, m: "Shinto Shrine", r: "みや" },
-  { c: "率", s: 11, m: "Ratio", r: "ひきいる" },
-  { c: "衛", s: 16, m: "Defense", r: "えい" },
-  { c: "張", s: 11, m: "Lengthen", r: "はる" },
-  { c: "監", s: 15, m: "Oversee", r: "かん" },
-  { c: "環", s: 17, m: "Ring", r: "わ" },
-  { c: "審", s: 15, m: "Hearing", r: "つまびらか" },
-  { c: "義", s: 13, m: "Righteousness", r: "ぎ" },
-  { c: "訴", s: 12, m: "Accusation", r: "うったえる" },
-  { c: "株", s: 10, m: "Stocks", r: "かぶ" },
-  { c: "姿", s: 9, m: "Figure", r: "すがた" },
-  { c: "閣", s: 14, m: "Tower", r: "かく" },
-  { c: "衆", s: 12, m: "Masses", r: "おおい" },
-  { c: "評", s: 12, m: "Evaluate", r: "ひょう" },
-  { c: "影", s: 15, m: "Shadow", r: "かげ" },
-  { c: "松", s: 8, m: "Pine Tree", r: "まつ" },
-  { c: "撃", s: 15, m: "Beat", r: "うつ" },
-  { c: "佐", s: 7, m: "Assistant", r: "さ" },
-  { c: "核", s: 10, m: "Nucleus", r: "かく" },
-  { c: "整", s: 16, m: "Organize", r: "ととのえる" },
-  { c: "融", s: 16, m: "Dissolve", r: "とける" },
-  { c: "製", s: 14, m: "Made In...", r: "せい" },
-  { c: "票", s: 11, m: "Ballot", r: "ひょう" },
-  { c: "渉", s: 11, m: "Ford", r: "わたる" },
-  { c: "響", s: 20, m: "Echo", r: "ひびく" },
-  { c: "推", s: 11, m: "Conjecture", r: "おす" },
-  { c: "請", s: 15, m: "Solicit", r: "こう" },
-  { c: "器", s: 15, m: "Utensil", r: "うつわ" },
-  { c: "士", s: 3, m: "Gentleman", r: "さむらい" },
-  { c: "討", s: 10, m: "Chastise", r: "うつ" },
-  { c: "攻", s: 7, m: "Aggression", r: "せめる" },
-  { c: "崎", s: 11, m: "Promontory", r: "さき" },
-  { c: "督", s: 13, m: "Coach", r: "とく" },
-  { c: "授", s: 11, m: "Impart", r: "さずける" },
-  { c: "催", s: 13, m: "Sponsor", r: "もようす" },
-  { c: "及", s: 3, m: "Reach Out", r: "およぶ" },
-  { c: "憲", s: 16, m: "Constitution", r: "けん" },
-  { c: "離", s: 19, m: "Detach", r: "はなれる" },
-  { c: "激", s: 16, m: "Violent", r: "はげしい" },
-  { c: "摘", s: 14, m: "Pinch", r: "つむ" },
-  { c: "系", s: 7, m: "Lineage", r: "けい" },
-  { c: "批", s: 7, m: "Criticism", r: "ひ" },
-  { c: "郎", s: 9, m: "Son", r: "おとこ" },
-  { c: "健", s: 11, m: "Healthy", r: "すこやか" },
-  { c: "盟", s: 13, m: "Alliance", r: "めい" },
-  { c: "従", s: 10, m: "Accompany", r: "したがう" },
-  { c: "修", s: 10, m: "Discipline", r: "おさめる" },
-  { c: "隊", s: 12, m: "Regiment", r: "たい" },
-  { c: "織", s: 18, m: "Weave", r: "おる" },
-  { c: "拡", s: 8, m: "Broaden", r: "ひろがる" },
-  { c: "故", s: 9, m: "Happenstance", r: "ゆえ" },
-  { c: "振", s: 10, m: "Shake", r: "ふる" },
-  { c: "弁", s: 5, m: "Valve", r: "かんむり" },
-  { c: "就", s: 12, m: "Concerning", r: "つく" },
-  { c: "異", s: 11, m: "Uncommon", r: "こと" },
-  { c: "献", s: 13, m: "Offering", r: "たてまつる" },
-  { c: "厳", s: 17, m: "Stern", r: "おごそか" },
-  { c: "維", s: 14, m: "Fiber", r: "い" },
-  { c: "浜", s: 10, m: "Seacoast", r: "はま" },
-  { c: "遺", s: 15, m: "Bequeath", r: "のこす" },
-  { c: "塁", s: 12, m: "Bases", r: "とりで" },
-  { c: "邦", s: 7, m: "Home Country", r: "くに" },
-  { c: "素", s: 10, m: "Elementary", r: "もと" },
-  { c: "遣", s: 13, m: "Dispatch", r: "つかう" },
-  { c: "抗", s: 7, m: "Confront", r: "あらがう" },
-  { c: "模", s: 14, m: "Imitation", r: "も" },
-  { c: "雄", s: 12, m: "Masculine", r: "お" },
-  { c: "益", s: 10, m: "Benefit", r: "ます" },
-  { c: "緊", s: 15, m: "Tense", r: "しめる" },
-  { c: "標", s: 15, m: "Signpost", r: "しるべ" },
-  { c: "宣", s: 9, m: "Proclaim", r: "のたまう" },
-  { c: "昭", s: 9, m: "Shining", r: "しょう" },
-  { c: "廃", s: 12, m: "Abolish", r: "すたれる" },
-  { c: "伊", s: 6, m: "Italy", r: "かれ" },
-  { c: "江", s: 6, m: "Creek", r: "え" },
-  { c: "僚", s: 14, m: "Colleague", r: "りょう" },
-  { c: "吉", s: 6, m: "Good Luck", r: "よし" },
-  { c: "盛", s: 11, m: "Boom", r: "もる" },
-  { c: "皇", s: 9, m: "Emperor", r: "こう" },
-  { c: "臨", s: 18, m: "Look To", r: "のぞむ" },
-  { c: "踏", s: 15, m: "Step", r: "ふむ" },
-  { c: "壊", s: 16, m: "Demolition", r: "こわす" },
-  { c: "債", s: 13, m: "Bond", r: "さい" },
-  { c: "興", s: 16, m: "Entertain", r: "おこる" },
-  { c: "源", s: 13, m: "Source", r: "みなもと" },
-  { c: "儀", s: 15, m: "Ceremony", r: "ぎ" },
-  { c: "創", s: 12, m: "Genesis", r: "つくる" },
-  { c: "障", s: 14, m: "Hinder", r: "さわる" },
-  { c: "継", s: 13, m: "Inherit", r: "つぐ" },
-  { c: "筋", s: 12, m: "Muscle", r: "すじ" },
-  { c: "闘", s: 18, m: "Fight", r: "たたかう" },
-  { c: "葬", s: 12, m: "Interment", r: "ほうむる" },
-  { c: "避", s: 16, m: "Evade", r: "さける" },
-  { c: "司", s: 5, m: "Director", r: "つかさどる" },
-  { c: "康", s: 11, m: "Ease", r: "こう" },
-  { c: "善", s: 12, m: "Virtuous", r: "よい" },
-  { c: "逮", s: 11, m: "Apprehend", r: "たい" },
-  { c: "迫", s: 8, m: "Urge", r: "せまる" },
-  { c: "惑", s: 12, m: "Beguile", r: "まどう" },
-  { c: "崩", s: 11, m: "Crumble", r: "くずれる" },
-  { c: "紀", s: 9, m: "Chronicle", r: "き" },
-  { c: "聴", s: 17, m: "Listen", r: "きく" },
-  { c: "脱", s: 11, m: "Undress", r: "ぬぐ" },
-  { c: "級", s: 9, m: "Class", r: "きゅう" },
-  { c: "博", s: 12, m: "Dr.", r: "はく" },
-  { c: "締", s: 15, m: "Tighten", r: "しまる" },
-  { c: "救", s: 11, m: "Salvation", r: "すくう" },
-  { c: "執", s: 11, m: "Tenacious", r: "とる" },
-  { c: "房", s: 8, m: "Tassel", r: "ふさ" },
-  { c: "撤", s: 15, m: "Remove", r: "てつ" },
-  { c: "削", s: 9, m: "Plane", r: "けずる" },
-  { c: "密", s: 11, m: "Secrecy", r: "ひそか" },
-  { c: "措", s: 11, m: "Set Aside", r: "おく" },
-  { c: "志", s: 7, m: "Intention", r: "シリング" },
-  { c: "載", s: 13, m: "Ride", r: "のせる" },
-  { c: "陣", s: 10, m: "Camp", r: "じん" },
-  { c: "我", s: 7, m: "Ego", r: "われ" },
-  { c: "為", s: 9, m: "Do", r: "ため" },
-  { c: "抑", s: 7, m: "Repress", r: "おさえる" },
-  { c: "幕", s: 13, m: "Curtain", r: "とばり" },
-  { c: "染", s: 9, m: "Dye", r: "そめる" },
-  { c: "奈", s: 8, m: "Nara", r: "いかん" },
-  { c: "傷", s: 13, m: "Wound", r: "きず" },
-  { c: "択", s: 7, m: "Choose", r: "えらぶ" },
-  { c: "秀", s: 7, m: "Excel", r: "ひいでる" },
-  { c: "徴", s: 14, m: "Indications", r: "しるし" },
-  { c: "弾", s: 12, m: "Bullet", r: "ひく" },
-  { c: "償", s: 17, m: "Reparation", r: "つぐなう" },
-  { c: "功", s: 5, m: "Achievement", r: "いさお" },
-  { c: "拠", s: 8, m: "Foothold", r: "よる" },
-  { c: "秘", s: 10, m: "Secret", r: "ひめる" },
-  { c: "拒", s: 8, m: "Repel", r: "こばむ" },
-  { c: "刑", s: 6, m: "Punish", r: "けい" },
-  { c: "塚", s: 12, m: "Hillock", r: "つか" },
-  { c: "致", s: 10, m: "Doth", r: "いたす" },
-  { c: "繰", s: 19, m: "Winding", r: "くる" },
-  { c: "尾", s: 7, m: "Tail", r: "お" },
-  { c: "描", s: 11, m: "Sketch", r: "えがく" },
-  { c: "鈴", s: 13, m: "Small Bell", r: "すず" },
-  { c: "盤", s: 15, m: "Tray", r: "ばん" },
-  { c: "項", s: 12, m: "Paragraph", r: "うなじ" },
-  { c: "喪", s: 12, m: "Miss", r: "も" },
-  { c: "伴", s: 7, m: "Consort", r: "ともなう" },
-  { c: "養", s: 15, m: "Foster", r: "やしなう" },
-  { c: "懸", s: 20, m: "State Of Suspension", r: "かける" },
-  { c: "街", s: 12, m: "Boulevard", r: "まち" },
-  { c: "契", s: 9, m: "Pledge", r: "ちぎる" },
-  { c: "掲", s: 11, m: "Put Up (a Notice)", r: "かかげる" },
-  { c: "躍", s: 21, m: "Leap", r: "おどる" },
-  { c: "棄", s: 13, m: "Abandon", r: "すてる" },
-  { c: "邸", s: 8, m: "Residence", r: "やしき" },
-  { c: "縮", s: 17, m: "Shrink", r: "ちぢむ" },
-  { c: "還", s: 16, m: "Send Back", r: "かえる" },
-  { c: "属", s: 12, m: "Belong", r: "さかん" },
-  { c: "慮", s: 15, m: "Prudence", r: "おもんぱくる" },
-  { c: "枠", s: 8, m: "Frame", r: "わく" },
-  { c: "恵", s: 10, m: "Favor", r: "めぐむ" },
-  { c: "露", s: 21, m: "Dew", r: "つゆ" },
-  { c: "沖", s: 7, m: "Open Sea", r: "おき" },
-  { c: "緩", s: 15, m: "Slacken", r: "ゆるい" },
-  { c: "節", s: 13, m: "Node", r: "ふし" },
-  { c: "需", s: 14, m: "Demand", r: "じゅ" },
-  { c: "射", s: 10, m: "Shoot", r: "いる" },
-  { c: "購", s: 17, m: "Subscription", r: "こう" },
-  { c: "揮", s: 12, m: "Brandish", r: "ふるう" },
-  { c: "充", s: 6, m: "Allot", r: "あてる" },
-  { c: "貢", s: 10, m: "Tribute", r: "みつぐ" },
-  { c: "鹿", s: 11, m: "Deer", r: "しか" },
-  { c: "却", s: 7, m: "Instead", r: "かえって" },
-  { c: "端", s: 14, m: "Edge", r: "はし" },
-  { c: "賃", s: 13, m: "Fare", r: "ちん" },
-  { c: "獲", s: 16, m: "Seize", r: "える" },
-  { c: "郡", s: 10, m: "County", r: "こおり" },
-  { c: "併", s: 8, m: "Join", r: "あわせる" },
-  { c: "徹", s: 15, m: "Penetrate", r: "てつ" },
-  { c: "貴", s: 12, m: "Precious", r: "たっとい" },
-  { c: "衝", s: 15, m: "Collide", r: "つく" },
-  { c: "焦", s: 12, m: "Char", r: "こげる" },
-  { c: "奪", s: 14, m: "Rob", r: "うばう" },
-  { c: "災", s: 7, m: "Disaster", r: "わざわい" },
-  { c: "浦", s: 10, m: "Bay", r: "うら" },
-  { c: "析", s: 8, m: "Chop", r: "せき" },
-  { c: "譲", s: 20, m: "Defer", r: "ゆずる" },
-  { c: "称", s: 10, m: "Appellation", r: "たたえる" },
-  { c: "納", s: 10, m: "Settlement", r: "おさめる" },
-  { c: "樹", s: 16, m: "Timber", r: "き" },
-  { c: "挑", s: 9, m: "Challenge", r: "いどむ" },
-  { c: "誘", s: 14, m: "Entice", r: "さそう" },
-  { c: "紛", s: 10, m: "Distract", r: "まぎれる" },
-  { c: "至", s: 6, m: "Climax", r: "いたる" },
-  { c: "宗", s: 8, m: "Religion", r: "むね" },
-  { c: "促", s: 9, m: "Stimulate", r: "うながす" },
-  { c: "慎", s: 13, m: "Humility", r: "つつしむ" },
-  { c: "控", s: 11, m: "Withdraw", r: "ひかえる" },
-  { c: "智", s: 12, m: "Wisdom", r: "ち" },
-  { c: "握", s: 12, m: "Grip", r: "にぎる" },
-  { c: "宙", s: 8, m: "Mid-air", r: "ちゅう" },
-  { c: "俊", s: 9, m: "Sagacious", r: "しゅん" },
-  { c: "銭", s: 14, m: "Coin", r: "ぜに" },
-  { c: "渋", s: 11, m: "Astringent", r: "しぶ" },
-  { c: "銃", s: 14, m: "Gun", r: "つつ" },
-  { c: "操", s: 16, m: "Maneuver", r: "みさお" },
-  { c: "携", s: 13, m: "Portable", r: "たずさえる" },
-  { c: "診", s: 12, m: "Checkup", r: "みる" },
-  { c: "託", s: 10, m: "Consign", r: "かこつける" },
-  { c: "撮", s: 15, m: "Snapshot", r: "とる" },
-  { c: "誕", s: 15, m: "Nativity", r: "たん" },
-  { c: "侵", s: 9, m: "Encroach", r: "おかす" },
-  { c: "括", s: 9, m: "Fasten", r: "くくる" },
-  { c: "謝", s: 17, m: "Apologize", r: "あやまる" },
-  { c: "駆", s: 14, m: "Drive", r: "かける" },
-  { c: "透", s: 10, m: "Transparent", r: "すく" },
-  { c: "津", s: 9, m: "Haven", r: "つ" },
-  { c: "壁", s: 16, m: "Wall", r: "かべ" },
-  { c: "稲", s: 14, m: "Rice Plant", r: "いね" },
-  { c: "仮", s: 6, m: "Sham", r: "かり" },
-  { c: "裂", s: 12, m: "Split", r: "さく" },
-  { c: "敏", s: 10, m: "Cleverness", r: "さとい" },
-  { c: "是", s: 9, m: "Just So", r: "これ" },
-  { c: "排", s: 11, m: "Repudiate", r: "はい" },
-  { c: "裕", s: 12, m: "Abundant", r: "ゆう" },
-  { c: "堅", s: 12, m: "Strict", r: "かたい" },
-  { c: "訳", s: 11, m: "Translate", r: "わけ" },
-  { c: "芝", s: 6, m: "Turf", r: "しば" },
-  { c: "綱", s: 14, m: "Hawser", r: "つな" },
-  { c: "典", s: 8, m: "Code", r: "てん" },
-  { c: "賀", s: 12, m: "Congratulations", r: "が" },
-  { c: "扱", s: 6, m: "Handle", r: "あつかい" },
-  { c: "顧", s: 21, m: "Look Back", r: "かえりみる" },
-  { c: "弘", s: 5, m: "Vast", r: "ひろい" },
-  { c: "看", s: 9, m: "Watch Over", r: "みる" },
-  { c: "訟", s: 11, m: "Sue", r: "しょう" },
-  { c: "戒", s: 7, m: "Commandment", r: "いましめる" },
-  { c: "祉", s: 8, m: "Welfare", r: "し" },
-  { c: "誉", s: 13, m: "Reputation", r: "ほまれ" },
-  { c: "歓", s: 15, m: "Delight", r: "よろこぶ" },
-  { c: "奏", s: 9, m: "Play Music", r: "かなでる" },
-  { c: "勧", s: 13, m: "Persuade", r: "すすめる" },
-  { c: "騒", s: 18, m: "Boisterous", r: "さわぐ" },
-  { c: "閥", s: 14, m: "Clique", r: "ばつ" },
-  { c: "甲", s: 5, m: "Armor", r: "きのえ" },
-  { c: "縄", s: 15, m: "Straw Rope", r: "なわ" },
-  { c: "郷", s: 11, m: "Home Town", r: "さと" },
-  { c: "揺", s: 12, m: "Swing", r: "ゆれる" },
-  { c: "免", s: 8, m: "Excuse", r: "まぬかれる" },
-  { c: "既", s: 10, m: "Previously", r: "すでに" },
-  { c: "薦", s: 16, m: "Recommend", r: "すすめる" },
-  { c: "隣", s: 16, m: "Neighboring", r: "となる" },
-  { c: "華", s: 10, m: "Splendor", r: "はな" },
-  { c: "範", s: 15, m: "Pattern", r: "はん" },
-  { c: "隠", s: 14, m: "Conceal", r: "かくす" },
-  { c: "徳", s: 14, m: "Benevolence", r: "とく" },
-  { c: "哲", s: 10, m: "Philosophy", r: "さとい" },
-  { c: "杉", s: 7, m: "Cedar", r: "すぎ" },
-  { c: "釈", s: 11, m: "Explanation", r: "とく" },
-  { c: "己", s: 3, m: "Self", r: "おのれ" },
-  { c: "妥", s: 7, m: "Gentle", r: "だ" },
-  { c: "威", s: 9, m: "Intimidate", r: "おどす" },
-  { c: "豪", s: 14, m: "Overpowering", r: "えらい" },
-  { c: "熊", s: 14, m: "Bear", r: "くま" },
-  { c: "滞", s: 13, m: "Stagnate", r: "とどこおる" },
-  { c: "微", s: 13, m: "Delicate", r: "かすか" },
-  { c: "隆", s: 11, m: "Hump", r: "りゅう" },
-  { c: "症", s: 10, m: "Symptoms", r: "しょう" },
-  { c: "暫", s: 15, m: "Temporarily", r: "しばらく" },
-  { c: "忠", s: 8, m: "Loyalty", r: "ちゅう" },
-  { c: "倉", s: 10, m: "Godown", r: "くら" },
-  { c: "彦", s: 9, m: "Lad", r: "ひこ" },
-  { c: "肝", s: 7, m: "Liver", r: "きも" },
-  { c: "喚", s: 12, m: "Yell", r: "わめく" },
-  { c: "沿", s: 8, m: "Run Alongside", r: "そう" },
-  { c: "妙", s: 7, m: "Exquisite", r: "たえ" },
-  { c: "唱", s: 11, m: "Chant", r: "となえる" },
-  { c: "阿", s: 8, m: "Africa", r: "おもねる" },
-  { c: "索", s: 10, m: "Cord", r: "さく" },
-  { c: "誠", s: 13, m: "Sincerity", r: "まこと" },
-  { c: "襲", s: 22, m: "Attack", r: "おそう" },
-  { c: "懇", s: 17, m: "Sociable", r: "ねんごろ" },
-  { c: "俳", s: 10, m: "Haiku", r: "はい" },
-  { c: "柄", s: 9, m: "Design", r: "がら" },
-  { c: "驚", s: 22, m: "Wonder", r: "おどろく" },
-  { c: "麻", s: 11, m: "Hemp", r: "あさ" },
-  { c: "李", s: 7, m: "Plum", r: "すもも" },
-  { c: "浩", s: 10, m: "Wide Expanse", r: "おおきい" },
-  { c: "剤", s: 10, m: "Dose", r: "かる" },
-  { c: "瀬", s: 19, m: "Rapids", r: "せ" },
-  { c: "趣", s: 15, m: "Purport", r: "おもむき" },
-  { c: "陥", s: 10, m: "Collapse", r: "おちいる" },
-  { c: "斎", s: 11, m: "Purification", r: "とき" },
-  { c: "貫", s: 11, m: "Pierce", r: "つらぬく" },
-  { c: "仙", s: 5, m: "Hermit", r: "せん" },
-  { c: "慰", s: 15, m: "Consolation", r: "なぐさめる" },
-  { c: "序", s: 7, m: "Preface", r: "ついで" },
-  { c: "旬", s: 6, m: "Decameron", r: "じゅん" },
-  { c: "兼", s: 10, m: "Concurrently", r: "かねる" },
-  { c: "聖", s: 13, m: "Holy", r: "ひじり" },
-  { c: "旨", s: 6, m: "Delicious", r: "むね" },
-  { c: "即", s: 7, m: "Instant", r: "つく" },
-  { c: "柳", s: 9, m: "Willow", r: "やなぎ" },
-  { c: "舎", s: 8, m: "Cottage", r: "やどる" },
-  { c: "偽", s: 11, m: "Falsehood", r: "いつわる" },
-  { c: "較", s: 13, m: "Contrast", r: "くらべる" },
-  { c: "覇", s: 19, m: "Hegemony", r: "はたがしら" },
-  { c: "詳", s: 13, m: "Detailed", r: "くわしい" },
-  { c: "抵", s: 8, m: "Resist", r: "てい" },
-  { c: "脅", s: 10, m: "Threaten", r: "おびやかす" },
-  { c: "茂", s: 8, m: "Overgrown", r: "しげる" },
-  { c: "犠", s: 17, m: "Sacrifice", r: "いけにえ" },
-  { c: "旗", s: 14, m: "National Flag", r: "はた" },
-  { c: "距", s: 12, m: "Long-distance", r: "へだたる" },
-  { c: "雅", s: 13, m: "Gracious", r: "みやび" },
-  { c: "飾", s: 13, m: "Decorate", r: "かざる" },
-  { c: "網", s: 14, m: "Netting", r: "あみ" },
-  { c: "竜", s: 10, m: "Dragon", r: "たつ" },
-  { c: "詩", s: 13, m: "Poem", r: "うた" },
-  { c: "繁", s: 16, m: "Luxuriant", r: "しげる" },
-  { c: "翼", s: 17, m: "Wing", r: "つばさ" },
-  { c: "潟", s: 15, m: "Lagoon", r: "かた" },
-  { c: "敵", s: 15, m: "Enemy", r: "かたき" },
-  { c: "魅", s: 15, m: "Fascination", r: "み" },
-  { c: "嫌", s: 13, m: "Dislike", r: "きらう" },
-  { c: "斉", s: 8, m: "Adjusted", r: "そろう" },
-  { c: "敷", s: 15, m: "Spread", r: "しく" },
-  { c: "擁", s: 16, m: "Hug", r: "よう" },
-  { c: "圏", s: 12, m: "Sphere", r: "かこい" },
-  { c: "酸", s: 14, m: "Acid", r: "すい" },
-  { c: "罰", s: 14, m: "Penalty", r: "ばっする" },
-  { c: "滅", s: 13, m: "Destroy", r: "ほろびる" },
-  { c: "礎", s: 18, m: "Cornerstone", r: "いしずえ" },
-  { c: "腐", s: 14, m: "Rot", r: "くさる" },
-  { c: "脚", s: 11, m: "Skids", r: "あし" },
-  { c: "潮", s: 15, m: "Tide", r: "しお" },
-  { c: "梅", s: 10, m: "Plum", r: "うめ" },
-  { c: "尽", s: 6, m: "Exhaust", r: "つくす" },
-  { c: "僕", s: 14, m: "Me", r: "しもべ" },
-  { c: "桜", s: 10, m: "Cherry", r: "さくら" },
-  { c: "滑", s: 13, m: "Slippery", r: "すべる" },
-  { c: "孤", s: 9, m: "Orphan", r: "こ" },
-  { c: "炎", s: 8, m: "Inflammation", r: "ほのお" },
-  { c: "賠", s: 15, m: "Compensation", r: "ばい" },
-  { c: "句", s: 5, m: "Phrase", r: "く" },
-  { c: "鋼", s: 16, m: "Steel", r: "はがね" },
-  { c: "頑", s: 13, m: "Stubborn", r: "かたく" },
-  { c: "鎖", s: 18, m: "Chain", r: "くさり" },
-  { c: "彩", s: 11, m: "Coloring", r: "いろどる" },
-  { c: "摩", s: 15, m: "Chafe", r: "まする" },
-  { c: "励", s: 7, m: "Encourage", r: "はげむ" },
-  { c: "縦", s: 16, m: "Vertical", r: "たて" },
-  { c: "輝", s: 15, m: "Radiance", r: "かがやく" },
-  { c: "蓄", s: 13, m: "Amass", r: "たくわえる" },
-  { c: "軸", s: 12, m: "Axis", r: "じく" },
-  { c: "巡", s: 6, m: "Patrol", r: "めぐる" },
-  { c: "稼", s: 15, m: "Earnings", r: "かせぐ" },
-  { c: "瞬", s: 18, m: "Wink", r: "またたく" },
-  { c: "砲", s: 10, m: "Cannon", r: "ほう" },
-  { c: "噴", s: 15, m: "Erupt", r: "ふく" },
-  { c: "誇", s: 13, m: "Boast", r: "ほこる" },
-  { c: "祥", s: 10, m: "Auspicious", r: "さいわい" },
-  { c: "牲", s: 9, m: "Animal Sacrifice", r: "せい" },
-  { c: "秩", s: 10, m: "Regularity", r: "ちつ" },
-  { c: "帝", s: 9, m: "Sovereign", r: "みかど" },
-  { c: "宏", s: 7, m: "Wide", r: "ひろい" },
-  { c: "唆", s: 10, m: "Tempt", r: "そそる" },
-  { c: "阻", s: 8, m: "Thwart", r: "はばむ" },
-  { c: "泰", s: 10, m: "Peaceful", r: "たい" },
-  { c: "賄", s: 13, m: "Bribe", r: "まかなう" },
-  { c: "撲", s: 15, m: "Slap", r: "ぼく" },
-  { c: "堀", s: 11, m: "Ditch", r: "ほり" },
-  { c: "菊", s: 11, m: "Chrysanthemum", r: "きく" },
-  { c: "絞", s: 12, m: "Strangle", r: "しぼる" },
-  { c: "縁", s: 15, m: "Affinity", r: "ふち" },
-  { c: "唯", s: 11, m: "Solely", r: "ただ" },
-  { c: "膨", s: 16, m: "Swell", r: "ふくらむ" },
-  { c: "矢", s: 5, m: "Dart", r: "や" },
-  { c: "耐", s: 9, m: "-proof", r: "たえる" },
-  { c: "塾", s: 14, m: "Cram School", r: "じゅく" },
-  { c: "漏", s: 14, m: "Leak", r: "もる" },
-  { c: "慶", s: 15, m: "Jubilation", r: "よろこび" },
-  { c: "猛", s: 11, m: "Fierce", r: "もう" },
-  { c: "芳", s: 7, m: "Perfume", r: "かんばしい" },
-  { c: "懲", s: 18, m: "Penal", r: "こりる" },
-  { c: "剣", s: 10, m: "Sabre", r: "つるぎ" },
-  { c: "彰", s: 14, m: "Patent", r: "しょう" },
-  { c: "棋", s: 12, m: "Chess Piece", r: "ご" },
-  { c: "丁", s: 2, m: "Street", r: "ひのと" },
-  { c: "恒", s: 9, m: "Constancy", r: "つね" },
-  { c: "揚", s: 12, m: "Raise", r: "あげる" },
-  { c: "冒", s: 9, m: "Risk", r: "おかす" },
-  { c: "之", s: 3, m: "Of", r: "の" },
-  { c: "倫", s: 10, m: "Ethics", r: "りん" },
-  { c: "陳", s: 11, m: "Exhibit", r: "ひねる" },
-  { c: "憶", s: 16, m: "Recollection", r: "おく" },
-  { c: "潜", s: 15, m: "Submerge", r: "ひそむ" },
-  { c: "梨", s: 11, m: "Pear Tree", r: "なし" },
-  { c: "仁", s: 4, m: "Humanity", r: "じん" },
-  { c: "克", s: 7, m: "Overcome", r: "かつ" },
-  { c: "岳", s: 8, m: "Point", r: "たけ" },
-  { c: "概", s: 14, m: "Outline", r: "おおむね" },
-  { c: "拘", s: 8, m: "Arrest", r: "かかわる" },
-  { c: "墓", s: 13, m: "Grave", r: "はか" },
-  { c: "黙", s: 15, m: "Silence", r: "だまる" },
-  { c: "須", s: 12, m: "Ought", r: "すべからく" },
-  { c: "偏", s: 11, m: "Partial", r: "かたよる" },
-  { c: "雰", s: 12, m: "Atmosphere", r: "ふん" },
-  { c: "遇", s: 12, m: "Meet", r: "あう" },
-  { c: "諮", s: 16, m: "Consult With", r: "はかる" },
-  { c: "狭", s: 9, m: "Cramped", r: "せまい" },
-  { c: "卓", s: 8, m: "Eminent", r: "たく" },
-  { c: "亀", s: 11, m: "Tortoise", r: "かめ" },
-  { c: "糧", s: 18, m: "Provisions", r: "かて" },
-  { c: "簿", s: 19, m: "Register", r: "ぼ" },
-  { c: "炉", s: 8, m: "Hearth", r: "いろり" },
-  { c: "牧", s: 8, m: "Breed", r: "まき" },
-  { c: "殊", s: 10, m: "Particularly", r: "こと" },
-  { c: "殖", s: 12, m: "Augment", r: "ふえる" },
-  { c: "艦", s: 21, m: "Warship", r: "かん" },
-  { c: "輩", s: 15, m: "Comrade", r: "ばら" },
-  { c: "穴", s: 5, m: "Hole", r: "あな" },
-  { c: "奇", s: 8, m: "Strange", r: "くしき" },
-  { c: "慢", s: 14, m: "Ridicule", r: "まん" },
-  { c: "鶴", s: 21, m: "Crane", r: "つる" },
-  { c: "謀", s: 16, m: "Conspire", r: "はかる" },
-  { c: "暖", s: 13, m: "Warmth", r: "あたたか" },
-  { c: "昌", s: 8, m: "Prosperous", r: "さかん" },
-  { c: "拍", s: 8, m: "Clap", r: "はく" },
-  { c: "朗", s: 10, m: "Melodious", r: "ほがらか" },
-  { c: "寛", s: 13, m: "Tolerant", r: "くつろぐ" },
-  { c: "覆", s: 18, m: "Capsize", r: "おおう" },
-  { c: "胞", s: 9, m: "Placenta", r: "ほう" },
-  { c: "泣", s: 8, m: "Cry", r: "なく" },
-  { c: "隔", s: 13, m: "Isolate", r: "へだてる" },
-  { c: "浄", s: 9, m: "Clean", r: "きよめる" },
-  { c: "没", s: 7, m: "Drown", r: "おぼれる" },
-  { c: "暇", s: 13, m: "Spare Time", r: "ひま" },
-  { c: "肺", s: 9, m: "Lungs", r: "はい" },
-  { c: "貞", s: 9, m: "Upright", r: "さだ" },
-  { c: "靖", s: 13, m: "Peaceful", r: "やすんじる" },
-  { c: "鑑", s: 23, m: "Specimen", r: "かんがみる" },
-  { c: "飼", s: 13, m: "Domesticate", r: "かう" },
-  { c: "陰", s: 11, m: "Shade", r: "かげ" },
-  { c: "銘", s: 14, m: "Inscription", r: "めい" },
-  { c: "随", s: 12, m: "Follow", r: "まにまに" },
-  { c: "烈", s: 10, m: "Ardent", r: "はげしい" },
-  { c: "尋", s: 12, m: "Inquire", r: "たずねる" },
-  { c: "稿", s: 15, m: "Draft", r: "わら" },
-  { c: "丹", s: 4, m: "Rust-colored", r: "に" },
-  { c: "啓", s: 11, m: "Disclose", r: "ひらく" },
-  { c: "也", s: 3, m: "To Be (classical)", r: "なり" },
-  { c: "丘", s: 5, m: "Hill", r: "おか" },
-  { c: "棟", s: 12, m: "Ridgepole", r: "むね" },
-  { c: "壌", s: 16, m: "Lot", r: "つち" },
-  { c: "漫", s: 14, m: "Cartoon", r: "みだりに" },
-  { c: "玄", s: 5, m: "Mysterious", r: "くろ" },
-  { c: "粘", s: 11, m: "Sticky", r: "ねばる" },
-  { c: "悟", s: 10, m: "Enlightenment", r: "さとる" },
-  { c: "舗", s: 15, m: "Shop", r: "ほ" },
-  { c: "妊", s: 7, m: "Pregnancy", r: "はらむ" },
-  { c: "熟", s: 15, m: "Mellow", r: "うれる" },
-  { c: "旭", s: 6, m: "Rising Sun", r: "あさひ" },
-  { c: "恩", s: 10, m: "Grace", r: "おん" },
-  { c: "騰", s: 20, m: "Leaping Up", r: "あがる" },
-  { c: "往", s: 8, m: "Journey", r: "いく" },
-  { c: "豆", s: 7, m: "Beans", r: "まめ" },
-  { c: "遂", s: 12, m: "Consummate", r: "とげる" },
-  { c: "狂", s: 7, m: "Lunatic", r: "くるう" },
-  { c: "岐", s: 7, m: "Branch Off", r: "き" },
-  { c: "陛", s: 10, m: "Highness", r: "へい" },
-  { c: "緯", s: 16, m: "Horizontal", r: "よこいと" },
-  { c: "培", s: 11, m: "Cultivate", r: "つちかう" },
-  { c: "衰", s: 10, m: "Decline", r: "おとろえる" },
-  { c: "艇", s: 13, m: "Rowboat", r: "てい" },
-  { c: "屈", s: 8, m: "Yield", r: "かがむ" },
-  { c: "径", s: 8, m: "Diameter", r: "みち" },
-  { c: "淡", s: 11, m: "Thin", r: "あわい" },
-  { c: "抽", s: 8, m: "Pluck", r: "ひき" },
-  { c: "披", s: 8, m: "Expose", r: "ひ" },
-  { c: "廷", s: 7, m: "Courts", r: "てい" },
-  { c: "錦", s: 16, m: "Brocade", r: "にしき" },
-  { c: "准", s: 10, m: "Quasi-", r: "じゅん" },
-  { c: "暑", s: 12, m: "Sultry", r: "あつい" },
-  { c: "磯", s: 17, m: "Seashore", r: "いそ" },
-  { c: "奨", s: 13, m: "Exhort", r: "すすめる" },
-  { c: "浸", s: 10, m: "Immersed", r: "ひたす" },
-  { c: "剰", s: 11, m: "Surplus", r: "あまつさえ" },
-  { c: "胆", s: 9, m: "Gall Bladder", r: "きも" },
-  { c: "繊", s: 17, m: "Slender", r: "せん" },
-  { c: "駒", s: 15, m: "Pony", r: "こま" },
-  { c: "虚", s: 11, m: "Void", r: "むなしい" },
-  { c: "霊", s: 15, m: "Spirits", r: "たま" },
-  { c: "帳", s: 11, m: "Notebook", r: "とばり" },
-  { c: "悔", s: 9, m: "Repent", r: "くいる" },
-  { c: "諭", s: 16, m: "Rebuke", r: "さとす" },
-  { c: "惨", s: 11, m: "Wretched", r: "みじめ" },
-  { c: "虐", s: 9, m: "Tyrannize", r: "しいたげる" },
-  { c: "翻", s: 18, m: "Flip", r: "ひるがえる" },
-  { c: "墜", s: 15, m: "Crash", r: "おちる" },
-  { c: "沼", s: 8, m: "Marsh", r: "ぬま" },
-  { c: "据", s: 11, m: "Set", r: "すえる" },
-  { c: "肥", s: 8, m: "Fertilizer", r: "こえる" },
-  { c: "徐", s: 10, m: "Gradually", r: "おもむろに" },
-  { c: "糖", s: 16, m: "Sugar", r: "とう" },
-  { c: "搭", s: 12, m: "Board", r: "とう" },
-  { c: "盾", s: 9, m: "Shield", r: "たて" },
-  { c: "脈", s: 10, m: "Vein", r: "すじ" },
-  { c: "滝", s: 13, m: "Waterfall", r: "たき" },
-  { c: "軌", s: 9, m: "Rut", r: "き" },
-  { c: "俵", s: 10, m: "Bag", r: "たわら" },
-  { c: "妨", s: 7, m: "Disturb", r: "さまたげる" },
-  { c: "擦", s: 17, m: "Grate", r: "する" },
-  { c: "鯨", s: 19, m: "Whale", r: "くじら" },
-  { c: "荘", s: 9, m: "Villa", r: "ほうき" },
-  { c: "諾", s: 15, m: "Consent", r: "だく" },
-  { c: "雷", s: 13, m: "Thunder", r: "かみなり" },
-  { c: "漂", s: 14, m: "Drift", r: "ただよう" },
-  { c: "懐", s: 16, m: "Pocket", r: "ふところ" },
-  { c: "勘", s: 11, m: "Intuition", r: "かん" },
-  { c: "栽", s: 10, m: "Plantation", r: "さい" },
-  { c: "拐", s: 8, m: "Kidnap", r: "かい" },
-  { c: "駄", s: 14, m: "Burdensome", r: "だ" },
-  { c: "添", s: 11, m: "Annexed", r: "そえる" },
-  { c: "冠", s: 9, m: "Crown", r: "かんむり" },
-  { c: "斜", s: 11, m: "Diagonal", r: "ななめ" },
-  { c: "鏡", s: 19, m: "Mirror", r: "かがみ" },
-  { c: "聡", s: 14, m: "Wise", r: "さとい" },
-  { c: "浪", s: 10, m: "Wandering", r: "ろう" },
-  { c: "亜", s: 7, m: "Asia", r: "つぐ" },
-  { c: "覧", s: 17, m: "Perusal", r: "みる" },
-  { c: "詐", s: 12, m: "Lie", r: "いつわる" },
-  { c: "壇", s: 16, m: "Podium", r: "だん" },
-  { c: "勲", s: 15, m: "Meritorious Deed", r: "いさお" },
-  { c: "魔", s: 21, m: "Witch", r: "ま" },
-  { c: "酬", s: 13, m: "Repay", r: "むくいる" },
-  { c: "紫", s: 12, m: "Purple", r: "むらさき" },
-  { c: "曙", s: 17, m: "Dawn", r: "あけぼの" },
-  { c: "紋", s: 10, m: "Family Crest", r: "もん" },
-  { c: "卸", s: 9, m: "Wholesale", r: "おろす" },
-  { c: "奮", s: 16, m: "Stirred Up", r: "ふるう" },
-  { c: "欄", s: 20, m: "Column", r: "てすり" },
-  { c: "逸", s: 11, m: "Deviate", r: "それる" },
-  { c: "涯", s: 11, m: "Horizon", r: "はて" },
-  { c: "拓", s: 8, m: "Clear (the Land)", r: "ひらく" },
-  { c: "眼", s: 11, m: "Eyeball", r: "まなこ" },
-  { c: "獄", s: 14, m: "Prison", r: "ごく" },
-  { c: "尚", s: 8, m: "Esteem", r: "なお" },
-  { c: "彫", s: 11, m: "Carve", r: "ほる" },
-  { c: "穏", s: 16, m: "Calm", r: "おだやか" },
-  { c: "顕", s: 18, m: "Appear", r: "あきらか" },
-  { c: "巧", s: 5, m: "Adroit", r: "たくみ" },
-  { c: "矛", s: 5, m: "Halberd", r: "ほこ" },
-  { c: "垣", s: 9, m: "Hedge", r: "かき" },
-  { c: "欺", s: 12, m: "Deceit", r: "あざむく" },
-  { c: "釣", s: 11, m: "Angling", r: "つる" },
-  { c: "萩", s: 12, m: "Bush Clover", r: "はぎ" },
-  { c: "粛", s: 11, m: "Solemn", r: "つつしむ" },
-  { c: "栗", s: 10, m: "Chestnut", r: "くり" },
-  { c: "愚", s: 13, m: "Foolish", r: "おろか" },
-  { c: "嘉", s: 14, m: "Applaud", r: "よみする" },
-  { c: "遭", s: 14, m: "Encounter", r: "あう" },
-  { c: "架", s: 9, m: "Erect", r: "かける" },
-  { c: "鬼", s: 10, m: "Ghost", r: "おに" },
-  { c: "庶", s: 11, m: "Commoner", r: "しょ" },
-  { c: "稚", s: 13, m: "Immature", r: "いとけない" },
-  { c: "滋", s: 12, m: "Nourishing", r: "じ" },
-  { c: "幻", s: 4, m: "Phantasm", r: "まぼろし" },
-  { c: "煮", s: 12, m: "Boil", r: "にる" },
-  { c: "姫", s: 10, m: "Princess", r: "ひめ" },
-  { c: "誓", s: 14, m: "Vow", r: "ちかう" },
-  { c: "把", s: 7, m: "Grasp", r: "は" },
-  { c: "践", s: 13, m: "Tread", r: "ふむ" },
-  { c: "呈", s: 7, m: "Display", r: "てい" },
-  { c: "疎", s: 12, m: "Alienate", r: "うとい" },
-  { c: "仰", s: 6, m: "Face-up", r: "あおぐ" },
-  { c: "剛", s: 10, m: "Sturdy", r: "ごう" },
-  { c: "疾", s: 10, m: "Rapidly", r: "はやい" },
-  { c: "征", s: 8, m: "Subjugate", r: "せい" },
-  { c: "砕", s: 9, m: "Smash", r: "くだく" },
-  { c: "謡", s: 16, m: "Song", r: "うたい" },
-  { c: "嫁", s: 13, m: "Marry Into", r: "よめ" },
-  { c: "謙", s: 17, m: "Self-effacing", r: "へりくだる" },
-  { c: "后", s: 6, m: "Empress", r: "きさき" },
-  { c: "嘆", s: 13, m: "Sigh", r: "なげく" },
-  { c: "菌", s: 11, m: "Germ", r: "きん" },
-  { c: "鎌", s: 18, m: "Sickle", r: "かま" },
-  { c: "巣", s: 11, m: "Nest", r: "す" },
-  { c: "頻", s: 17, m: "Repeatedly", r: "しきりに" },
-  { c: "琴", s: 12, m: "Harp", r: "こと" },
-  { c: "班", s: 10, m: "Squad", r: "はん" },
-  { c: "棚", s: 12, m: "Shelf", r: "たな" },
-  { c: "潔", s: 15, m: "Undefiled", r: "いさぎよい" },
-  { c: "酷", s: 14, m: "Cruel", r: "ひどい" },
-  { c: "宰", s: 10, m: "Superintend", r: "さい" },
-  { c: "廊", s: 12, m: "Corridor", r: "ろう" },
-  { c: "寂", s: 11, m: "Loneliness", r: "さび" },
-  { c: "辰", s: 7, m: "Sign Of The Dragon", r: "たつ" },
-  { c: "霞", s: 17, m: "Be Hazy", r: "かすみ" },
-  { c: "伏", s: 6, m: "Prostrated", r: "ふせる" },
-  { c: "碁", s: 13, m: "Go", r: "ご" },
-  { c: "俗", s: 9, m: "Vulgar", r: "ぞく" },
-  { c: "漠", s: 13, m: "Vague", r: "ばく" },
-  { c: "邪", s: 8, m: "Wicked", r: "よこしま" },
-  { c: "晶", s: 12, m: "Sparkle", r: "しょう" },
-  { c: "墨", s: 14, m: "Black Ink", r: "すみ" },
-  { c: "鎮", s: 18, m: "Tranquilize", r: "しずめる" },
-  { c: "洞", s: 9, m: "Den", r: "ほら" },
-  { c: "履", s: 15, m: "Perform", r: "はく" },
-  { c: "劣", s: 6, m: "Inferiority", r: "おとる" },
-  { c: "那", s: 7, m: "What?", r: "なに" },
-  { c: "殴", s: 8, m: "Assault", r: "なぐる" },
-  { c: "娠", s: 10, m: "With Child", r: "しん" },
-  { c: "奉", s: 8, m: "Observance", r: "たてまつる" },
-  { c: "憂", s: 15, m: "Melancholy", r: "うれえる" },
-  { c: "朴", s: 6, m: "Crude", r: "ほう" },
-  { c: "亭", s: 9, m: "Pavilion", r: "てい" },
-  { c: "淳", s: 11, m: "Pure", r: "あつい" },
-  { c: "怪", s: 8, m: "Suspicious", r: "あやしい" },
-  { c: "鳩", s: 13, m: "Pigeon", r: "はと" },
-  { c: "酔", s: 11, m: "Drunk", r: "よう" },
-  { c: "惜", s: 11, m: "Pity", r: "おしい" },
-  { c: "穫", s: 18, m: "Harvest", r: "かく" },
-  { c: "佳", s: 8, m: "Excellent", r: "か" },
-  { c: "潤", s: 15, m: "Wet", r: "うるおう" },
-  { c: "悼", s: 11, m: "Lament", r: "いたむ" },
-  { c: "乏", s: 4, m: "Destitution", r: "とぼしい" },
-  { c: "該", s: 13, m: "Above-stated", r: "がい" },
-  { c: "赴", s: 9, m: "Proceed", r: "おもむく" },
-  { c: "桑", s: 10, m: "Mulberry", r: "くわ" },
-  { c: "桂", s: 10, m: "Japanese Judas-tree", r: "かつら" },
-  { c: "髄", s: 19, m: "Marrow", r: "ずい" },
-  { c: "虎", s: 8, m: "Tiger", r: "とら" },
-  { c: "盆", s: 9, m: "Basin", r: "ぼん" },
-  { c: "晋", s: 10, m: "Advance", r: "すすむ" },
-  { c: "穂", s: 15, m: "Ear", r: "ほ" },
-  { c: "壮", s: 6, m: "Robust", r: "さかん" },
-  { c: "堤", s: 12, m: "Dike", r: "つつみ" },
-  { c: "飢", s: 10, m: "Hungry", r: "うえる" },
-  { c: "傍", s: 12, m: "Bystander", r: "かたわら" },
-  { c: "疫", s: 9, m: "Epidemic", r: "えき" },
-  { c: "累", s: 11, m: "Accumulate", r: "るい" },
-  { c: "痴", s: 13, m: "Stupid", r: "しれる" },
-  { c: "搬", s: 13, m: "Conveyor", r: "はん" },
-  { c: "晃", s: 10, m: "Clear", r: "あきらか" },
-  { c: "癒", s: 18, m: "Healing", r: "いえる" },
-  { c: "桐", s: 10, m: "Paulownia", r: "きり" },
-  { c: "寸", s: 3, m: "Measurement", r: "すん" },
-  { c: "郭", s: 11, m: "Enclosure", r: "くるわ" },
-  { c: "尿", s: 7, m: "Urine", r: "ゆばり" },
-  { c: "凶", s: 4, m: "Villain", r: "きょう" },
-  { c: "吐", s: 6, m: "Spit", r: "はく" },
-  { c: "宴", s: 10, m: "Banquet", r: "うたげ" },
-  { c: "鷹", s: 24, m: "Hawk", r: "たか" },
-  { c: "賓", s: 15, m: "V.i.p.", r: "ひん" },
-  { c: "虜", s: 13, m: "Captive", r: "とりこ" },
-  { c: "陶", s: 11, m: "Pottery", r: "すえ" },
-  { c: "鐘", s: 20, m: "Bell", r: "かね" },
-  { c: "憾", s: 16, m: "Remorse", r: "うらむ" },
-  { c: "猪", s: 11, m: "Boar", r: "い" },
-  { c: "紘", s: 10, m: "Large", r: "おおづな" },
-  { c: "磁", s: 14, m: "Magnet", r: "じ" },
-  { c: "弥", s: 8, m: "All The More", r: "や" },
-  { c: "昆", s: 8, m: "Descendants", r: "こん" },
-  { c: "粗", s: 11, m: "Coarse", r: "あらい" },
-  { c: "訂", s: 9, m: "Revise", r: "ただす" },
-  { c: "芽", s: 8, m: "Bud", r: "め" },
-  { c: "庄", s: 6, m: "Level", r: "しょう" },
-  { c: "傘", s: 12, m: "Umbrella", r: "かさ" },
-  { c: "敦", s: 12, m: "Industry", r: "あつい" },
-  { c: "騎", s: 18, m: "Equestrian", r: "き" },
-  { c: "寧", s: 14, m: "Rather", r: "むしろ" },
-  { c: "循", s: 12, m: "Sequential", r: "じゅん" },
-  { c: "忍", s: 7, m: "Endure", r: "しのぶ" },
-  { c: "怠", s: 9, m: "Neglect", r: "おこたる" },
-  { c: "如", s: 6, m: "Likeness", r: "ごとし" },
-  { c: "寮", s: 15, m: "Dormitory", r: "りょう" },
-  { c: "祐", s: 9, m: "Help", r: "たすける" },
-  { c: "鵬", s: 19, m: "Phoenix", r: "おおとり" },
-  { c: "鉛", s: 13, m: "Lead", r: "なまり" },
-  { c: "珠", s: 10, m: "Pearl", r: "たま" },
-  { c: "凝", s: 16, m: "Congeal", r: "こる" },
-  { c: "苗", s: 8, m: "Seedling", r: "なえ" },
-  { c: "獣", s: 16, m: "Animal", r: "けもの" },
-  { c: "哀", s: 9, m: "Pathetic", r: "あわれ" },
-  { c: "跳", s: 13, m: "Hop", r: "はねる" },
-  { c: "匠", s: 6, m: "Artisan", r: "たくみ" },
-  { c: "垂", s: 8, m: "Droop", r: "たれる" },
-  { c: "蛇", s: 11, m: "Snake", r: "へび" },
-  { c: "澄", s: 15, m: "Lucidity", r: "すむ" },
-  { c: "縫", s: 16, m: "Sew", r: "ぬう" },
-  { c: "僧", s: 13, m: "Buddhist Priest", r: "そう" },
-  { c: "眺", s: 11, m: "Stare", r: "ながめる" },
-  { c: "亘", s: 6, m: "Span", r: "わたる" },
-  { c: "呉", s: 7, m: "Give", r: "くれる" },
-  { c: "凡", s: 3, m: "Commonplace", r: "およそ" },
-  { c: "憩", s: 16, m: "Recess", r: "いこい" },
-  { c: "媛", s: 12, m: "Beautiful Woman", r: "ひめ" },
-  { c: "溝", s: 13, m: "Gutter", r: "みぞ" },
-  { c: "恭", s: 10, m: "Respect", r: "うやうやしい" },
-  { c: "刈", s: 4, m: "Reap", r: "かる" },
-  { c: "睡", s: 13, m: "Drowsy", r: "ねむる" },
-  { c: "錯", s: 16, m: "Confused", r: "さく" },
-  { c: "伯", s: 7, m: "Chief", r: "はく" },
-  { c: "笹", s: 11, m: "Bamboo Grass", r: "ささ" },
-  { c: "穀", s: 14, m: "Cereals", r: "こく" },
-  { c: "陵", s: 11, m: "Mausoleum", r: "みささぎ" },
-  { c: "霧", s: 19, m: "Fog", r: "きり" },
-  { c: "魂", s: 14, m: "Soul", r: "たましい" },
-  { c: "弊", s: 15, m: "Abuse", r: "へい" },
-  { c: "妃", s: 6, m: "Queen", r: "きさき" },
-  { c: "舶", s: 11, m: "Liner", r: "はく" },
-  { c: "餓", s: 15, m: "Starve", r: "うえる" },
-  { c: "窮", s: 15, m: "Hard Up", r: "きわめる" },
-  { c: "掌", s: 12, m: "Manipulate", r: "てのひら" },
-  { c: "麗", s: 19, m: "Lovely", r: "うるわしい" },
-  { c: "綾", s: 14, m: "Design", r: "あや" },
-  { c: "臭", s: 9, m: "Stinking", r: "くさい" },
-  { c: "悦", s: 10, m: "Ecstasy", r: "よろこぶ" },
-  { c: "刃", s: 3, m: "Blade", r: "は" },
-  { c: "縛", s: 16, m: "Truss", r: "しばる" },
-  { c: "暦", s: 14, m: "Calendar", r: "こよみ" },
-  { c: "宜", s: 8, m: "Best Regards", r: "よろしい" },
-  { c: "盲", s: 8, m: "Blind", r: "めくら" },
-  { c: "粋", s: 10, m: "Chic", r: "いき" },
-  { c: "辱", s: 10, m: "Embarrass", r: "はずかしめる" },
-  { c: "毅", s: 15, m: "Strong", r: "つよい" },
-  { c: "轄", s: 17, m: "Control", r: "くさび" },
-  { c: "猿", s: 13, m: "Monkey", r: "さる" },
-  { c: "弦", s: 8, m: "Bowstring", r: "つる" },
-  { c: "稔", s: 13, m: "Harvest", r: "みのる" },
-  { c: "窒", s: 11, m: "Plug Up", r: "ちつ" },
-  { c: "炊", s: 8, m: "Cook", r: "たく" },
-  { c: "洪", s: 9, m: "Deluge", r: "こう" },
-  { c: "摂", s: 13, m: "Vicarious", r: "おさめる" },
-  { c: "飽", s: 13, m: "Sated", r: "あきる" },
-  { c: "冗", s: 4, m: "Superfluous", r: "じょう" },
-  { c: "桃", s: 10, m: "Peach", r: "もも" },
-  { c: "狩", s: 9, m: "Hunt", r: "かる" },
-  { c: "朱", s: 6, m: "Vermilion", r: "あけ" },
-  { c: "渦", s: 12, m: "Whirlpool", r: "うず" },
-  { c: "紳", s: 11, m: "Sire", r: "しん" },
-  { c: "枢", s: 8, m: "Hinge", r: "とぼそ" },
-  { c: "碑", s: 14, m: "Tombstone", r: "いしぶみ" },
-  { c: "鍛", s: 17, m: "Forge", r: "きたえる" },
-  { c: "刀", s: 2, m: "Sword", r: "かたな" },
-  { c: "鼓", s: 13, m: "Drum", r: "つづみ" },
-  { c: "裸", s: 13, m: "Naked", r: "はだか" },
-  { c: "猶", s: 12, m: "Furthermore", r: "なお" },
-  { c: "塊", s: 13, m: "Clod", r: "かたまり" },
-  { c: "旋", s: 11, m: "Rotation", r: "めぐる" },
-  { c: "弓", s: 3, m: "Bow", r: "ゆみ" },
-  { c: "幣", s: 15, m: "Cash", r: "ぬさ" },
-  { c: "膜", s: 14, m: "Membrane", r: "まく" },
-  { c: "扇", s: 10, m: "Fan", r: "おうぎ" },
-  { c: "腸", s: 13, m: "Intestines", r: "はらわた" },
-  { c: "槽", s: 15, m: "Vat", r: "ふね" },
-  { c: "慈", s: 13, m: "Mercy", r: "いつくしむ" },
-  { c: "楊", s: 13, m: "Willow", r: "やなぎ" },
-  { c: "伐", s: 6, m: "Fell", r: "きる" },
-  { c: "駿", s: 17, m: "A Good Horse", r: "すぐれる" },
-  { c: "漬", s: 14, m: "Pickling", r: "つける" },
-  { c: "糾", s: 9, m: "Twist", r: "ただす" },
-  { c: "亮", s: 9, m: "Clear", r: "あきらか" },
-  { c: "墳", s: 15, m: "Tomb", r: "ふん" },
-  { c: "坪", s: 8, m: "Two-mat Area", r: "つぼ" },
-  { c: "紺", s: 11, m: "Dark Blue", r: "こん" },
-  { c: "娯", s: 10, m: "Recreation", r: "ご" },
-  { c: "椿", s: 13, m: "Camellia", r: "つばき" },
-  { c: "舌", s: 6, m: "Tongue", r: "した" },
-  { c: "羅", s: 19, m: "Gauze", r: "うすもの" },
-  { c: "峡", s: 9, m: "Gorge", r: "はざま" },
-  { c: "俸", s: 10, m: "Stipend", r: "ほう" },
-  { c: "厘", s: 9, m: "Rin", r: "りん" },
-  { c: "峰", s: 10, m: "Summit", r: "みね" },
-  { c: "圭", s: 6, m: "Square Jewel", r: "けい" },
-  { c: "醸", s: 20, m: "Brew", r: "かもす" },
-  { c: "蓮", s: 13, m: "Lotus", r: "はす" },
-  { c: "弔", s: 4, m: "Condolences", r: "とむらう" },
-  { c: "乙", s: 1, m: "The Latter", r: "おと" },
-  { c: "汁", s: 5, m: "Soup", r: "しる" },
-  { c: "尼", s: 5, m: "Nun", r: "あま" },
-  { c: "遍", s: 12, m: "Everywhere", r: "あまねく" },
-  { c: "衡", s: 16, m: "Equilibrium", r: "こう" },
-  { c: "薫", s: 16, m: "Send Forth Fragrance", r: "かおる" },
-  { c: "猟", s: 11, m: "Game-hunting", r: "かり" },
-  { c: "羊", s: 6, m: "Sheep", r: "ひつじ" },
-  { c: "款", s: 12, m: "Goodwill", r: "かん" },
-  { c: "閲", s: 15, m: "Review", r: "けみする" },
-  { c: "偵", s: 11, m: "Spy", r: "てい" },
-  { c: "喝", s: 11, m: "Hoarse", r: "かつ" },
-  { c: "敢", s: 12, m: "Daring", r: "あえて" },
-  { c: "胎", s: 9, m: "Womb", r: "たい" },
-  { c: "酵", s: 14, m: "Fermentation", r: "こう" },
-  { c: "憤", s: 15, m: "Aroused", r: "いきどおる" },
-  { c: "豚", s: 11, m: "Pork", r: "ぶた" },
-  { c: "遮", s: 14, m: "Intercept", r: "さえぎる" },
-  { c: "扉", s: 12, m: "Front Door", r: "とびら" },
-  { c: "硫", s: 12, m: "Sulphur", r: "りゅう" },
-  { c: "赦", s: 11, m: "Pardon", r: "しゃ" },
-  { c: "窃", s: 9, m: "Stealth", r: "ぬすむ" },
-  { c: "泡", s: 8, m: "Bubbles", r: "あわ" },
-  { c: "瑞", s: 13, m: "Congratulations", r: "みず" },
-  { c: "又", s: 2, m: "Or Again", r: "また" },
-  { c: "慨", s: 13, m: "Rue", r: "がい" },
-  { c: "紡", s: 10, m: "Spinning", r: "つむぐ" },
-  { c: "恨", s: 9, m: "Regret", r: "うらむ" },
-  { c: "肪", s: 8, m: "Obese", r: "ぼう" },
-  { c: "扶", s: 7, m: "Aid", r: "たすける" },
-  { c: "戯", s: 15, m: "Frolic", r: "たわむれる" },
-  { c: "伍", s: 6, m: "Five", r: "いつつ" },
-  { c: "忌", s: 7, m: "Mourning", r: "いむ" },
-  { c: "濁", s: 16, m: "Voiced", r: "にごる" },
-  { c: "奔", s: 8, m: "Run", r: "はしる" },
-  { c: "斗", s: 4, m: "Big Dipper", r: "と" },
-  { c: "蘭", s: 19, m: "Orchid", r: "らん" },
-  { c: "迅", s: 6, m: "Swift", r: "じん" },
-  { c: "肖", s: 7, m: "Resemblance", r: "あやかる" },
-  { c: "鉢", s: 13, m: "Bowl", r: "はち" },
-  { c: "朽", s: 6, m: "Decay", r: "くちる" },
-  { c: "殻", s: 11, m: "Husk", r: "から" },
-  { c: "享", s: 8, m: "Enjoy", r: "うける" },
-  { c: "秦", s: 10, m: "Manchu Dynasty", r: "はた" },
-  { c: "茅", s: 8, m: "Miscanthus Reed", r: "かや" },
-  { c: "藩", s: 18, m: "Clan", r: "はん" },
-  { c: "沙", s: 7, m: "Sand", r: "すな" },
-  { c: "輔", s: 14, m: "Help", r: "たすける" },
-  { c: "媒", s: 12, m: "Mediator", r: "なこうど" },
-  { c: "鶏", s: 19, m: "Chicken", r: "にわとり" },
-  { c: "禅", s: 13, m: "Zen", r: "しずか" },
-  { c: "嘱", s: 15, m: "Entrust", r: "しょくする" },
-  { c: "胴", s: 10, m: "Trunk", r: "どう" },
-  { c: "迭", s: 8, m: "Transfer", r: "てつ" },
-  { c: "挿", s: 10, m: "Insert", r: "さす" },
-  { c: "嵐", s: 12, m: "Storm", r: "あらし" },
-  { c: "椎", s: 12, m: "Chinquapin", r: "つち" },
-  { c: "絹", s: 13, m: "Silk", r: "きぬ" },
-  { c: "陪", s: 11, m: "Obeisance", r: "ばい" },
-  { c: "剖", s: 10, m: "Divide", r: "ぼう" },
-  { c: "譜", s: 19, m: "Musical Score", r: "ふ" },
-  { c: "郁", s: 9, m: "Cultural Progress", r: "いく" },
-  { c: "悠", s: 11, m: "Permanence", r: "ゆう" },
-  { c: "淑", s: 11, m: "Graceful", r: "しとやか" },
-  { c: "帆", s: 6, m: "Sail", r: "ほ" },
-  { c: "暁", s: 12, m: "Daybreak", r: "あかつき" },
-  { c: "傑", s: 13, m: "Greatness", r: "すぐれる" },
-  { c: "楠", s: 13, m: "Camphor Tree", r: "くす" },
-  { c: "笛", s: 11, m: "Flute", r: "ふえ" },
-  { c: "玲", s: 9, m: "Sound Of Jewels", r: "れい" },
-  { c: "奴", s: 5, m: "Guy", r: "やつ" },
-  { c: "錠", s: 16, m: "Lock", r: "じょう" },
-  { c: "拳", s: 10, m: "Fist", r: "こぶし" },
-  { c: "翔", s: 12, m: "Soar", r: "かける" },
-  { c: "遷", s: 15, m: "Transition", r: "うつる" },
-  { c: "拙", s: 8, m: "Bungling", r: "つたない" },
-  { c: "侍", s: 8, m: "Waiter", r: "さむらい" },
-  { c: "尺", s: 4, m: "Shaku", r: "しゃく" },
-  { c: "峠", s: 9, m: "Mountain Peak", r: "とうげ" },
-  { c: "篤", s: 16, m: "Fervent", r: "あつい" },
-  { c: "肇", s: 14, m: "Beginning", r: "はじめる" },
-  { c: "渇", s: 11, m: "Thirst", r: "かわく" },
-  { c: "叔", s: 8, m: "Uncle", r: "しゅく" },
-  { c: "雌", s: 14, m: "Feminine", r: "め" },
-  { c: "亨", s: 7, m: "Pass Through", r: "とおる" },
-  { c: "堪", s: 12, m: "Withstand", r: "たえる" },
-  { c: "叙", s: 9, m: "Confer", r: "ついず" },
-  { c: "酢", s: 12, m: "Vinegar", r: "す" },
-  { c: "吟", s: 7, m: "Versify", r: "ぎん" },
-  { c: "逓", s: 10, m: "Relay", r: "かわる" },
-  { c: "嶺", s: 17, m: "Peak", r: "みね" },
-  { c: "甚", s: 9, m: "Tremendously", r: "はなはだ" },
-  { c: "喬", s: 12, m: "High", r: "たかい" },
-  { c: "崇", s: 11, m: "Adore", r: "あがめる" },
-  { c: "漆", s: 14, m: "Lacquer", r: "うるし" },
-  { c: "岬", s: 8, m: "Headland", r: "みさき" },
-  { c: "癖", s: 18, m: "Mannerism", r: "くせ" },
-  { c: "愉", s: 12, m: "Pleasure", r: "たのしい" },
-  { c: "寅", s: 11, m: "Sign Of The Tiger", r: "とら" },
-  { c: "礁", s: 17, m: "Reef", r: "しょう" },
-  { c: "乃", s: 2, m: "From", r: "の" },
-  { c: "洲", s: 9, m: "Continent", r: "しま" },
-  { c: "屯", s: 4, m: "Barracks", r: "たむろ" },
-  { c: "樺", s: 14, m: "Birch", r: "かば" },
-  { c: "槙", s: 14, m: "Twig", r: "まき" },
-  { c: "姻", s: 9, m: "Matrimony", r: "いん" },
-  { c: "巌", s: 20, m: "Rock", r: "いわ" },
-  { c: "擬", s: 17, m: "Mimic", r: "まがい" },
-  { c: "塀", s: 12, m: "Fence", r: "へい" },
-  { c: "唇", s: 10, m: "Lips", r: "くちびる" },
-  { c: "睦", s: 13, m: "Intimate", r: "むつまじい" },
-  { c: "閑", s: 12, m: "Leisure", r: "かん" },
-  { c: "胡", s: 9, m: "Barbarian", r: "なんぞ" },
-  { c: "幽", s: 9, m: "Seclude", r: "ふかい" },
-  { c: "峻", s: 10, m: "High", r: "けわしい" },
-  { c: "曹", s: 11, m: "Office", r: "そう" },
-  { c: "詠", s: 12, m: "Recitation", r: "よむ" },
-  { c: "卑", s: 9, m: "Lowly", r: "いやしい" },
-  { c: "侮", s: 8, m: "Scorn", r: "あなどる" },
-  { c: "鋳", s: 15, m: "Casting", r: "いる" },
-  { c: "抹", s: 8, m: "Rub", r: "まつ" },
-  { c: "尉", s: 11, m: "Military Officer", r: "い" },
-  { c: "槻", s: 15, m: "Zelkova Tree", r: "つき" },
-  { c: "隷", s: 16, m: "Slave", r: "したがう" },
-  { c: "禍", s: 13, m: "Calamity", r: "わざわい" },
-  { c: "蝶", s: 15, m: "Butterfly", r: "ちょう" },
-  { c: "酪", s: 13, m: "Dairy Products", r: "らく" },
-  { c: "茎", s: 8, m: "Stalk", r: "くき" },
-  { c: "帥", s: 9, m: "Commander", r: "すい" },
-  { c: "逝", s: 10, m: "Departed", r: "ゆく" },
-  { c: "汽", s: 7, m: "Vapor", r: "き" },
-  { c: "琢", s: 11, m: "Polish", r: "みがく" },
-  { c: "匿", s: 10, m: "Hide", r: "かくまう" },
-  { c: "襟", s: 18, m: "Collar", r: "えり" },
-  { c: "蛍", s: 11, m: "Lightning-bug", r: "ほたる" },
-  { c: "蕉", s: 15, m: "Banana", r: "しょう" },
-  { c: "寡", s: 14, m: "Widow", r: "か" },
-  { c: "琉", s: 11, m: "Precious Stone", r: "りゅう" },
-  { c: "痢", s: 12, m: "Diarrhea", r: "り" },
-  { c: "庸", s: 11, m: "Commonplace", r: "よう" },
-  { c: "朋", s: 8, m: "Companion", r: "とも" },
-  { c: "坑", s: 7, m: "Pit", r: "こう" },
-  { c: "藍", s: 18, m: "Indigo", r: "あい" },
-  { c: "賊", s: 13, m: "Burglar", r: "ぞく" },
-  { c: "搾", s: 13, m: "Squeeze", r: "しぼる" },
-  { c: "畔", s: 10, m: "Paddy Ridge", r: "あぜ" },
-  { c: "遼", s: 15, m: "Distant", r: "りょう" },
-  { c: "唄", s: 10, m: "Song", r: "うた" },
-  { c: "孔", s: 4, m: "Cavity", r: "あな" },
-  { c: "橘", s: 16, m: "Mandarin Orange", r: "たちばな" },
-  { c: "漱", s: 14, m: "Gargle", r: "くちすすぐ" },
-  { c: "呂", s: 7, m: "Spine", r: "せぼね" },
-  { c: "拷", s: 9, m: "Torture", r: "ごう" },
-  { c: "嬢", s: 16, m: "Lass", r: "むすめ" },
-  { c: "苑", s: 8, m: "Garden", r: "その" },
-  { c: "巽", s: 12, m: "Southeast", r: "たつみ" },
-  { c: "杜", s: 7, m: "Woods", r: "もり" },
-  { c: "渓", s: 11, m: "Mountain Stream", r: "たに" },
-  { c: "翁", s: 10, m: "Venerable Old Man", r: "おきな" },
-  { c: "廉", s: 13, m: "Bargain", r: "れん" },
-  { c: "謹", s: 17, m: "Discreet", r: "つつしむ" },
-  { c: "瞳", s: 17, m: "Pupil (of Eye)", r: "ひとみ" },
-  { c: "湧", s: 12, m: "Boil", r: "わく" },
-  { c: "欣", s: 8, m: "Take Pleasure In", r: "よろこぶ" },
-  { c: "窯", s: 15, m: "Kiln", r: "かま" },
-  { c: "褒", s: 15, m: "Praise", r: "ほめる" },
-  { c: "醜", s: 17, m: "Ugly", r: "みにくい" },
-  { c: "升", s: 4, m: "Measuring Box", r: "ます" },
-  { c: "殉", s: 10, m: "Martyrdom", r: "じゅん" },
-  { c: "煩", s: 13, m: "Anxiety", r: "わずらう" },
-  { c: "巴", s: 4, m: "Comma-design", r: "ともえ" },
-  { c: "禎", s: 13, m: "Happiness", r: "さいわい" },
-  { c: "劾", s: 8, m: "Censure", r: "がい" },
-  { c: "堕", s: 12, m: "Degenerate", r: "おちる" },
-  { c: "租", s: 10, m: "Tariff", r: "そ" },
-  { c: "稜", s: 13, m: "Angle", r: "いつ" },
-  { c: "桟", s: 10, m: "Scaffold", r: "かけはし" },
-  { c: "倭", s: 10, m: "Yamato", r: "やまと" },
-  { c: "婿", s: 12, m: "Bridegroom", r: "むこ" },
-  { c: "慕", s: 14, m: "Pining", r: "したう" },
-  { c: "斐", s: 12, m: "Beautiful", r: "ひ" },
-  { c: "罷", s: 15, m: "Quit", r: "まかり" },
-  { c: "矯", s: 17, m: "Rectify", r: "ためる" },
-  { c: "某", s: 9, m: "So-and-so", r: "それがし" },
-  { c: "囚", s: 5, m: "Captured", r: "とらわれる" },
-  { c: "魁", s: 14, m: "Charging Ahead Of Others", r: "さきがけ" },
-  { c: "虹", s: 9, m: "Rainbow", r: "にじ" },
-  { c: "鴻", s: 17, m: "Large Bird", r: "おおとり" },
-  { c: "泌", s: 8, m: "Ooze", r: "ひつ" },
-  { c: "於", s: 8, m: "At", r: "おいて" },
-  { c: "赳", s: 10, m: "Strong And Brave", r: "きゅう" },
-  { c: "漸", s: 14, m: "Steadily", r: "ようやく" },
-  { c: "蚊", s: 10, m: "Mosquito", r: "か" },
-  { c: "葵", s: 12, m: "Hollyhock", r: "あおい" },
-  { c: "厄", s: 4, m: "Unlucky", r: "やく" },
-  { c: "藻", s: 19, m: "Seaweed", r: "も" },
-  { c: "禄", s: 12, m: "Fief", r: "さいわい" },
-  { c: "孟", s: 8, m: "Chief", r: "かしら" },
-  { c: "嫡", s: 14, m: "Legitimate Wife", r: "ちゃく" },
-  { c: "尭", s: 8, m: "High", r: "たかい" },
-  { c: "嚇", s: 17, m: "Menacing", r: "おどす" },
-  { c: "巳", s: 3, m: "Sign Of The Snake Or Serpent", r: "み" },
-  { c: "凸", s: 5, m: "Convex", r: "でこ" },
-  { c: "暢", s: 14, m: "Stretch", r: "のびる" },
-  { c: "韻", s: 19, m: "Rhyme", r: "いん" },
-  { c: "霜", s: 17, m: "Frost", r: "しも" },
-  { c: "硝", s: 12, m: "Nitrate", r: "しょう" },
-  { c: "勅", s: 9, m: "Imperial Order", r: "いましめる" },
-  { c: "芹", s: 7, m: "Parsley", r: "せり" },
-  { c: "杏", s: 7, m: "Apricot", r: "あんず" },
-  { c: "棺", s: 12, m: "Coffin", r: "かん" },
-  { c: "儒", s: 16, m: "Confucian", r: "じゅ" },
-  { c: "鳳", s: 14, m: "Male Mythical Bird", r: "ほう" },
-  { c: "馨", s: 20, m: "Fragrant", r: "かおる" },
-  { c: "慧", s: 15, m: "Wise", r: "さとい" },
-  { c: "愁", s: 13, m: "Distress", r: "うれえる" },
-  { c: "楼", s: 13, m: "Watchtower", r: "たかどの" },
-  { c: "彬", s: 11, m: "Refined", r: "うるわしい" },
-  { c: "匡", s: 6, m: "Correct", r: "すくう" },
-  { c: "眉", s: 9, m: "Eyebrow", r: "まゆ" },
-  { c: "欽", s: 12, m: "Respect", r: "つつしむ" },
-  { c: "薪", s: 16, m: "Fuel", r: "たきぎ" },
-  { c: "褐", s: 13, m: "Brown", r: "かつ" },
-  { c: "賜", s: 15, m: "Grant", r: "たまわる" },
-  { c: "嵯", s: 13, m: "Steep", r: "さ" },
-  { c: "綜", s: 14, m: "Rule", r: "おさめる" },
-  { c: "繕", s: 18, m: "Darning", r: "つくろう" },
-  { c: "栓", s: 10, m: "Plug", r: "せん" },
-  { c: "翠", s: 14, m: "Green", r: "かわせみ" },
-  { c: "鮎", s: 16, m: "Freshwater Trout", r: "あゆ" },
-  { c: "榛", s: 14, m: "Hazelnut", r: "はしばみ" },
-  { c: "凹", s: 5, m: "Concave", r: "くぼむ" },
-  { c: "艶", s: 19, m: "Glossy", r: "つや" },
-  { c: "惣", s: 12, m: "All", r: "すべて" },
-  { c: "蔦", s: 14, m: "Vine", r: "つた" },
-  { c: "錬", s: 16, m: "Tempering", r: "ねる" },
-  { c: "隼", s: 10, m: "Falcon", r: "はやぶさ" },
-  { c: "渚", s: 11, m: "Strand", r: "なぎさ" },
-  { c: "衷", s: 10, m: "Inmost", r: "ちゅう" },
-  { c: "逐", s: 10, m: "Pursue", r: "ちく" },
-  { c: "斥", s: 5, m: "Reject", r: "しりぞける" },
-  { c: "稀", s: 12, m: "Rare", r: "まれ" },
-  { c: "芙", s: 7, m: "Lotus", r: "ふ" },
-  { c: "詔", s: 12, m: "Imperial Edict", r: "みことのり" },
-  { c: "皐", s: 11, m: "Swamp", r: "さつき" },
-  { c: "雛", s: 18, m: "Chick", r: "ひな" },
-  { c: "惟", s: 11, m: "Consider", r: "おもんみる" },
-  { c: "佑", s: 7, m: "Help", r: "たすける" },
-  { c: "耀", s: 20, m: "Shine", r: "かがやく" },
-  { c: "黛", s: 16, m: "Blackened Eyebrows", r: "まゆずみ" },
-  { c: "渥", s: 12, m: "Kindness", r: "あつい" },
-  { c: "憧", s: 15, m: "Yearn After", r: "あこがれる" },
-  { c: "宵", s: 10, m: "Wee Hours", r: "よい" },
-  { c: "妄", s: 6, m: "Delusion", r: "みだりに" },
-  { c: "惇", s: 11, m: "Sincere", r: "あつい" },
-  { c: "脩", s: 11, m: "Dried Meat", r: "おさめる" },
-  { c: "甫", s: 7, m: "For The First Time", r: "はじめて" },
-  { c: "酌", s: 10, m: "Bar-tending", r: "くむ" },
-  { c: "蚕", s: 10, m: "Silkworm", r: "かいこ" },
-  { c: "嬉", s: 15, m: "Glad", r: "うれしい" },
-  { c: "蒼", s: 13, m: "Blue", r: "あおい" },
-  { c: "暉", s: 13, m: "Shine", r: "かがやく" },
-  { c: "頒", s: 13, m: "Distribute", r: "わかつ" },
-  { c: "只", s: 5, m: "Only", r: "ただ" },
-  { c: "肢", s: 8, m: "Limb", r: "し" },
-  { c: "檀", s: 17, m: "Cedar", r: "まゆみ" },
-  { c: "凱", s: 12, m: "Victory Song", r: "かちどき" },
-  { c: "彗", s: 11, m: "Comet", r: "ほうき" },
-  { c: "謄", s: 17, m: "Mimeograph", r: "とう" },
-  { c: "梓", s: 11, m: "Catalpa Tree", r: "あずさ" },
-  { c: "丑", s: 4, m: "Sign Of The Ox Or Cow", r: "うし" },
-  { c: "嗣", s: 13, m: "Heir", r: "し" },
-  { c: "叶", s: 5, m: "Grant", r: "かなえる" },
-  { c: "汐", s: 6, m: "Eventide", r: "しお" },
-  { c: "絢", s: 12, m: "Brilliant Fabric Design", r: "けん" },
-  { c: "朔", s: 10, m: "Conjunction (astronomy)", r: "ついたち" },
-  { c: "伽", s: 7, m: "Nursing", r: "とぎ" },
-  { c: "畝", s: 10, m: "Furrow", r: "せ" },
-  { c: "抄", s: 7, m: "Extract", r: "しょう" },
-  { c: "爽", s: 11, m: "Refreshing", r: "あきらか" },
-  { c: "黎", s: 15, m: "Dark", r: "くろい" },
-  { c: "惰", s: 12, m: "Lazy", r: "だ" },
-  { c: "蛮", s: 12, m: "Barbarian", r: "えびす" },
-  { c: "冴", s: 7, m: "Be Clear", r: "さえる" },
-  { c: "旺", s: 8, m: "Flourishing", r: "かがやき" },
-  { c: "萌", s: 11, m: "Show Symptoms Of", r: "もえる" },
-  { c: "偲", s: 11, m: "Recollect", r: "しのぶ" },
-  { c: "壱", s: 7, m: "One (in Documents)", r: "ひとつ" },
-  { c: "瑠", s: 14, m: "Lapis Lazuli", r: "る" },
-  { c: "允", s: 4, m: "License", r: "じょう" },
-  { c: "侯", s: 9, m: "Marquis", r: "こう" },
-  { c: "蒔", s: 13, m: "Sow (seeds)", r: "うえる" },
-  { c: "鯉", s: 18, m: "Carp", r: "こい" },
-  { c: "弧", s: 9, m: "Arc", r: "こ" },
-  { c: "遥", s: 12, m: "Far Off", r: "はるか" },
-  { c: "舜", s: 13, m: "Type Of Morning Glory", r: "しゅん" },
-  { c: "瑛", s: 12, m: "Sparkle Of Jewelry", r: "えい" },
-  { c: "附", s: 8, m: "Affixed", r: "つける" },
-  { c: "彪", s: 11, m: "Spotted", r: "あや" },
-  { c: "卯", s: 5, m: "Sign Of The Hare Or Rabbit", r: "う" },
-  { c: "但", s: 7, m: "However", r: "ただし" },
-  { c: "綺", s: 14, m: "Figured Cloth", r: "あや" },
-  { c: "芋", s: 6, m: "Potato", r: "いも" },
-  { c: "茜", s: 9, m: "Madder", r: "あかね" },
-  { c: "凌", s: 10, m: "Endure", r: "しのぐ" },
-  { c: "皓", s: 12, m: "White", r: "しろい" },
-  { c: "洸", s: 9, m: "Sparkling Water", r: "こう" },
-  { c: "毬", s: 11, m: "Burr", r: "いが" },
-  { c: "婆", s: 11, m: "Old Woman", r: "ばば" },
-  { c: "緋", s: 14, m: "Scarlet", r: "あけ" },
-  { c: "鯛", s: 19, m: "Sea Bream", r: "たい" },
-  { c: "怜", s: 8, m: "Wise", r: "あわれむ" },
-  { c: "邑", s: 7, m: "Village", r: "むら" },
-  { c: "倣", s: 10, m: "Emulate", r: "ならう" },
-  { c: "碧", s: 14, m: "Blue", r: "へき" },
-  { c: "啄", s: 10, m: "Peck", r: "ついばむ" },
-  { c: "穣", s: 18, m: "Good Crops", r: "わら" },
-  { c: "酉", s: 7, m: "West", r: "とり" },
-  { c: "悌", s: 10, m: "Serving Our Elders", r: "てい" },
-  { c: "倹", s: 10, m: "Frugal", r: "つましい" },
-  { c: "柚", s: 9, m: "Citron", r: "ゆず" },
-  { c: "繭", s: 18, m: "Cocoon", r: "まゆ" },
-  { c: "且", s: 5, m: "Moreover", r: "かつ" },
-  { c: "丙", s: 5, m: "Third Class", r: "ひのえ" },
-  { c: "丞", s: 6, m: "Help", r: "すくう" },
-  { c: "亥", s: 6, m: "Sign Of The Hog", r: "い" },
-  { c: "亦", s: 6, m: "Also", r: "また" },
-  { c: "伎", s: 6, m: "Deed", r: "わざ" },
-  { c: "伶", s: 7, m: "Actor", r: "わざおぎ" },
-  { c: "侃", s: 8, m: "Strong", r: "つよい" },
-  { c: "侑", s: 8, m: "Urge To Eat", r: "すすめる" },
-  { c: "倖", s: 10, m: "Happiness", r: "しあわせ" },
-  { c: "冶", s: 7, m: "Melting", r: "いる" },
-  { c: "凜", s: 15, m: "Cold", r: "きびしい" },
-  { c: "凪", s: 6, m: "Lull", r: "なぎ" },
-  { c: "勁", s: 9, m: "Strong", r: "つよい" },
-  { c: "勺", s: 3, m: "Ladle", r: "しゃく" },
-  { c: "匁", s: 4, m: "Monme", r: "もんめ" },
-  { c: "叡", s: 16, m: "Intelligence", r: "あきらか" },
-  { c: "吏", s: 6, m: "Officer", r: "り" },
-  { c: "哉", s: 9, m: "How", r: "かな" },
-  { c: "塑", s: 13, m: "Model", r: "でく" },
-  { c: "墾", s: 16, m: "Ground-breaking", r: "はる" },
-  { c: "奎", s: 9, m: "Star", r: "けい" },
-  { c: "宥", s: 9, m: "Soothe", r: "なだめる" },
-  { c: "崚", s: 11, m: "Mountains Towering In A Row", r: "りょう" },
-  { c: "嵩", s: 13, m: "Be Aggravated", r: "かさ" },
-  { c: "弐", s: 6, m: "Ii", r: "ふたつ" },
-  { c: "恕", s: 10, m: "Excuse", r: "ゆるす" },
-  { c: "捷", s: 11, m: "Victory", r: "はやい" },
-  { c: "捺", s: 11, m: "Press", r: "さす" },
-  { c: "斤", s: 4, m: "Axe", r: "きん" },
-  { c: "旦", s: 5, m: "Daybreak", r: "あきらか" },
-  { c: "昂", s: 8, m: "Rise", r: "あがる" },
-  { c: "昴", s: 9, m: "The Pleiades", r: "すばる" },
-  { c: "晏", s: 10, m: "Late", r: "おそい" },
-  { c: "晟", s: 10, m: "Clear", r: "あきらか" },
-  { c: "晨", s: 11, m: "Morning", r: "あした" },
-  { c: "朕", s: 10, m: "Majestic Plural", r: "ちん" },
-  { c: "柊", s: 9, m: "Holly", r: "ひいらぎ" },
-  { c: "柾", s: 9, m: "Straight Grain", r: "まさ" },
-  { c: "栞", s: 10, m: "Bookmark", r: "しおり" },
-  { c: "梢", s: 11, m: "Treetops", r: "こずえ" },
-  { c: "梧", s: 11, m: "Chinese Parasol Tree", r: "あおぎり" },
-  { c: "椋", s: 12, m: "Type Of Deciduous Tree", r: "むく" },
-  { c: "椰", s: 13, m: "Coconut Tree", r: "やし" },
-  { c: "楓", s: 13, m: "Maple", r: "かえで" },
-  { c: "汰", s: 7, m: "Washing", r: "おごる" },
-  { c: "洵", s: 9, m: "Alike", r: "のぶ" },
-  { c: "滉", s: 13, m: "Deep And Broad", r: "ひろい" },
-  { c: "澪", s: 16, m: "Water Route", r: "みお" },
-  { c: "濫", s: 18, m: "Excessive", r: "みだりに" },
-  { c: "熙", s: 15, m: "Bright", r: "たのしむ" },
-  { c: "燎", s: 16, m: "Burn", r: "かがりび" },
-  { c: "燦", s: 17, m: "Brilliant", r: "さんたる" },
-  { c: "燿", s: 18, m: "Shine", r: "かがやく" },
-  { c: "爵", s: 17, m: "Baron", r: "しゃく" },
-  { c: "爾", s: 14, m: "You", r: "なんじ" },
-  { c: "玖", s: 7, m: "Beautiful Black Jewel", r: "きゅう" },
-  { c: "琳", s: 12, m: "Jewel", r: "りん" },
-  { c: "瑚", s: 13, m: "Ancestral Offering Receptacle", r: "こ" },
-  { c: "瑳", s: 14, m: "Polish", r: "みがく" },
-  { c: "瑶", s: 13, m: "Beautiful As A Jewel", r: "たま" },
-  { c: "璃", s: 15, m: "Glassy", r: "り" },
-  { c: "痘", s: 12, m: "Pox", r: "とう" },
-  { c: "眸", s: 11, m: "Pupil Of The Eye", r: "ひとみ" },
-  { c: "瞭", s: 17, m: "Clear", r: "あきらか" },
-  { c: "碩", s: 14, m: "Large", r: "おおきい" },
-  { c: "竣", s: 12, m: "End", r: "わらわ" },
-  { c: "笙", s: 11, m: "A Reed Instrument", r: "ふえ" },
-  { c: "箇", s: 14, m: "Counter For Articles", r: "か" },
-  { c: "紗", s: 10, m: "Gauze", r: "うすぎぬ" },
-  { c: "紬", s: 11, m: "Pongee (a Knotted Silk Cloth)", r: "つむぎ" },
-  { c: "絃", s: 11, m: "String", r: "いと" },
-  { c: "綸", s: 14, m: "Thread", r: "いと" },
-  { c: "耗", s: 10, m: "Decrease", r: "もう" },
-  { c: "耶", s: 9, m: "Question Mark", r: "か" },
-  { c: "胤", s: 9, m: "Descendent", r: "たね" },
-  { c: "脹", s: 12, m: "Dilate", r: "はれる" },
-  { c: "茄", s: 8, m: "Eggplant", r: "か" },
-  { c: "茉", s: 8, m: "Jasmine", r: "まつ" },
-  { c: "莉", s: 10, m: "Jasmine", r: "り" },
-  { c: "莞", s: 10, m: "Smiling", r: "い" },
-  { c: "菖", s: 11, m: "Iris", r: "しょう" },
-  { c: "菫", s: 11, m: "The Violet", r: "すみれ" },
-  { c: "蓉", s: 13, m: "Lotus", r: "よう" },
-  { c: "蕗", s: 16, m: "Butterbur", r: "ふき" },
-  { c: "虞", s: 13, m: "Fear", r: "おそれ" },
-  { c: "衿", s: 9, m: "Neck", r: "えり" },
-  { c: "袈", s: 11, m: "A Coarse Camlet", r: "け" },
-  { c: "裟", s: 13, m: "Buddhist Surplice", r: "さ" },
-  { c: "詢", s: 13, m: "Consult With", r: "はかる" },
-  { c: "誼", s: 15, m: "Friendship", r: "よしみ" },
-  { c: "諄", s: 15, m: "Tedious", r: "ひちくどい" },
-  { c: "諒", s: 15, m: "Fact", r: "あきらか" },
-  { c: "謁", s: 15, m: "Audience", r: "えつ" },
-  { c: "賦", s: 15, m: "Levy", r: "ふ" },
-  { c: "迪", s: 8, m: "Edify", r: "みち" },
-  { c: "遵", s: 15, m: "Abide By", r: "じゅん" },
-  { c: "采", s: 8, m: "Dice", r: "とる" },
-  { c: "銑", s: 14, m: "Pig Iron", r: "せん" },
-  { c: "錘", s: 16, m: "Weight", r: "つむ" },
-  { c: "鞠", s: 17, m: "Ball", r: "まり" },
-  { c: "頌", s: 13, m: "Eulogy", r: "かたち" },
-  { c: "颯", s: 14, m: "Sudden", r: "さっと" },
-  { c: "麟", s: 24, m: "Chinese Unicorn", r: "りん" },
-  { c: "麿", s: 18, m: "I", r: "まろ" },
-];
+const N2_TABLE = `
+党|10|なかま|Party
+協|8|きょう|Co-
+総|14|すべて|General
+区|4|く|Ward
+領|14|えり|Jurisdiction
+県|9|かける|Prefecture
+設|11|もうける|Establishment
+改|7|あらためる|Reformation
+府|8|ふ|Borough
+査|9|さ|Investigate
+委|8|ゆだねる|Committee
+軍|9|いくさ|Army
+団|6|かたまり|Group
+各|6|おのおの|Each
+島|10|しま|Island
+革|9|かわ|Leather
+村|7|むら|Village
+勢|13|いきおい|Forces
+減|12|へる|Dwindle
+再|6|ふたたび|Again
+税|12|ぜい|Tax
+営|12|いとなむ|Occupation
+比|4|くらべる|Compare
+防|7|ふせぐ|Ward Off
+補|12|おぎなう|Supplement
+境|14|さかい|Boundary
+導|15|みちびく|Guidance
+副|11|ふく|Vice-
+算|14|そろ|Calculate
+輸|16|ゆ|Transport
+述|8|のべる|Mention
+線|15|すじ|Line
+農|13|のう|Agriculture
+州|6|す|State
+武|8|たけ|Warrior
+象|12|かたどる|Elephant
+域|11|いき|Range
+額|18|ひたい|Forehead
+欧|8|うたう|Europe
+担|8|かつぐ|Shouldering
+準|13|じゅんじる|Semi-
+賞|15|ほめる|Prize
+辺|5|あたり|Environs
+造|10|つくる|Create
+被|10|こうむる|Incur
+技|7|わざ|Skill
+低|7|ひくい|Lower
+復|12|また|Restore
+移|11|うつる|Shift
+個|10|こ|Individual
+門|8|かど|Gate
+課|15|か|Chapter
+脳|11|のうずる|Brain
+極|12|きわめる|Poles
+含|7|ふくむ|Contain
+蔵|15|くら|Storehouse
+量|12|はかる|Quantity
+型|9|かた|Mould
+況|8|まして|Condition
+針|10|はり|Needle
+専|9|もっぱら|Specialty
+谷|7|たに|Valley
+史|5|し|History
+階|12|きざはし|Storey
+管|14|くだ|Pipe
+兵|7|つわもの|Soldier
+接|11|つぐ|Touch
+細|11|ほそい|Dainty
+効|8|きく|Merit
+丸|3|まる|Round
+湾|12|いりえ|Gulf
+録|16|しるす|Record
+省|9|かえりみる|Focus
+旧|5|ふるい|Old Times
+橋|16|はし|Bridge
+岸|8|きし|Beach
+周|8|まわり|Circumference
+材|7|ざい|Lumber
+戸|4|と|Door
+央|5|おう|Center
+券|8|けん|Ticket
+編|15|あむ|Compilation
+捜|10|さがす|Search
+竹|6|たけ|Bamboo
+超|12|こえる|Transcend
+並|8|なみ|Row
+療|17|りょう|Heal
+採|11|とる|Pick
+森|12|もり|Forest
+競|20|きそう|Emulate
+介|4|かい|Jammed In
+根|10|ね|Root
+販|11|はん|Marketing
+歴|14|れき|Curriculum
+将|10|まさに|Leader
+幅|12|はば|Hanging Scroll
+般|10|はん|Carrier
+貿|12|ぼう|Trade
+講|17|こう|Lecture
+林|8|はやし|Grove
+装|12|よそおう|Attire
+諸|15|もろ|Various
+劇|15|げき|Drama
+河|8|かわ|River
+航|10|こう|Navigate
+鉄|13|くろがね|Iron
+児|7|こ|Newborn Babe
+禁|13|きん|Prohibition
+印|6|しるし|Stamp
+逆|9|さか|Inverted
+換|12|かえる|Interchange
+久|3|ひさしい|Long Time
+短|12|みじかい|Short
+油|8|あぶら|Oil
+暴|15|あばく|Outburst
+輪|15|わ|Wheel
+占|5|しめる|Fortune-telling
+植|12|うえる|Plant
+清|11|きよい|Pure
+倍|10|ばい|Double
+均|7|ならす|Level
+億|15|おく|Hundred Million
+圧|5|おす|Pressure
+芸|7|うえる|Technique
+署|13|しょ|Signature
+伸|7|のびる|Expand
+停|11|とめる|Halt
+爆|19|はぜる|Bomb
+陸|11|おか|Land
+玉|5|たま|Jewel
+波|8|なみ|Waves
+帯|10|おびる|Sash
+延|8|のびる|Prolong
+羽|6|は|Feathers
+固|8|かためる|Harden
+則|9|のっとる|Rule
+乱|7|みだれる|Riot
+普|12|あまねく|Universal
+測|12|はかる|Fathom
+豊|13|ゆたか|Bountiful
+厚|9|あつい|Thick
+齢|17|よわい|Age
+囲|7|かこむ|Surround
+卒|8|そっする|Graduate
+略|11|ほぼ|Abbreviation
+承|8|うけたまわる|Acquiesce
+順|12|じゅん|Obey
+岩|8|いわ|Boulder
+練|14|ねる|Practice
+軽|12|かるい|Lightly
+了|2|りょう|Complete
+庁|5|やくしょ|Government Office
+城|9|しろ|Castle
+患|11|わずらう|Afflicted
+層|14|そう|Stratum
+版|8|はん|Printing Block
+令|5|れい|Orders
+角|7|かど|Angle
+絡|12|からむ|Entwine
+損|13|そこなう|Damage
+募|12|つのる|Recruit
+裏|13|うら|Back
+仏|4|ほとけ|Buddha
+績|17|せき|Exploits
+築|16|きずく|Fabricate
+貨|11|たから|Freight
+混|11|まじる|Mix
+昇|8|のぼる|Rise Up
+池|6|いけ|Pond
+血|6|ち|Blood
+温|12|あたたか|Warm
+季|8|き|Seasons
+星|9|ほし|Star
+永|5|ながい|Eternity
+著|11|あらわす|Renowned
+誌|14|し|Document
+庫|10|くら|Warehouse
+刊|5|かん|Publish
+像|14|ぞう|Statue
+香|9|か|Incense
+坂|7|さか|Slope
+底|8|そこ|Bottom
+布|5|ぬの|Linen
+寺|6|てら|Buddhist Temple
+宇|6|う|Eaves
+巨|5|きょ|Gigantic
+震|15|ふるう|Quake
+希|7|まれ|Hope
+触|13|ふれる|Contact
+依|8|よる|Reliant
+籍|20|せき|Enroll
+汚|6|けがす|Dirty
+枚|8|まい|Sheet Of...
+複|14|ふく|Duplicate
+郵|11|ゆう|Mail
+仲|6|なか|Go-between
+栄|9|さかえる|Flourish
+札|5|ふだ|Tag
+板|8|いた|Plank
+骨|10|ほね|Skeleton
+傾|13|かたむく|Lean
+届|8|とどける|Deliver
+巻|9|まく|Scroll
+燃|16|もえる|Burn
+跡|13|あと|Tracks
+包|5|つつむ|Wrap
+駐|15|ちゅう|Stop-over
+弱|10|よわい|Weak
+紹|11|しょう|Introduce
+雇|12|やとう|Employ
+替|12|かえる|Exchange
+預|13|あずける|Deposit
+焼|12|やく|Bake
+簡|18|えらぶ|Simplicity
+章|11|しょう|Badge
+臓|19|はらわた|Entrails
+律|9|りつ|Rhythm
+贈|18|おくる|Presents
+照|13|てる|Illuminate
+薄|16|うすい|Dilute
+群|13|むれる|Flock
+秒|9|びょう|Second (1/60 Minute)
+奥|12|おく|Heart
+詰|13|つめる|Packed
+双|4|ふた|Pair
+刺|8|さす|Thorn
+純|10|じゅん|Genuine
+翌|11|よく|The Following
+快|7|こころよい|Cheerful
+片|4|かた|One-sided
+敬|12|うやまう|Awe
+悩|10|なやむ|Trouble
+泉|9|いずみ|Spring
+皮|5|かわ|Pelt
+漁|14|あさる|Fishing
+荒|9|あらい|Laid Waste
+貯|12|ためる|Savings
+硬|12|かたい|Stiff
+埋|10|うめる|Bury
+柱|9|はしら|Pillar
+祭|11|まつる|Ritual
+袋|11|ふくろ|Sack
+筆|12|ふで|Writing Brush
+訓|10|おしえる|Instruction
+浴|10|あびる|Bathe
+童|12|わらべ|Juvenile
+宝|8|たから|Treasure
+封|9|ふう|Seal
+胸|10|むね|Bosom
+砂|9|すな|Sand
+塩|13|しお|Salt
+賢|16|かしこい|Intelligent
+腕|12|うで|Arm
+兆|6|きざす|Portent
+床|7|とこ|Bed
+毛|4|け|Fur
+緑|14|みどり|Green
+尊|12|たっとい|Revered
+祝|9|いわう|Celebrate
+柔|9|やわらか|Tender
+殿|13|との|Mr.
+濃|16|こい|Concentrated
+液|11|えき|Fluid
+衣|6|ころも|Garment
+肩|8|かた|Shoulder
+零|13|ぜろ|Zero
+幼|5|おさない|Infancy
+荷|10|に|Baggage
+泊|8|とまる|Overnight Stay
+黄|11|き|Yellow
+甘|5|あまい|Sweet
+臣|7|しん|Retainer
+浅|9|あさい|Shallow
+掃|11|はく|Sweep
+雲|12|くも|Cloud
+掘|11|ほる|Dig
+捨|11|すてる|Discard
+軟|11|やわらか|Soft
+沈|7|しずむ|Sink
+凍|10|こおる|Frozen
+乳|8|ちち|Milk
+恋|10|こう|Romance
+紅|9|べに|Crimson
+郊|9|こう|Outskirts
+腰|13|こし|Loins
+炭|9|すみ|Charcoal
+踊|14|おどる|Jump
+冊|5|ふみ|Tome
+勇|9|いさむ|Courage
+械|11|かせ|Contraption
+菜|11|な|Vegetable
+珍|9|めずらしい|Rare
+卵|7|たまご|Egg
+湖|12|みずうみ|Lake
+喫|12|のむ|Consume
+干|3|ほす|Dry
+虫|6|むし|Insect
+刷|8|する|Printing
+湯|12|ゆ|Hot Water
+溶|13|とける|Melt
+鉱|13|あらがね|Mineral
+涙|10|なみだ|Tears
+匹|4|ひき|Equal
+孫|10|まご|Grandchild
+鋭|15|するどい|Pointed
+枝|8|えだ|Bough
+塗|13|ぬる|Paint
+軒|10|のき|Flats
+毒|8|どく|Poison
+叫|6|さけぶ|Shout
+拝|8|おがむ|Worship
+氷|5|こおり|Icicle
+乾|11|かわく|Drought
+棒|12|ぼう|Rod
+祈|8|いのる|Pray
+拾|9|ひろう|Pick Up
+粉|10|デシメートル|Flour
+糸|6|いと|Thread
+綿|14|わた|Cotton
+汗|6|あせ|Sweat
+銅|14|あかがね|Copper
+湿|12|しめる|Damp
+瓶|11|かめ|Bottle
+咲|9|さく|Blossom
+召|5|めす|Seduce
+缶|6|かま|Tin Can
+隻|10|せき|Vessels
+脂|10|あぶら|Fat
+蒸|13|むす|Steam
+肌|6|はだ|Texture
+耕|10|たがやす|Till
+鈍|12|にぶい|Dull
+泥|8|どろ|Mud
+隅|12|すみ|Corner
+灯|6|ひ|Lamp
+辛|7|からい|Spicy
+磨|16|みがく|Grind
+麦|7|むぎ|Barley
+姓|8|せい|Surname
+筒|12|つつ|Cylinder
+鼻|14|はな|Nose
+粒|11|つぶ|Grains
+詞|12|ことば|Part Of Speech
+胃|9|い|Stomach
+畳|12|たたむ|Tatami Mat
+机|6|つくえ|Desk
+膚|15|はだ|Skin
+濯|17|すすぐ|Laundry
+塔|12|とう|Pagoda
+沸|8|わく|Seethe
+灰|6|はい|Ashes
+菓|11|か|Candy
+帽|12|ずきん|Cap
+枯|9|かれる|Wither
+涼|11|すずしい|Refreshing
+舟|6|ふね|Boat
+貝|7|かい|Shellfish
+符|11|ふ|Token
+憎|14|にくむ|Hate
+皿|5|さら|Dish
+肯|8|がえんじる|Agreement
+燥|17|はしゃぐ|Parch
+畜|10|ちく|Livestock
+挟|9|はさむ|Pinch
+曇|16|くもる|Cloudy Weather
+滴|14|しずく|Drip
+伺|7|うかがう|Pay Respects
+`;
+
+const N1_TABLE = `
+氏|4|うじ|Family Name
+統|12|すべる|Overall
+保|9|たもつ|Protect
+第|11|だい|No.
+結|12|むすぶ|Tie
+派|9|は|Faction
+案|10|つくえ|Plan
+策|12|さく|Scheme
+基|11|もと|Fundamentals
+価|8|あたい|Value
+提|12|さげる|Propose
+挙|10|あげる|Raise
+応|7|あたる|Apply
+企|6|くわだてる|Undertake
+検|12|しらべる|Examination
+藤|18|ふじ|Wisteria
+沢|7|さわ|Swamp
+裁|12|たつ|Tailor
+証|12|あかし|Evidence
+援|12|えん|Abet
+施|9|ほどこす|Give
+井|4|い|Well
+護|20|まもる|Safeguard
+展|10|てん|Unfold
+態|14|わざと|Attitude
+鮮|17|あざやか|Fresh
+視|11|みる|Inspection
+条|7|えだ|Article
+幹|13|みき|Tree Trunk
+独|9|ひとり|Single
+宮|10|みや|Shinto Shrine
+率|11|ひきいる|Ratio
+衛|16|えい|Defense
+張|11|はる|Lengthen
+監|15|かん|Oversee
+環|17|わ|Ring
+審|15|つまびらか|Hearing
+義|13|ぎ|Righteousness
+訴|12|うったえる|Accusation
+株|10|かぶ|Stocks
+姿|9|すがた|Figure
+閣|14|かく|Tower
+衆|12|おおい|Masses
+評|12|ひょう|Evaluate
+影|15|かげ|Shadow
+松|8|まつ|Pine Tree
+撃|15|うつ|Beat
+佐|7|さ|Assistant
+核|10|かく|Nucleus
+整|16|ととのえる|Organize
+融|16|とける|Dissolve
+製|14|せい|Made In...
+票|11|ひょう|Ballot
+渉|11|わたる|Ford
+響|20|ひびく|Echo
+推|11|おす|Conjecture
+請|15|こう|Solicit
+器|15|うつわ|Utensil
+士|3|さむらい|Gentleman
+討|10|うつ|Chastise
+攻|7|せめる|Aggression
+崎|11|さき|Promontory
+督|13|とく|Coach
+授|11|さずける|Impart
+催|13|もようす|Sponsor
+及|3|およぶ|Reach Out
+憲|16|けん|Constitution
+離|19|はなれる|Detach
+激|16|はげしい|Violent
+摘|14|つむ|Pinch
+系|7|けい|Lineage
+批|7|ひ|Criticism
+郎|9|おとこ|Son
+健|11|すこやか|Healthy
+盟|13|めい|Alliance
+従|10|したがう|Accompany
+修|10|おさめる|Discipline
+隊|12|たい|Regiment
+織|18|おる|Weave
+拡|8|ひろがる|Broaden
+故|9|ゆえ|Happenstance
+振|10|ふる|Shake
+弁|5|かんむり|Valve
+就|12|つく|Concerning
+異|11|こと|Uncommon
+献|13|たてまつる|Offering
+厳|17|おごそか|Stern
+維|14|い|Fiber
+浜|10|はま|Seacoast
+遺|15|のこす|Bequeath
+塁|12|とりで|Bases
+邦|7|くに|Home Country
+素|10|もと|Elementary
+遣|13|つかう|Dispatch
+抗|7|あらがう|Confront
+模|14|も|Imitation
+雄|12|お|Masculine
+益|10|ます|Benefit
+緊|15|しめる|Tense
+標|15|しるべ|Signpost
+宣|9|のたまう|Proclaim
+昭|9|しょう|Shining
+廃|12|すたれる|Abolish
+伊|6|かれ|Italy
+江|6|え|Creek
+僚|14|りょう|Colleague
+吉|6|よし|Good Luck
+盛|11|もる|Boom
+皇|9|こう|Emperor
+臨|18|のぞむ|Look To
+踏|15|ふむ|Step
+壊|16|こわす|Demolition
+債|13|さい|Bond
+興|16|おこる|Entertain
+源|13|みなもと|Source
+儀|15|ぎ|Ceremony
+創|12|つくる|Genesis
+障|14|さわる|Hinder
+継|13|つぐ|Inherit
+筋|12|すじ|Muscle
+闘|18|たたかう|Fight
+葬|12|ほうむる|Interment
+避|16|さける|Evade
+司|5|つかさどる|Director
+康|11|こう|Ease
+善|12|よい|Virtuous
+逮|11|たい|Apprehend
+迫|8|せまる|Urge
+惑|12|まどう|Beguile
+崩|11|くずれる|Crumble
+紀|9|き|Chronicle
+聴|17|きく|Listen
+脱|11|ぬぐ|Undress
+級|9|きゅう|Class
+博|12|はく|Dr.
+締|15|しまる|Tighten
+救|11|すくう|Salvation
+執|11|とる|Tenacious
+房|8|ふさ|Tassel
+撤|15|てつ|Remove
+削|9|けずる|Plane
+密|11|ひそか|Secrecy
+措|11|おく|Set Aside
+志|7|シリング|Intention
+載|13|のせる|Ride
+陣|10|じん|Camp
+我|7|われ|Ego
+為|9|ため|Do
+抑|7|おさえる|Repress
+幕|13|とばり|Curtain
+染|9|そめる|Dye
+奈|8|いかん|Nara
+傷|13|きず|Wound
+択|7|えらぶ|Choose
+秀|7|ひいでる|Excel
+徴|14|しるし|Indications
+弾|12|ひく|Bullet
+償|17|つぐなう|Reparation
+功|5|いさお|Achievement
+拠|8|よる|Foothold
+秘|10|ひめる|Secret
+拒|8|こばむ|Repel
+刑|6|けい|Punish
+塚|12|つか|Hillock
+致|10|いたす|Doth
+繰|19|くる|Winding
+尾|7|お|Tail
+描|11|えがく|Sketch
+鈴|13|すず|Small Bell
+盤|15|ばん|Tray
+項|12|うなじ|Paragraph
+喪|12|も|Miss
+伴|7|ともなう|Consort
+養|15|やしなう|Foster
+懸|20|かける|State Of Suspension
+街|12|まち|Boulevard
+契|9|ちぎる|Pledge
+掲|11|かかげる|Put Up (a Notice)
+躍|21|おどる|Leap
+棄|13|すてる|Abandon
+邸|8|やしき|Residence
+縮|17|ちぢむ|Shrink
+還|16|かえる|Send Back
+属|12|さかん|Belong
+慮|15|おもんぱくる|Prudence
+枠|8|わく|Frame
+恵|10|めぐむ|Favor
+露|21|つゆ|Dew
+沖|7|おき|Open Sea
+緩|15|ゆるい|Slacken
+節|13|ふし|Node
+需|14|じゅ|Demand
+射|10|いる|Shoot
+購|17|こう|Subscription
+揮|12|ふるう|Brandish
+充|6|あてる|Allot
+貢|10|みつぐ|Tribute
+鹿|11|しか|Deer
+却|7|かえって|Instead
+端|14|はし|Edge
+賃|13|ちん|Fare
+獲|16|える|Seize
+郡|10|こおり|County
+併|8|あわせる|Join
+徹|15|てつ|Penetrate
+貴|12|たっとい|Precious
+衝|15|つく|Collide
+焦|12|こげる|Char
+奪|14|うばう|Rob
+災|7|わざわい|Disaster
+浦|10|うら|Bay
+析|8|せき|Chop
+譲|20|ゆずる|Defer
+称|10|たたえる|Appellation
+納|10|おさめる|Settlement
+樹|16|き|Timber
+挑|9|いどむ|Challenge
+誘|14|さそう|Entice
+紛|10|まぎれる|Distract
+至|6|いたる|Climax
+宗|8|むね|Religion
+促|9|うながす|Stimulate
+慎|13|つつしむ|Humility
+控|11|ひかえる|Withdraw
+智|12|ち|Wisdom
+握|12|にぎる|Grip
+宙|8|ちゅう|Mid-air
+俊|9|しゅん|Sagacious
+銭|14|ぜに|Coin
+渋|11|しぶ|Astringent
+銃|14|つつ|Gun
+操|16|みさお|Maneuver
+携|13|たずさえる|Portable
+診|12|みる|Checkup
+託|10|かこつける|Consign
+撮|15|とる|Snapshot
+誕|15|たん|Nativity
+侵|9|おかす|Encroach
+括|9|くくる|Fasten
+謝|17|あやまる|Apologize
+駆|14|かける|Drive
+透|10|すく|Transparent
+津|9|つ|Haven
+壁|16|かべ|Wall
+稲|14|いね|Rice Plant
+仮|6|かり|Sham
+裂|12|さく|Split
+敏|10|さとい|Cleverness
+是|9|これ|Just So
+排|11|はい|Repudiate
+裕|12|ゆう|Abundant
+堅|12|かたい|Strict
+訳|11|わけ|Translate
+芝|6|しば|Turf
+綱|14|つな|Hawser
+典|8|てん|Code
+賀|12|が|Congratulations
+扱|6|あつかい|Handle
+顧|21|かえりみる|Look Back
+弘|5|ひろい|Vast
+看|9|みる|Watch Over
+訟|11|しょう|Sue
+戒|7|いましめる|Commandment
+祉|8|し|Welfare
+誉|13|ほまれ|Reputation
+歓|15|よろこぶ|Delight
+奏|9|かなでる|Play Music
+勧|13|すすめる|Persuade
+騒|18|さわぐ|Boisterous
+閥|14|ばつ|Clique
+甲|5|きのえ|Armor
+縄|15|なわ|Straw Rope
+郷|11|さと|Home Town
+揺|12|ゆれる|Swing
+免|8|まぬかれる|Excuse
+既|10|すでに|Previously
+薦|16|すすめる|Recommend
+隣|16|となる|Neighboring
+華|10|はな|Splendor
+範|15|はん|Pattern
+隠|14|かくす|Conceal
+徳|14|とく|Benevolence
+哲|10|さとい|Philosophy
+杉|7|すぎ|Cedar
+釈|11|とく|Explanation
+己|3|おのれ|Self
+妥|7|だ|Gentle
+威|9|おどす|Intimidate
+豪|14|えらい|Overpowering
+熊|14|くま|Bear
+滞|13|とどこおる|Stagnate
+微|13|かすか|Delicate
+隆|11|りゅう|Hump
+症|10|しょう|Symptoms
+暫|15|しばらく|Temporarily
+忠|8|ちゅう|Loyalty
+倉|10|くら|Godown
+彦|9|ひこ|Lad
+肝|7|きも|Liver
+喚|12|わめく|Yell
+沿|8|そう|Run Alongside
+妙|7|たえ|Exquisite
+唱|11|となえる|Chant
+阿|8|おもねる|Africa
+索|10|さく|Cord
+誠|13|まこと|Sincerity
+襲|22|おそう|Attack
+懇|17|ねんごろ|Sociable
+俳|10|はい|Haiku
+柄|9|がら|Design
+驚|22|おどろく|Wonder
+麻|11|あさ|Hemp
+李|7|すもも|Plum
+浩|10|おおきい|Wide Expanse
+剤|10|かる|Dose
+瀬|19|せ|Rapids
+趣|15|おもむき|Purport
+陥|10|おちいる|Collapse
+斎|11|とき|Purification
+貫|11|つらぬく|Pierce
+仙|5|せん|Hermit
+慰|15|なぐさめる|Consolation
+序|7|ついで|Preface
+旬|6|じゅん|Decameron
+兼|10|かねる|Concurrently
+聖|13|ひじり|Holy
+旨|6|むね|Delicious
+即|7|つく|Instant
+柳|9|やなぎ|Willow
+舎|8|やどる|Cottage
+偽|11|いつわる|Falsehood
+較|13|くらべる|Contrast
+覇|19|はたがしら|Hegemony
+詳|13|くわしい|Detailed
+抵|8|てい|Resist
+脅|10|おびやかす|Threaten
+茂|8|しげる|Overgrown
+犠|17|いけにえ|Sacrifice
+旗|14|はた|National Flag
+距|12|へだたる|Long-distance
+雅|13|みやび|Gracious
+飾|13|かざる|Decorate
+網|14|あみ|Netting
+竜|10|たつ|Dragon
+詩|13|うた|Poem
+繁|16|しげる|Luxuriant
+翼|17|つばさ|Wing
+潟|15|かた|Lagoon
+敵|15|かたき|Enemy
+魅|15|み|Fascination
+嫌|13|きらう|Dislike
+斉|8|そろう|Adjusted
+敷|15|しく|Spread
+擁|16|よう|Hug
+圏|12|かこい|Sphere
+酸|14|すい|Acid
+罰|14|ばっする|Penalty
+滅|13|ほろびる|Destroy
+礎|18|いしずえ|Cornerstone
+腐|14|くさる|Rot
+脚|11|あし|Skids
+潮|15|しお|Tide
+梅|10|うめ|Plum
+尽|6|つくす|Exhaust
+僕|14|しもべ|Me
+桜|10|さくら|Cherry
+滑|13|すべる|Slippery
+孤|9|こ|Orphan
+炎|8|ほのお|Inflammation
+賠|15|ばい|Compensation
+句|5|く|Phrase
+鋼|16|はがね|Steel
+頑|13|かたく|Stubborn
+鎖|18|くさり|Chain
+彩|11|いろどる|Coloring
+摩|15|まする|Chafe
+励|7|はげむ|Encourage
+縦|16|たて|Vertical
+輝|15|かがやく|Radiance
+蓄|13|たくわえる|Amass
+軸|12|じく|Axis
+巡|6|めぐる|Patrol
+稼|15|かせぐ|Earnings
+瞬|18|またたく|Wink
+砲|10|ほう|Cannon
+噴|15|ふく|Erupt
+誇|13|ほこる|Boast
+祥|10|さいわい|Auspicious
+牲|9|せい|Animal Sacrifice
+秩|10|ちつ|Regularity
+帝|9|みかど|Sovereign
+宏|7|ひろい|Wide
+唆|10|そそる|Tempt
+阻|8|はばむ|Thwart
+泰|10|たい|Peaceful
+賄|13|まかなう|Bribe
+撲|15|ぼく|Slap
+堀|11|ほり|Ditch
+菊|11|きく|Chrysanthemum
+絞|12|しぼる|Strangle
+縁|15|ふち|Affinity
+唯|11|ただ|Solely
+膨|16|ふくらむ|Swell
+矢|5|や|Dart
+耐|9|たえる|-proof
+塾|14|じゅく|Cram School
+漏|14|もる|Leak
+慶|15|よろこび|Jubilation
+猛|11|もう|Fierce
+芳|7|かんばしい|Perfume
+懲|18|こりる|Penal
+剣|10|つるぎ|Sabre
+彰|14|しょう|Patent
+棋|12|ご|Chess Piece
+丁|2|ひのと|Street
+恒|9|つね|Constancy
+揚|12|あげる|Raise
+冒|9|おかす|Risk
+之|3|の|Of
+倫|10|りん|Ethics
+陳|11|ひねる|Exhibit
+憶|16|おく|Recollection
+潜|15|ひそむ|Submerge
+梨|11|なし|Pear Tree
+仁|4|じん|Humanity
+克|7|かつ|Overcome
+岳|8|たけ|Point
+概|14|おおむね|Outline
+拘|8|かかわる|Arrest
+墓|13|はか|Grave
+黙|15|だまる|Silence
+須|12|すべからく|Ought
+偏|11|かたよる|Partial
+雰|12|ふん|Atmosphere
+遇|12|あう|Meet
+諮|16|はかる|Consult With
+狭|9|せまい|Cramped
+卓|8|たく|Eminent
+亀|11|かめ|Tortoise
+糧|18|かて|Provisions
+簿|19|ぼ|Register
+炉|8|いろり|Hearth
+牧|8|まき|Breed
+殊|10|こと|Particularly
+殖|12|ふえる|Augment
+艦|21|かん|Warship
+輩|15|ばら|Comrade
+穴|5|あな|Hole
+奇|8|くしき|Strange
+慢|14|まん|Ridicule
+鶴|21|つる|Crane
+謀|16|はかる|Conspire
+暖|13|あたたか|Warmth
+昌|8|さかん|Prosperous
+拍|8|はく|Clap
+朗|10|ほがらか|Melodious
+寛|13|くつろぐ|Tolerant
+覆|18|おおう|Capsize
+胞|9|ほう|Placenta
+泣|8|なく|Cry
+隔|13|へだてる|Isolate
+浄|9|きよめる|Clean
+没|7|おぼれる|Drown
+暇|13|ひま|Spare Time
+肺|9|はい|Lungs
+貞|9|さだ|Upright
+靖|13|やすんじる|Peaceful
+鑑|23|かんがみる|Specimen
+飼|13|かう|Domesticate
+陰|11|かげ|Shade
+銘|14|めい|Inscription
+随|12|まにまに|Follow
+烈|10|はげしい|Ardent
+尋|12|たずねる|Inquire
+稿|15|わら|Draft
+丹|4|に|Rust-colored
+啓|11|ひらく|Disclose
+也|3|なり|To Be (classical)
+丘|5|おか|Hill
+棟|12|むね|Ridgepole
+壌|16|つち|Lot
+漫|14|みだりに|Cartoon
+玄|5|くろ|Mysterious
+粘|11|ねばる|Sticky
+悟|10|さとる|Enlightenment
+舗|15|ほ|Shop
+妊|7|はらむ|Pregnancy
+熟|15|うれる|Mellow
+旭|6|あさひ|Rising Sun
+恩|10|おん|Grace
+騰|20|あがる|Leaping Up
+往|8|いく|Journey
+豆|7|まめ|Beans
+遂|12|とげる|Consummate
+狂|7|くるう|Lunatic
+岐|7|き|Branch Off
+陛|10|へい|Highness
+緯|16|よこいと|Horizontal
+培|11|つちかう|Cultivate
+衰|10|おとろえる|Decline
+艇|13|てい|Rowboat
+屈|8|かがむ|Yield
+径|8|みち|Diameter
+淡|11|あわい|Thin
+抽|8|ひき|Pluck
+披|8|ひ|Expose
+廷|7|てい|Courts
+錦|16|にしき|Brocade
+准|10|じゅん|Quasi-
+暑|12|あつい|Sultry
+磯|17|いそ|Seashore
+奨|13|すすめる|Exhort
+浸|10|ひたす|Immersed
+剰|11|あまつさえ|Surplus
+胆|9|きも|Gall Bladder
+繊|17|せん|Slender
+駒|15|こま|Pony
+虚|11|むなしい|Void
+霊|15|たま|Spirits
+帳|11|とばり|Notebook
+悔|9|くいる|Repent
+諭|16|さとす|Rebuke
+惨|11|みじめ|Wretched
+虐|9|しいたげる|Tyrannize
+翻|18|ひるがえる|Flip
+墜|15|おちる|Crash
+沼|8|ぬま|Marsh
+据|11|すえる|Set
+肥|8|こえる|Fertilizer
+徐|10|おもむろに|Gradually
+糖|16|とう|Sugar
+搭|12|とう|Board
+盾|9|たて|Shield
+脈|10|すじ|Vein
+滝|13|たき|Waterfall
+軌|9|き|Rut
+俵|10|たわら|Bag
+妨|7|さまたげる|Disturb
+擦|17|する|Grate
+鯨|19|くじら|Whale
+荘|9|ほうき|Villa
+諾|15|だく|Consent
+雷|13|かみなり|Thunder
+漂|14|ただよう|Drift
+懐|16|ふところ|Pocket
+勘|11|かん|Intuition
+栽|10|さい|Plantation
+拐|8|かい|Kidnap
+駄|14|だ|Burdensome
+添|11|そえる|Annexed
+冠|9|かんむり|Crown
+斜|11|ななめ|Diagonal
+鏡|19|かがみ|Mirror
+聡|14|さとい|Wise
+浪|10|ろう|Wandering
+亜|7|つぐ|Asia
+覧|17|みる|Perusal
+詐|12|いつわる|Lie
+壇|16|だん|Podium
+勲|15|いさお|Meritorious Deed
+魔|21|ま|Witch
+酬|13|むくいる|Repay
+紫|12|むらさき|Purple
+曙|17|あけぼの|Dawn
+紋|10|もん|Family Crest
+卸|9|おろす|Wholesale
+奮|16|ふるう|Stirred Up
+欄|20|てすり|Column
+逸|11|それる|Deviate
+涯|11|はて|Horizon
+拓|8|ひらく|Clear (the Land)
+眼|11|まなこ|Eyeball
+獄|14|ごく|Prison
+尚|8|なお|Esteem
+彫|11|ほる|Carve
+穏|16|おだやか|Calm
+顕|18|あきらか|Appear
+巧|5|たくみ|Adroit
+矛|5|ほこ|Halberd
+垣|9|かき|Hedge
+欺|12|あざむく|Deceit
+釣|11|つる|Angling
+萩|12|はぎ|Bush Clover
+粛|11|つつしむ|Solemn
+栗|10|くり|Chestnut
+愚|13|おろか|Foolish
+嘉|14|よみする|Applaud
+遭|14|あう|Encounter
+架|9|かける|Erect
+鬼|10|おに|Ghost
+庶|11|しょ|Commoner
+稚|13|いとけない|Immature
+滋|12|じ|Nourishing
+幻|4|まぼろし|Phantasm
+煮|12|にる|Boil
+姫|10|ひめ|Princess
+誓|14|ちかう|Vow
+把|7|は|Grasp
+践|13|ふむ|Tread
+呈|7|てい|Display
+疎|12|うとい|Alienate
+仰|6|あおぐ|Face-up
+剛|10|ごう|Sturdy
+疾|10|はやい|Rapidly
+征|8|せい|Subjugate
+砕|9|くだく|Smash
+謡|16|うたい|Song
+嫁|13|よめ|Marry Into
+謙|17|へりくだる|Self-effacing
+后|6|きさき|Empress
+嘆|13|なげく|Sigh
+菌|11|きん|Germ
+鎌|18|かま|Sickle
+巣|11|す|Nest
+頻|17|しきりに|Repeatedly
+琴|12|こと|Harp
+班|10|はん|Squad
+棚|12|たな|Shelf
+潔|15|いさぎよい|Undefiled
+酷|14|ひどい|Cruel
+宰|10|さい|Superintend
+廊|12|ろう|Corridor
+寂|11|さび|Loneliness
+辰|7|たつ|Sign Of The Dragon
+霞|17|かすみ|Be Hazy
+伏|6|ふせる|Prostrated
+碁|13|ご|Go
+俗|9|ぞく|Vulgar
+漠|13|ばく|Vague
+邪|8|よこしま|Wicked
+晶|12|しょう|Sparkle
+墨|14|すみ|Black Ink
+鎮|18|しずめる|Tranquilize
+洞|9|ほら|Den
+履|15|はく|Perform
+劣|6|おとる|Inferiority
+那|7|なに|What?
+殴|8|なぐる|Assault
+娠|10|しん|With Child
+奉|8|たてまつる|Observance
+憂|15|うれえる|Melancholy
+朴|6|ほう|Crude
+亭|9|てい|Pavilion
+淳|11|あつい|Pure
+怪|8|あやしい|Suspicious
+鳩|13|はと|Pigeon
+酔|11|よう|Drunk
+惜|11|おしい|Pity
+穫|18|かく|Harvest
+佳|8|か|Excellent
+潤|15|うるおう|Wet
+悼|11|いたむ|Lament
+乏|4|とぼしい|Destitution
+該|13|がい|Above-stated
+赴|9|おもむく|Proceed
+桑|10|くわ|Mulberry
+桂|10|かつら|Japanese Judas-tree
+髄|19|ずい|Marrow
+虎|8|とら|Tiger
+盆|9|ぼん|Basin
+晋|10|すすむ|Advance
+穂|15|ほ|Ear
+壮|6|さかん|Robust
+堤|12|つつみ|Dike
+飢|10|うえる|Hungry
+傍|12|かたわら|Bystander
+疫|9|えき|Epidemic
+累|11|るい|Accumulate
+痴|13|しれる|Stupid
+搬|13|はん|Conveyor
+晃|10|あきらか|Clear
+癒|18|いえる|Healing
+桐|10|きり|Paulownia
+寸|3|すん|Measurement
+郭|11|くるわ|Enclosure
+尿|7|ゆばり|Urine
+凶|4|きょう|Villain
+吐|6|はく|Spit
+宴|10|うたげ|Banquet
+鷹|24|たか|Hawk
+賓|15|ひん|V.i.p.
+虜|13|とりこ|Captive
+陶|11|すえ|Pottery
+鐘|20|かね|Bell
+憾|16|うらむ|Remorse
+猪|11|い|Boar
+紘|10|おおづな|Large
+磁|14|じ|Magnet
+弥|8|や|All The More
+昆|8|こん|Descendants
+粗|11|あらい|Coarse
+訂|9|ただす|Revise
+芽|8|め|Bud
+庄|6|しょう|Level
+傘|12|かさ|Umbrella
+敦|12|あつい|Industry
+騎|18|き|Equestrian
+寧|14|むしろ|Rather
+循|12|じゅん|Sequential
+忍|7|しのぶ|Endure
+怠|9|おこたる|Neglect
+如|6|ごとし|Likeness
+寮|15|りょう|Dormitory
+祐|9|たすける|Help
+鵬|19|おおとり|Phoenix
+鉛|13|なまり|Lead
+珠|10|たま|Pearl
+凝|16|こる|Congeal
+苗|8|なえ|Seedling
+獣|16|けもの|Animal
+哀|9|あわれ|Pathetic
+跳|13|はねる|Hop
+匠|6|たくみ|Artisan
+垂|8|たれる|Droop
+蛇|11|へび|Snake
+澄|15|すむ|Lucidity
+縫|16|ぬう|Sew
+僧|13|そう|Buddhist Priest
+眺|11|ながめる|Stare
+亘|6|わたる|Span
+呉|7|くれる|Give
+凡|3|およそ|Commonplace
+憩|16|いこい|Recess
+媛|12|ひめ|Beautiful Woman
+溝|13|みぞ|Gutter
+恭|10|うやうやしい|Respect
+刈|4|かる|Reap
+睡|13|ねむる|Drowsy
+錯|16|さく|Confused
+伯|7|はく|Chief
+笹|11|ささ|Bamboo Grass
+穀|14|こく|Cereals
+陵|11|みささぎ|Mausoleum
+霧|19|きり|Fog
+魂|14|たましい|Soul
+弊|15|へい|Abuse
+妃|6|きさき|Queen
+舶|11|はく|Liner
+餓|15|うえる|Starve
+窮|15|きわめる|Hard Up
+掌|12|てのひら|Manipulate
+麗|19|うるわしい|Lovely
+綾|14|あや|Design
+臭|9|くさい|Stinking
+悦|10|よろこぶ|Ecstasy
+刃|3|は|Blade
+縛|16|しばる|Truss
+暦|14|こよみ|Calendar
+宜|8|よろしい|Best Regards
+盲|8|めくら|Blind
+粋|10|いき|Chic
+辱|10|はずかしめる|Embarrass
+毅|15|つよい|Strong
+轄|17|くさび|Control
+猿|13|さる|Monkey
+弦|8|つる|Bowstring
+稔|13|みのる|Harvest
+窒|11|ちつ|Plug Up
+炊|8|たく|Cook
+洪|9|こう|Deluge
+摂|13|おさめる|Vicarious
+飽|13|あきる|Sated
+冗|4|じょう|Superfluous
+桃|10|もも|Peach
+狩|9|かる|Hunt
+朱|6|あけ|Vermilion
+渦|12|うず|Whirlpool
+紳|11|しん|Sire
+枢|8|とぼそ|Hinge
+碑|14|いしぶみ|Tombstone
+鍛|17|きたえる|Forge
+刀|2|かたな|Sword
+鼓|13|つづみ|Drum
+裸|13|はだか|Naked
+猶|12|なお|Furthermore
+塊|13|かたまり|Clod
+旋|11|めぐる|Rotation
+弓|3|ゆみ|Bow
+幣|15|ぬさ|Cash
+膜|14|まく|Membrane
+扇|10|おうぎ|Fan
+腸|13|はらわた|Intestines
+槽|15|ふね|Vat
+慈|13|いつくしむ|Mercy
+楊|13|やなぎ|Willow
+伐|6|きる|Fell
+駿|17|すぐれる|A Good Horse
+漬|14|つける|Pickling
+糾|9|ただす|Twist
+亮|9|あきらか|Clear
+墳|15|ふん|Tomb
+坪|8|つぼ|Two-mat Area
+紺|11|こん|Dark Blue
+娯|10|ご|Recreation
+椿|13|つばき|Camellia
+舌|6|した|Tongue
+羅|19|うすもの|Gauze
+峡|9|はざま|Gorge
+俸|10|ほう|Stipend
+厘|9|りん|Rin
+峰|10|みね|Summit
+圭|6|けい|Square Jewel
+醸|20|かもす|Brew
+蓮|13|はす|Lotus
+弔|4|とむらう|Condolences
+乙|1|おと|The Latter
+汁|5|しる|Soup
+尼|5|あま|Nun
+遍|12|あまねく|Everywhere
+衡|16|こう|Equilibrium
+薫|16|かおる|Send Forth Fragrance
+猟|11|かり|Game-hunting
+羊|6|ひつじ|Sheep
+款|12|かん|Goodwill
+閲|15|けみする|Review
+偵|11|てい|Spy
+喝|11|かつ|Hoarse
+敢|12|あえて|Daring
+胎|9|たい|Womb
+酵|14|こう|Fermentation
+憤|15|いきどおる|Aroused
+豚|11|ぶた|Pork
+遮|14|さえぎる|Intercept
+扉|12|とびら|Front Door
+硫|12|りゅう|Sulphur
+赦|11|しゃ|Pardon
+窃|9|ぬすむ|Stealth
+泡|8|あわ|Bubbles
+瑞|13|みず|Congratulations
+又|2|また|Or Again
+慨|13|がい|Rue
+紡|10|つむぐ|Spinning
+恨|9|うらむ|Regret
+肪|8|ぼう|Obese
+扶|7|たすける|Aid
+戯|15|たわむれる|Frolic
+伍|6|いつつ|Five
+忌|7|いむ|Mourning
+濁|16|にごる|Voiced
+奔|8|はしる|Run
+斗|4|と|Big Dipper
+蘭|19|らん|Orchid
+迅|6|じん|Swift
+肖|7|あやかる|Resemblance
+鉢|13|はち|Bowl
+朽|6|くちる|Decay
+殻|11|から|Husk
+享|8|うける|Enjoy
+秦|10|はた|Manchu Dynasty
+茅|8|かや|Miscanthus Reed
+藩|18|はん|Clan
+沙|7|すな|Sand
+輔|14|たすける|Help
+媒|12|なこうど|Mediator
+鶏|19|にわとり|Chicken
+禅|13|しずか|Zen
+嘱|15|しょくする|Entrust
+胴|10|どう|Trunk
+迭|8|てつ|Transfer
+挿|10|さす|Insert
+嵐|12|あらし|Storm
+椎|12|つち|Chinquapin
+絹|13|きぬ|Silk
+陪|11|ばい|Obeisance
+剖|10|ぼう|Divide
+譜|19|ふ|Musical Score
+郁|9|いく|Cultural Progress
+悠|11|ゆう|Permanence
+淑|11|しとやか|Graceful
+帆|6|ほ|Sail
+暁|12|あかつき|Daybreak
+傑|13|すぐれる|Greatness
+楠|13|くす|Camphor Tree
+笛|11|ふえ|Flute
+玲|9|れい|Sound Of Jewels
+奴|5|やつ|Guy
+錠|16|じょう|Lock
+拳|10|こぶし|Fist
+翔|12|かける|Soar
+遷|15|うつる|Transition
+拙|8|つたない|Bungling
+侍|8|さむらい|Waiter
+尺|4|しゃく|Shaku
+峠|9|とうげ|Mountain Peak
+篤|16|あつい|Fervent
+肇|14|はじめる|Beginning
+渇|11|かわく|Thirst
+叔|8|しゅく|Uncle
+雌|14|め|Feminine
+亨|7|とおる|Pass Through
+堪|12|たえる|Withstand
+叙|9|ついず|Confer
+酢|12|す|Vinegar
+吟|7|ぎん|Versify
+逓|10|かわる|Relay
+嶺|17|みね|Peak
+甚|9|はなはだ|Tremendously
+喬|12|たかい|High
+崇|11|あがめる|Adore
+漆|14|うるし|Lacquer
+岬|8|みさき|Headland
+癖|18|くせ|Mannerism
+愉|12|たのしい|Pleasure
+寅|11|とら|Sign Of The Tiger
+礁|17|しょう|Reef
+乃|2|の|From
+洲|9|しま|Continent
+屯|4|たむろ|Barracks
+樺|14|かば|Birch
+槙|14|まき|Twig
+姻|9|いん|Matrimony
+巌|20|いわ|Rock
+擬|17|まがい|Mimic
+塀|12|へい|Fence
+唇|10|くちびる|Lips
+睦|13|むつまじい|Intimate
+閑|12|かん|Leisure
+胡|9|なんぞ|Barbarian
+幽|9|ふかい|Seclude
+峻|10|けわしい|High
+曹|11|そう|Office
+詠|12|よむ|Recitation
+卑|9|いやしい|Lowly
+侮|8|あなどる|Scorn
+鋳|15|いる|Casting
+抹|8|まつ|Rub
+尉|11|い|Military Officer
+槻|15|つき|Zelkova Tree
+隷|16|したがう|Slave
+禍|13|わざわい|Calamity
+蝶|15|ちょう|Butterfly
+酪|13|らく|Dairy Products
+茎|8|くき|Stalk
+帥|9|すい|Commander
+逝|10|ゆく|Departed
+汽|7|き|Vapor
+琢|11|みがく|Polish
+匿|10|かくまう|Hide
+襟|18|えり|Collar
+蛍|11|ほたる|Lightning-bug
+蕉|15|しょう|Banana
+寡|14|か|Widow
+琉|11|りゅう|Precious Stone
+痢|12|り|Diarrhea
+庸|11|よう|Commonplace
+朋|8|とも|Companion
+坑|7|こう|Pit
+藍|18|あい|Indigo
+賊|13|ぞく|Burglar
+搾|13|しぼる|Squeeze
+畔|10|あぜ|Paddy Ridge
+遼|15|りょう|Distant
+唄|10|うた|Song
+孔|4|あな|Cavity
+橘|16|たちばな|Mandarin Orange
+漱|14|くちすすぐ|Gargle
+呂|7|せぼね|Spine
+拷|9|ごう|Torture
+嬢|16|むすめ|Lass
+苑|8|その|Garden
+巽|12|たつみ|Southeast
+杜|7|もり|Woods
+渓|11|たに|Mountain Stream
+翁|10|おきな|Venerable Old Man
+廉|13|れん|Bargain
+謹|17|つつしむ|Discreet
+瞳|17|ひとみ|Pupil (of Eye)
+湧|12|わく|Boil
+欣|8|よろこぶ|Take Pleasure In
+窯|15|かま|Kiln
+褒|15|ほめる|Praise
+醜|17|みにくい|Ugly
+升|4|ます|Measuring Box
+殉|10|じゅん|Martyrdom
+煩|13|わずらう|Anxiety
+巴|4|ともえ|Comma-design
+禎|13|さいわい|Happiness
+劾|8|がい|Censure
+堕|12|おちる|Degenerate
+租|10|そ|Tariff
+稜|13|いつ|Angle
+桟|10|かけはし|Scaffold
+倭|10|やまと|Yamato
+婿|12|むこ|Bridegroom
+慕|14|したう|Pining
+斐|12|ひ|Beautiful
+罷|15|まかり|Quit
+矯|17|ためる|Rectify
+某|9|それがし|So-and-so
+囚|5|とらわれる|Captured
+魁|14|さきがけ|Charging Ahead Of Others
+虹|9|にじ|Rainbow
+鴻|17|おおとり|Large Bird
+泌|8|ひつ|Ooze
+於|8|おいて|At
+赳|10|きゅう|Strong And Brave
+漸|14|ようやく|Steadily
+蚊|10|か|Mosquito
+葵|12|あおい|Hollyhock
+厄|4|やく|Unlucky
+藻|19|も|Seaweed
+禄|12|さいわい|Fief
+孟|8|かしら|Chief
+嫡|14|ちゃく|Legitimate Wife
+尭|8|たかい|High
+嚇|17|おどす|Menacing
+巳|3|み|Sign Of The Snake Or Serpent
+凸|5|でこ|Convex
+暢|14|のびる|Stretch
+韻|19|いん|Rhyme
+霜|17|しも|Frost
+硝|12|しょう|Nitrate
+勅|9|いましめる|Imperial Order
+芹|7|せり|Parsley
+杏|7|あんず|Apricot
+棺|12|かん|Coffin
+儒|16|じゅ|Confucian
+鳳|14|ほう|Male Mythical Bird
+馨|20|かおる|Fragrant
+慧|15|さとい|Wise
+愁|13|うれえる|Distress
+楼|13|たかどの|Watchtower
+彬|11|うるわしい|Refined
+匡|6|すくう|Correct
+眉|9|まゆ|Eyebrow
+欽|12|つつしむ|Respect
+薪|16|たきぎ|Fuel
+褐|13|かつ|Brown
+賜|15|たまわる|Grant
+嵯|13|さ|Steep
+綜|14|おさめる|Rule
+繕|18|つくろう|Darning
+栓|10|せん|Plug
+翠|14|かわせみ|Green
+鮎|16|あゆ|Freshwater Trout
+榛|14|はしばみ|Hazelnut
+凹|5|くぼむ|Concave
+艶|19|つや|Glossy
+惣|12|すべて|All
+蔦|14|つた|Vine
+錬|16|ねる|Tempering
+隼|10|はやぶさ|Falcon
+渚|11|なぎさ|Strand
+衷|10|ちゅう|Inmost
+逐|10|ちく|Pursue
+斥|5|しりぞける|Reject
+稀|12|まれ|Rare
+芙|7|ふ|Lotus
+詔|12|みことのり|Imperial Edict
+皐|11|さつき|Swamp
+雛|18|ひな|Chick
+惟|11|おもんみる|Consider
+佑|7|たすける|Help
+耀|20|かがやく|Shine
+黛|16|まゆずみ|Blackened Eyebrows
+渥|12|あつい|Kindness
+憧|15|あこがれる|Yearn After
+宵|10|よい|Wee Hours
+妄|6|みだりに|Delusion
+惇|11|あつい|Sincere
+脩|11|おさめる|Dried Meat
+甫|7|はじめて|For The First Time
+酌|10|くむ|Bar-tending
+蚕|10|かいこ|Silkworm
+嬉|15|うれしい|Glad
+蒼|13|あおい|Blue
+暉|13|かがやく|Shine
+頒|13|わかつ|Distribute
+只|5|ただ|Only
+肢|8|し|Limb
+檀|17|まゆみ|Cedar
+凱|12|かちどき|Victory Song
+彗|11|ほうき|Comet
+謄|17|とう|Mimeograph
+梓|11|あずさ|Catalpa Tree
+丑|4|うし|Sign Of The Ox Or Cow
+嗣|13|し|Heir
+叶|5|かなえる|Grant
+汐|6|しお|Eventide
+絢|12|けん|Brilliant Fabric Design
+朔|10|ついたち|Conjunction (astronomy)
+伽|7|とぎ|Nursing
+畝|10|せ|Furrow
+抄|7|しょう|Extract
+爽|11|あきらか|Refreshing
+黎|15|くろい|Dark
+惰|12|だ|Lazy
+蛮|12|えびす|Barbarian
+冴|7|さえる|Be Clear
+旺|8|かがやき|Flourishing
+萌|11|もえる|Show Symptoms Of
+偲|11|しのぶ|Recollect
+壱|7|ひとつ|One (in Documents)
+瑠|14|る|Lapis Lazuli
+允|4|じょう|License
+侯|9|こう|Marquis
+蒔|13|うえる|Sow (seeds)
+鯉|18|こい|Carp
+弧|9|こ|Arc
+遥|12|はるか|Far Off
+舜|13|しゅん|Type Of Morning Glory
+瑛|12|えい|Sparkle Of Jewelry
+附|8|つける|Affixed
+彪|11|あや|Spotted
+卯|5|う|Sign Of The Hare Or Rabbit
+但|7|ただし|However
+綺|14|あや|Figured Cloth
+芋|6|いも|Potato
+茜|9|あかね|Madder
+凌|10|しのぐ|Endure
+皓|12|しろい|White
+洸|9|こう|Sparkling Water
+毬|11|いが|Burr
+婆|11|ばば|Old Woman
+緋|14|あけ|Scarlet
+鯛|19|たい|Sea Bream
+怜|8|あわれむ|Wise
+邑|7|むら|Village
+倣|10|ならう|Emulate
+碧|14|へき|Blue
+啄|10|ついばむ|Peck
+穣|18|わら|Good Crops
+酉|7|とり|West
+悌|10|てい|Serving Our Elders
+倹|10|つましい|Frugal
+柚|9|ゆず|Citron
+繭|18|まゆ|Cocoon
+且|5|かつ|Moreover
+丙|5|ひのえ|Third Class
+丞|6|すくう|Help
+亥|6|い|Sign Of The Hog
+亦|6|また|Also
+伎|6|わざ|Deed
+伶|7|わざおぎ|Actor
+侃|8|つよい|Strong
+侑|8|すすめる|Urge To Eat
+倖|10|しあわせ|Happiness
+冶|7|いる|Melting
+凜|15|きびしい|Cold
+凪|6|なぎ|Lull
+勁|9|つよい|Strong
+勺|3|しゃく|Ladle
+匁|4|もんめ|Monme
+叡|16|あきらか|Intelligence
+吏|6|り|Officer
+哉|9|かな|How
+塑|13|でく|Model
+墾|16|はる|Ground-breaking
+奎|9|けい|Star
+宥|9|なだめる|Soothe
+崚|11|りょう|Mountains Towering In A Row
+嵩|13|かさ|Be Aggravated
+弐|6|ふたつ|Ii
+恕|10|ゆるす|Excuse
+捷|11|はやい|Victory
+捺|11|さす|Press
+斤|4|きん|Axe
+旦|5|あきらか|Daybreak
+昂|8|あがる|Rise
+昴|9|すばる|The Pleiades
+晏|10|おそい|Late
+晟|10|あきらか|Clear
+晨|11|あした|Morning
+朕|10|ちん|Majestic Plural
+柊|9|ひいらぎ|Holly
+柾|9|まさ|Straight Grain
+栞|10|しおり|Bookmark
+梢|11|こずえ|Treetops
+梧|11|あおぎり|Chinese Parasol Tree
+椋|12|むく|Type Of Deciduous Tree
+椰|13|やし|Coconut Tree
+楓|13|かえで|Maple
+汰|7|おごる|Washing
+洵|9|のぶ|Alike
+滉|13|ひろい|Deep And Broad
+澪|16|みお|Water Route
+濫|18|みだりに|Excessive
+熙|15|たのしむ|Bright
+燎|16|かがりび|Burn
+燦|17|さんたる|Brilliant
+燿|18|かがやく|Shine
+爵|17|しゃく|Baron
+爾|14|なんじ|You
+玖|7|きゅう|Beautiful Black Jewel
+琳|12|りん|Jewel
+瑚|13|こ|Ancestral Offering Receptacle
+瑳|14|みがく|Polish
+瑶|13|たま|Beautiful As A Jewel
+璃|15|り|Glassy
+痘|12|とう|Pox
+眸|11|ひとみ|Pupil Of The Eye
+瞭|17|あきらか|Clear
+碩|14|おおきい|Large
+竣|12|わらわ|End
+笙|11|ふえ|A Reed Instrument
+箇|14|か|Counter For Articles
+紗|10|うすぎぬ|Gauze
+紬|11|つむぎ|Pongee (a Knotted Silk Cloth)
+絃|11|いと|String
+綸|14|いと|Thread
+耗|10|もう|Decrease
+耶|9|か|Question Mark
+胤|9|たね|Descendent
+脹|12|はれる|Dilate
+茄|8|か|Eggplant
+茉|8|まつ|Jasmine
+莉|10|り|Jasmine
+莞|10|い|Smiling
+菖|11|しょう|Iris
+菫|11|すみれ|The Violet
+蓉|13|よう|Lotus
+蕗|16|ふき|Butterbur
+虞|13|おそれ|Fear
+衿|9|えり|Neck
+袈|11|け|A Coarse Camlet
+裟|13|さ|Buddhist Surplice
+詢|13|はかる|Consult With
+誼|15|よしみ|Friendship
+諄|15|ひちくどい|Tedious
+諒|15|あきらか|Fact
+謁|15|えつ|Audience
+賦|15|ふ|Levy
+迪|8|みち|Edify
+遵|15|じゅん|Abide By
+采|8|とる|Dice
+銑|14|せん|Pig Iron
+錘|16|つむ|Weight
+鞠|17|まり|Ball
+頌|13|かたち|Eulogy
+颯|14|さっと|Sudden
+麟|24|りん|Chinese Unicorn
+麿|18|まろ|I
+`;
+
+export const N5 = parse(N5_TABLE);
+export const N4 = parse(N4_TABLE);
+export const N3 = parse(N3_TABLE);
+export const N2 = parse(N2_TABLE);
+export const N1 = parse(N1_TABLE);
 
 const BY_LEVEL = { N5, N4, N3, N2, N1 };
 
@@ -2245,11 +2265,13 @@ export function kanjiLessons(): Lesson[] {
         group: level,
         title: entry.c + '  ' + entry.r,
         subTitle: entry.s + ' trazos · ' + entry.m,
-        instructions: 'El primer cuadrado es el ejemplo. Copia el kanji en los demás. El orden, la dirección y el remate cuentan.',
+        instructions: 'El primer cuadrado es el ejemplo. Copia el kanji en los demás: cada copia se califica por separado. El orden, la dirección y el remate cuentan.',
         characterOrWord: entry.c,
         recommendedTool: 'fude',
         suggestedGrid: 'genkouyoushi',
-        strokesExpected: entry.s
+        strokesExpected: entry.s,
+        reading: entry.r,
+        meaning: entry.m
       });
     }
   }

@@ -4,9 +4,11 @@ import { clamp } from './geometry';
 
 export class HeightAnalyzer {
   /**
-   * Mide si los cuerpos de letra se quedan en la x-height y si esa altura es estable.
+   * Letra suelta: mide si los cuerpos de letra se quedan en la x-height y si esa altura es estable.
+   * Devuelve null si no hay ningún trazo de cuerpo que medir (antes daba un 60 fijo).
+   * La escritura enlazada (palabras, oraciones) se mide por columnas en ScoringEngine.
    */
-  public static analyze(strokes: Stroke[], canvasHeight: number): number {
+  public static analyze(strokes: Stroke[], canvasHeight: number): number | null {
     const ratios: number[] = [];
 
     for (const stroke of strokes) {
@@ -30,7 +32,7 @@ export class HeightAnalyzer {
       ratios.push(height / row.xHeight);
     }
 
-    if (ratios.length === 0) return 60;
+    if (ratios.length === 0) return null;
 
     const mean = ratios.reduce((sum, value) => sum + value, 0) / ratios.length;
     const variance = ratios.reduce((sum, value) => sum + (value - mean) ** 2, 0) / ratios.length;

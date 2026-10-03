@@ -32,7 +32,7 @@ export class BrushRenderer {
   public widthAt(point: StrokePoint, tool: BrushTool, baseWidth: number): number {
     const pressure = point.pressure > 0 ? point.pressure : 0.5;
     const speed = Math.min(1, (point.velocity ?? 0) / 1.6);
-    const tilt = Math.min(1, Math.abs(point.tiltX) / 60);
+    const tilt = Math.min(1, Math.hypot(point.tiltX, point.tiltY) / 60);
     return brushWidthAt(tool, baseWidth, pressure, speed, tilt);
   }
 
@@ -53,12 +53,7 @@ export class BrushRenderer {
     const dist = Math.hypot(dx, dy);
 
     ctx.save();
-    if (color === 'eraser') {
-      ctx.globalCompositeOperation = 'destination-out';
-      ctx.fillStyle = '#000000';
-    } else {
-      ctx.fillStyle = color;
-    }
+    ctx.fillStyle = color;
 
     if (dist < 0.1) {
       ctx.beginPath();
@@ -102,14 +97,15 @@ export class BrushRenderer {
     ctx.restore();
   }
 
-  public drawStroke(ctx: CanvasRenderingContext2D, stroke: Stroke): void {
+  public drawStroke(ctx: CanvasRenderingContext2D, stroke: Stroke, colorOverride?: string): void {
+    const color = colorOverride ?? stroke.color;
     const points = stroke.points;
     if (points.length === 0) return;
 
     if (points.length === 1) {
       const width = this.widthAt(points[0], stroke.tool, stroke.baseWidth);
       ctx.save();
-      ctx.fillStyle = stroke.color;
+      ctx.fillStyle = color;
       ctx.beginPath();
       ctx.arc(points[0].x, points[0].y, width / 2, 0, Math.PI * 2);
       ctx.fill();
@@ -148,12 +144,7 @@ export class BrushRenderer {
     }
 
     ctx.save();
-    if (stroke.tool === 'eraser') {
-      ctx.globalCompositeOperation = 'destination-out';
-      ctx.fillStyle = '#000000';
-    } else {
-      ctx.fillStyle = stroke.color;
-    }
+    ctx.fillStyle = color;
     ctx.beginPath();
     this.curveThrough(ctx, left);
     this.curveThrough(ctx, right.reverse());

@@ -1,35 +1,41 @@
 import { Lesson } from '../../types/ink';
-import { PALMER_GROUPS } from '../../data/lessons';
-
-const KANJI_LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
-const JP_TABS = ['Hiragana', 'Katakana', 'Kanji', 'Dictado'];
+import { JAPANESE_TABS, KANJI_LEVELS, PALMER_GROUPS } from '../../data/groups';
 
 const COPY: Record<string, { title: string; blurb: string }> = {
   Ejercicios: { title: 'Trazos de base', blurb: 'Óvalo, empuje y enlaces, antes de las letras.' },
   Minúsculas: { title: 'Minúsculas', blurb: 'Cada letra sola, una vez, antes de llenar la plana.' },
   Mayúsculas: { title: 'Mayúsculas', blurb: 'La mayúscula sola, antes de repetirla en varias líneas.' },
+  Enlaces: { title: 'Enlaces', blurb: 'Los pares que más cuestan: br, os, ve, wr… sin levantar la pluma.' },
   Planas: { title: 'Planas', blurb: 'Varias líneas de la misma letra. La primera lleva la guía.' },
   Palabras: { title: 'Palabras', blurb: 'Palabras cortas con las letras ya practicadas.' },
-  Oraciones: { title: 'Oraciones', blurb: 'La primera línea lleva la guía. Las de abajo van en blanco.' },
-  Dictado: { title: 'Dictado', blurb: 'Escucha la frase y escríbela.' },
-  Hiragana: { title: 'Hiragana', blurb: 'Los signos de las palabras japonesas.' },
-  Katakana: { title: 'Katakana', blurb: 'Los signos de los préstamos.' },
+  Oraciones: { title: 'Oraciones', blurb: 'La primera línea lleva la guía. Las de abajo van en blanco. Tus textos también aparecen aquí.' },
+  Dictado: { title: 'Dictado', blurb: 'Escucha la frase y escríbela. El texto aparece al entregar.' },
+  Hiragana: { title: 'Hiragana', blurb: 'Básicos, sonoros (が, ぱ), pequeños (ゃ, っ) y combinaciones (きゃ).' },
+  Katakana: { title: 'Katakana', blurb: 'Los signos de los préstamos, con sonoros y pequeños.' },
   Kanji: { title: 'Kanji', blurb: 'Elige un nivel y copia el orden de cada trazo.' },
-  N5: { title: 'Kanji N5', blurb: 'Los primeros kanji, en orden de trazo.' },
+  Vocabulario: { title: 'Vocabulario', blurb: 'Palabras con kanji de N5. Un signo por cuadro.' },
+  N5: { title: 'Kanji N5', blurb: 'Los primeros kanji, en orden de trazo. Significados en español.' },
   N4: { title: 'Kanji N4', blurb: 'El siguiente nivel, todavía trazo a trazo.' },
   N3: { title: 'Kanji N3', blurb: 'Más piezas. El orden sigue contando.' },
   N2: { title: 'Kanji N2', blurb: 'Formas largas. Empieza por el primer trazo.' },
   N1: { title: 'Kanji N1', blurb: 'Los más densos del curso.' }
 };
 
+/**
+ * Catálogo de lecciones. Las tarjetas se construyen solo al cambiar de grupo o de búsqueda;
+ * el progreso y la selección se actualizan sobre las tarjetas ya puestas.
+ */
 export class LessonNavigator {
   private category: 'palmer' | 'japanese' = 'palmer';
   private tab = 'Ejercicios';
   private level = 'N5';
   private activeId = '';
   private query = '';
-  private done = new Set<string>();
-  private started = new Set<string>();
+  /** Kanji: por frecuencia (el orden de la fuente) o de menos a más trazos. */
+  private kanjiOrder: 'frequency' | 'strokes' = 'frequency';
+  private mastery = new Map<string, number>();
+  private due = new Set<string>();
+  private tiles = new Map<string, HTMLButtonElement>();
 
   public onSelect?: (lesson: Lesson) => void;
 
@@ -41,56 +47,66 @@ export class LessonNavigator {
     private heading: HTMLElement,
     private blurb: HTMLElement,
     private search: HTMLInputElement,
-    private filters: { palmer: HTMLButtonElement; kanji: HTMLButtonElement },
-    private badge: HTMLElement
+    private filters: { palmer: HTMLButtonElement; kanji: HTMLButtonElement }
   ) {
     this.filters.palmer.addEventListener('click', () => this.setCategory('palmer'));
     this.filters.kanji.addEventListener('click', () => this.setCategory('japanese'));
+    let timer = 0;
     this.search.addEventListener('input', () => {
-      this.query = this.search.value.trim().toLowerCase();
-      this.render();
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        this.query = this.search.value.trim().toLowerCase();
+        this.render();
+      }, 120);
     });
     this.render();
   }
 
-  public current(): Lesson {
-    return this.lessons.find((lesson) => lesson.id === this.activeId) ?? this.visible()[0] ?? this.lessons[0];
+  public setLessons(lessons: Lesson[]): void {
+    this.lessons = lessons;
+    this.render();
   }
 
-  public setProgress(started: string[], done: string[]): void {
-    this.started = new Set(started);
-    this.done = new Set(done);
-    this.render();
+  /** Nivel de dominio por lección (0–4) y las que tienen repaso pendiente. */
+  public setProgress(mastery: Map<string, number>, due: Set<string>): void {
+    this.mastery = mastery;
+    this.due = due;
+    for (const [id, tile] of this.tiles) this.paintState(tile, id);
   }
 
   public showGroup(category: 'palmer' | 'japanese', group: string): void {
     this.category = category;
-    this.query = '';
-    this.search.value = '';
+    this.clearQuery();
     if (category === 'japanese' && KANJI_LEVELS.includes(group)) {
       this.tab = 'Kanji';
       this.level = group;
     } else {
       this.tab = group;
     }
-    this.syncChrome();
+    this.render();
+  }
+
+  /** Marca la lección como activa y muestra su grupo, sin abrirla. */
+  public focus(lesson: Lesson): void {
+    this.place(lesson);
+    this.activeId = lesson.id;
     this.render();
   }
 
   public select(lesson: Lesson): void {
-    this.place(lesson);
-    this.activeId = lesson.id;
-    this.syncChrome();
-    this.render();
+    this.focus(lesson);
     this.onSelect?.(lesson);
+  }
+
+  private clearQuery(): void {
+    this.query = '';
+    this.search.value = '';
   }
 
   private setCategory(category: 'palmer' | 'japanese'): void {
     this.category = category;
-    this.tab = category === 'palmer' ? PALMER_GROUPS[0] : 'Hiragana';
-    this.query = '';
-    this.search.value = '';
-    this.syncChrome();
+    this.tab = category === 'palmer' ? PALMER_GROUPS[0] : JAPANESE_TABS[0];
+    this.clearQuery();
     this.render();
   }
 
@@ -101,7 +117,7 @@ export class LessonNavigator {
       this.level = lesson.group;
       return;
     }
-    const tabs = lesson.category === 'palmer' ? PALMER_GROUPS : JP_TABS;
+    const tabs = lesson.category === 'palmer' ? PALMER_GROUPS : JAPANESE_TABS;
     this.tab = tabs.includes(lesson.group) ? lesson.group : tabs[0];
   }
 
@@ -110,68 +126,87 @@ export class LessonNavigator {
     return this.tab;
   }
 
-  private syncChrome(): void {
-    this.badge.textContent = this.category === 'palmer' ? 'Palmer Cursiva' : 'Kanji / Kana';
-    this.filters.palmer.classList.toggle('active', this.category === 'palmer');
-    this.filters.kanji.classList.toggle('active', this.category === 'japanese');
-  }
-
   private visible(): Lesson[] {
-    return this.lessons.filter((lesson) => {
+    const list = this.lessons.filter((lesson) => {
       if (lesson.category !== this.category) return false;
       if (!this.query) return lesson.group === this.currentGroup();
-      const haystack = `${lesson.title} ${lesson.subTitle} ${lesson.characterOrWord}`.toLowerCase();
+      const haystack = `${lesson.title} ${lesson.subTitle} ${lesson.characterOrWord} ${lesson.meaning ?? ''}`.toLowerCase();
       return haystack.includes(this.query);
     });
+    if (this.kanjiOrder === 'strokes' && this.tab === 'Kanji' && !this.query) {
+      return list.map((lesson, index) => ({ lesson, index }))
+        .sort((a, b) => (a.lesson.strokesExpected ?? 0) - (b.lesson.strokesExpected ?? 0) || a.index - b.index)
+        .map((entry) => entry.lesson);
+    }
+    return list;
   }
 
   private render(): void {
+    this.filters.palmer.classList.toggle('active', this.category === 'palmer');
+    this.filters.kanji.classList.toggle('active', this.category === 'japanese');
+    this.filters.palmer.setAttribute('aria-pressed', String(this.category === 'palmer'));
+    this.filters.kanji.setAttribute('aria-pressed', String(this.category === 'japanese'));
     this.renderTabs();
     this.renderLevels();
     this.renderCopy();
     const lessons = this.visible();
-    this.list.innerHTML = '';
-    for (const lesson of lessons) {
-      this.list.appendChild(this.tile(lesson));
-    }
+    this.tiles.clear();
+    const fragment = document.createDocumentFragment();
+    for (const lesson of lessons) fragment.appendChild(this.tile(lesson));
+    this.list.replaceChildren(fragment);
   }
 
   private renderTabs(): void {
-    const names = this.category === 'palmer' ? PALMER_GROUPS : JP_TABS;
-    this.tabs.innerHTML = '';
-    for (const name of names) {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = `board-tab${name === this.tab ? ' active' : ''}`;
-      button.setAttribute('role', 'tab');
-      button.setAttribute('aria-selected', String(name === this.tab));
-      button.textContent = name;
-      button.addEventListener('click', () => {
-        this.tab = name;
-        this.query = '';
-        this.search.value = '';
-        this.render();
-      });
-      this.tabs.appendChild(button);
-    }
+    const names = this.category === 'palmer' ? PALMER_GROUPS : JAPANESE_TABS;
+    this.tabs.replaceChildren(
+      ...names.map((name) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `board-tab${name === this.tab ? ' active' : ''}`;
+        button.setAttribute('role', 'tab');
+        button.setAttribute('aria-selected', String(name === this.tab));
+        button.textContent = name;
+        button.addEventListener('click', () => {
+          this.tab = name;
+          this.clearQuery();
+          this.render();
+        });
+        return button;
+      })
+    );
   }
 
   private renderLevels(): void {
     const show = this.category === 'japanese' && this.tab === 'Kanji' && !this.query;
     this.levels.hidden = !show;
-    this.levels.innerHTML = '';
-    if (!show) return;
-    for (const level of KANJI_LEVELS) {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = `board-level${level === this.level ? ' active' : ''}`;
-      button.textContent = level;
-      button.addEventListener('click', () => {
-        this.level = level;
-        this.render();
-      });
-      this.levels.appendChild(button);
+    if (!show) {
+      this.levels.replaceChildren();
+      return;
     }
+    const order = document.createElement('button');
+    order.type = 'button';
+    order.className = 'board-level board-order';
+    order.textContent = this.kanjiOrder === 'strokes' ? 'Orden: de menos a más trazos' : 'Orden: por frecuencia';
+    order.setAttribute('aria-label', `Cambiar orden. Ahora: ${order.textContent}`);
+    order.addEventListener('click', () => {
+      this.kanjiOrder = this.kanjiOrder === 'strokes' ? 'frequency' : 'strokes';
+      this.render();
+    });
+    this.levels.replaceChildren(
+      ...KANJI_LEVELS.map((level) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `board-level${level === this.level ? ' active' : ''}`;
+        button.setAttribute('aria-pressed', String(level === this.level));
+        button.textContent = level;
+        button.addEventListener('click', () => {
+          this.level = level;
+          this.render();
+        });
+        return button;
+      }),
+      order
+    );
   }
 
   private renderCopy(): void {
@@ -186,37 +221,53 @@ export class LessonNavigator {
     this.blurb.textContent = copy.blurb;
   }
 
+  private paintState(card: HTMLButtonElement, id: string): void {
+    const level = this.mastery.get(id) ?? 0;
+    card.dataset.mastery = String(level);
+    card.classList.toggle('is-done', level >= 2);
+    card.classList.toggle('is-started', level === 1);
+    card.classList.toggle('is-due', this.due.has(id));
+    card.classList.toggle('active', id === this.activeId);
+    const label = card.dataset.label ?? '';
+    const state = this.due.has(id) ? ', repaso pendiente' : level >= 2 ? ', aprendida' : level === 1 ? ', en curso' : '';
+    card.setAttribute('aria-label', `${label}${state}`);
+  }
+
   private tile(lesson: Lesson): HTMLButtonElement {
     const face = this.face(lesson);
     const card = document.createElement('button');
     card.type = 'button';
-    const state = this.done.has(lesson.id) ? ' is-done' : this.started.has(lesson.id) ? ' is-started' : '';
-    card.className = `lesson-card glyph-tile${face.span}${lesson.id === this.activeId ? ' active' : ''}${state}`;
+    card.className = `lesson-card glyph-tile${face.span}`;
     card.dataset.script = lesson.category;
+    card.dataset.label = `${lesson.title} ${lesson.subTitle}`.trim();
 
     const glyph = document.createElement('span');
     glyph.className = 'glyph-tile-char';
     glyph.textContent = face.glyph;
+    glyph.setAttribute('aria-hidden', 'true');
 
     const caption = document.createElement('span');
     caption.className = 'glyph-tile-read';
     caption.textContent = face.caption;
+    caption.setAttribute('aria-hidden', 'true');
 
     const bar = document.createElement('span');
     bar.className = 'glyph-tile-bar';
     bar.setAttribute('aria-hidden', 'true');
 
-    card.append(glyph, caption, bar);
-    if (this.done.has(lesson.id)) {
-      const check = document.createElement('i');
-      check.className = 'ti ti-circle-check tile-check-icon';
-      card.append(check);
-    }
+    const check = document.createElement('i');
+    check.className = 'ti ti-circle-check tile-check-icon';
+    check.setAttribute('aria-hidden', 'true');
+
+    card.append(glyph, caption, bar, check);
+    this.paintState(card, lesson.id);
+    this.tiles.set(lesson.id, card);
     card.addEventListener('click', () => {
-      this.place(lesson);
+      const previousId = this.activeId;
       this.activeId = lesson.id;
-      this.syncChrome();
-      this.render();
+      const previous = this.tiles.get(previousId);
+      if (previous) this.paintState(previous, previousId);
+      this.paintState(card, lesson.id);
       this.onSelect?.(lesson);
     });
     return card;
@@ -225,10 +276,13 @@ export class LessonNavigator {
   private face(lesson: Lesson): { glyph: string; caption: string; span: string } {
     const text = lesson.characterOrWord.trim();
     const single = Array.from(text).length === 1;
-    const reading = lesson.title.includes('  ') ? lesson.title.split('  ').slice(1).join(' ').trim() : '';
+    const reading = lesson.reading ?? (lesson.title.includes('  ') ? lesson.title.split('  ').slice(1).join(' ').trim() : '');
     if (single && lesson.group !== 'Ejercicios') {
       const steps = lesson.steps?.length ?? 0;
       return { glyph: text, caption: reading || (steps ? `${steps} pasos` : ''), span: '' };
+    }
+    if (lesson.category === 'japanese' && !lesson.dictation) {
+      return { glyph: text, caption: [reading, lesson.meaning].filter(Boolean).join(' · '), span: Array.from(text).length > 3 ? ' glyph-tile-wide' : '' };
     }
     const titleChars = Array.from(lesson.title);
     if (titleChars.length === 1) {

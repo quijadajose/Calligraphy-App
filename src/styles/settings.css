@@ -1,50 +1,29 @@
 /* ==========================================================================
-   Settings Screen
+   Ajustes
    ========================================================================== */
+
+.settings-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 760px;
+}
 
 .settings-section {
   margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .settings-subtitle {
   font-weight: 600;
   font-size: 14px;
-  margin-bottom: 8px;
   color: var(--ut);
 }
 
-.theme-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-  gap: 10px;
-}
-
-.theme-card {
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  transition: all 0.15s ease;
-}
-
-.theme-card:hover {
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.theme-card.active {
-  box-shadow: inset 0 0 0 1.5px var(--accent-soft);
-}
-
-.sw {
-  display: flex;
-  gap: 4px;
-}
-
-.sw i {
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-  display: block;
+.settings-hint {
+  font-size: 12px;
 }
 
 .chips-row {
@@ -54,9 +33,73 @@
   align-items: center;
 }
 
-.settings-two-col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+.switch-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  cursor: pointer;
 }
 
+.switch-row input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--accent);
+}
+
+.field-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-height: 36px;
+}
+
+.field-row input[type='number'],
+.field-row input[type='time'],
+.custom-form input {
+  min-height: 36px;
+  background: var(--ui2);
+  border: 0.5px solid var(--ub);
+  border-radius: var(--border-radius-sm);
+  padding: 0 10px;
+  color: var(--ut);
+}
+
+.field-row input[type='number'] {
+  width: 84px;
+}
+
+.field-row .mu {
+  flex: 1;
+  min-width: 200px;
+}
+
+.custom-form {
+  display: flex;
+  gap: 8px;
+}
+
+.custom-form input {
+  flex: 1;
+  max-width: 420px;
+}
+
+.custom-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.custom-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-voice);
+  font-size: 18px;
+}
+
+.custom-list li span {
+  flex: 1;
+}
