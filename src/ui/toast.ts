@@ -1,5 +1,5 @@
 /** Aviso breve en la parte baja de la pantalla. Sustituye a alert(). */
-export function toast(message: string, kind: 'info' | 'error' = 'info'): void {
+export function toast(message: string, kind: 'info' | 'error' | 'success' = 'info'): void {
   let host = document.getElementById('toast-host');
   if (!host) {
     host = document.createElement('div');

@@ -490,7 +490,7 @@ export class Studio {
     if (this.penMatchesModel) this.applyModelPen();
     if (chars.length === 1 && this.glyphs[0]) this.ink.animateGuide();
     if (loaded === 0) {
-      this.say('No hay datos de trazo para este carácter. Conéctate una vez para descargarlo.');
+      this.say('No hay datos de trazo para este carácter sin conexión. Conéctate una vez, o usa «Descargar todo» en Ajustes para tener todos los kanji.');
     } else if (chars.length === 1) {
       this.say(`${this.glyphs[0]?.strokes.length ?? 0} trazos. El ejemplo está arriba; copia el signo en los demás cuadrados. Cada copia se califica.`);
     } else {
@@ -659,16 +659,11 @@ export class Studio {
     if (lesson.steps?.length || lesson.dictation) return;
     const draft = await this.sheets.loadDraft(lesson.id);
     if (!draft || token !== this.token || draft.strokes.length === 0) return;
-    const size = this.ink.getSize();
-    const sx = draft.width > 0 ? size.width / draft.width : 1;
-    const sy = draft.height > 0 ? size.height / draft.height : 1;
-    // Si la hoja cambió mucho de tamaño (otro dispositivo, giro), la pauta ya no coincide.
-    if (Math.abs(1 - sx) > 0.35 || Math.abs(1 - sy) > 0.35) return;
     const strokes = draft.strokes.map((stroke) => ({
       ...stroke,
-      points: stroke.points.map((point) => ({ ...point, x: point.x * sx, y: point.y * sy }))
+      points: stroke.points.map((point) => ({ ...point }))
     }));
-    this.ink.loadStrokes(strokes);
+    this.ink.loadStrokes(strokes, { width: draft.width, height: draft.height });
     this.el.toolbar.setHistory(true);
     this.say('Se recuperó la hoja que dejaste a medias. «Borrar hoja» empieza de cero.');
   }

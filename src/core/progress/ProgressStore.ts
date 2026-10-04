@@ -298,6 +298,21 @@ export class ProgressStore {
     return this.days.get(dayKey(this.now()))?.lessons.includes(id) ?? false;
   }
 
+  /** Lo registrado un día: tiempo, trazos y lecciones tocadas. */
+  public dayLog(key: string = dayKey(this.now())): DayLog {
+    const log = this.days.get(key);
+    return log ? { ms: log.ms, strokes: log.strokes, lessons: [...log.lessons] } : { ms: 0, strokes: 0, lessons: [] };
+  }
+
+  /** Notas de «Calificar» puestas un día, de cualquier lección. */
+  public scoresOn(key: string = dayKey(this.now())): number[] {
+    const result: number[] = [];
+    for (const record of this.lessons.values()) {
+      for (const entry of record.scores) if (dayKey(entry.at) === key) result.push(entry.score);
+    }
+    return result;
+  }
+
   public todayMs(): number {
     return this.days.get(dayKey(this.now()))?.ms ?? 0;
   }

@@ -255,11 +255,9 @@ export class LessonNavigator {
     bar.className = 'glyph-tile-bar';
     bar.setAttribute('aria-hidden', 'true');
 
-    const check = document.createElement('i');
-    check.className = 'ti ti-circle-check tile-check-icon';
-    check.setAttribute('aria-hidden', 'true');
-
-    card.append(glyph, caption, bar, check);
+    card.append(glyph);
+    if (face.caption) card.append(caption);
+    card.append(bar);
     this.paintState(card, lesson.id);
     this.tiles.set(lesson.id, card);
     card.addEventListener('click', () => {
@@ -278,8 +276,7 @@ export class LessonNavigator {
     const single = Array.from(text).length === 1;
     const reading = lesson.reading ?? (lesson.title.includes('  ') ? lesson.title.split('  ').slice(1).join(' ').trim() : '');
     if (single && lesson.group !== 'Ejercicios') {
-      const steps = lesson.steps?.length ?? 0;
-      return { glyph: text, caption: reading || (steps ? `${steps} pasos` : ''), span: '' };
+      return { glyph: text, caption: reading, span: '' };
     }
     if (lesson.category === 'japanese' && !lesson.dictation) {
       return { glyph: text, caption: [reading, lesson.meaning].filter(Boolean).join(' · '), span: Array.from(text).length > 3 ? ' glyph-tile-wide' : '' };

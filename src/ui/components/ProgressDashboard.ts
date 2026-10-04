@@ -1,6 +1,8 @@
 import { SavedSheet } from '../../core/storage/SheetStore';
 import { GroupStat, LessonProgress, MASTERY_LABELS, ProgressView, masteryLevel } from '../../core/progress/ProgressStore';
 import { Lesson } from '../../types/ink';
+import { MONTH_NAMES, MonthStatus } from '../../core/challenges/Challenges';
+import { medalName, medalSvg } from '../medals';
 
 function formatMinutes(ms: number): string {
   const minutes = Math.round(ms / 60000);
@@ -18,9 +20,15 @@ export class ProgressDashboard {
 
   constructor(private root: HTMLElement) {}
 
-  public render(view: ProgressView, goalMinutes: number, lessonsById: Map<string, Lesson>): void {
+  public render(
+    view: ProgressView,
+    goalMinutes: number,
+    lessonsById: Map<string, Lesson>,
+    medals?: { earned: Set<string>; current: MonthStatus }
+  ): void {
     this.root.replaceChildren();
     this.root.append(this.summary(view));
+    if (medals) this.root.append(this.medalShelf(medals.earned, medals.current));
     this.root.append(this.calendar(view.days, goalMinutes));
     if (view.complete === 0 && view.started === 0) {
       const empty = document.createElement('p');
@@ -75,6 +83,38 @@ export class ProgressDashboard {
   }
 
   private lessonsById = new Map<string, Lesson>();
+
+  /** Las doce medallas del año: ganadas en color, el mes en curso con su avance. */
+  private medalShelf(earned: Set<string>, current: MonthStatus): HTMLElement {
+    const section = document.createElement('section');
+    section.className = 'progress-section';
+    const heading = document.createElement('h3');
+    heading.textContent = `Medallas de ${current.year}`;
+    const shelf = document.createElement('ul');
+    shelf.className = 'medal-shelf';
+    for (let month = 0; month < 12; month++) {
+      const key = `${current.year}-${String(month + 1).padStart(2, '0')}`;
+      const won = earned.has(key);
+      const item = document.createElement('li');
+      item.className = `medal-slot${won ? ' is-earned' : ''}${month === current.month ? ' is-current' : ''}`;
+      const caption = document.createElement('span');
+      caption.className = 'medal-slot-name';
+      caption.textContent = MONTH_NAMES[month];
+      const note = document.createElement('span');
+      note.className = 'medal-slot-note';
+      note.textContent = won
+        ? medalName(month)
+        : month === current.month
+          ? `${current.count} / ${current.target}`
+          : '';
+      item.innerHTML = medalSvg(month, won || (month === current.month ? 'pending' : false), 64);
+      item.append(caption, note);
+      item.setAttribute('aria-label', `${MONTH_NAMES[month]}: ${won ? `medalla ganada, ${medalName(month)}` : note.textContent || 'por llegar'}`);
+      shelf.append(item);
+    }
+    section.append(heading, shelf);
+    return section;
+  }
 
   /** Galería de hojas: por lección, la primera y la última lado a lado. */
   public renderSheets(sheets: SavedSheet[]): void {

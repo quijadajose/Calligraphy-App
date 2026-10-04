@@ -143,12 +143,30 @@ export class BrushRenderer {
       right.push({ x: smooth[i].x + ty * half, y: smooth[i].y - tx * half });
     }
 
+    const outline = left.concat(right.slice().reverse());
+    // Los remates deben girar en el mismo sentido que el contorno: si no, la regla
+    // de relleno los resta y aparece un hueco en la punta.
+    let area = 0;
+    for (let i = 0; i < outline.length; i++) {
+      const a = outline[i];
+      const b = outline[(i + 1) % outline.length];
+      area += a.x * b.y - b.x * a.y;
+    }
+    const anticlockwise = area < 0;
+
     ctx.save();
     ctx.fillStyle = color;
     ctx.beginPath();
     this.curveThrough(ctx, left);
     this.curveThrough(ctx, right.reverse());
     ctx.closePath();
+    // Remates redondos, como al escribir en vivo. Van en el mismo camino para pintar una sola vez.
+    const first = smooth[0];
+    const last = smooth[smooth.length - 1];
+    ctx.moveTo(first.x + widths[0] / 2, first.y);
+    ctx.arc(first.x, first.y, widths[0] / 2, 0, Math.PI * 2, anticlockwise);
+    ctx.moveTo(last.x + widths[widths.length - 1] / 2, last.y);
+    ctx.arc(last.x, last.y, widths[widths.length - 1] / 2, 0, Math.PI * 2, anticlockwise);
     ctx.fill();
     ctx.restore();
   }

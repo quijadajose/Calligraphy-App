@@ -281,3 +281,43 @@ body.zen-mode .dock:focus-within {
   background: var(--accent-danger);
   color: #1b1a18;
 }
+
+.toast-success {
+  border-left: 3px solid var(--accent-green);
+}
+
+.medal-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 28px 24px 22px;
+}
+
+.medal-art {
+  animation: medal-in 0.7s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+.medal-title {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.medal-text {
+  color: var(--um);
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.medal-box .go {
+  width: 100%;
+}
+
+@keyframes medal-in {
+  0% { transform: scale(0.3) rotate(-25deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .medal-art { animation: none; }
+}

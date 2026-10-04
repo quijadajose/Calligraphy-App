@@ -62,25 +62,6 @@ html[data-theme='light'] {
   --heat-4: #A84F33;
 }
 
-html[data-theme='kids'] {
-  --ui: #8FD4FF;
-  --ui2: #E1F2FE;
-  --ut: #1A365D;
-  --um: #2F527E;
-  --ub: #BADEFC;
-  --accent: #D9480F;
-  --accent-hover: #C2410C;
-  --accent-soft: #F08C00;
-  --paper-bg: #FFFDF8;
-  --tip-bg: #1A365D;
-  --guide-anim: #E8590C;
-  --guide-outline: #A5C8EE;
-  --heat-1: #FFE8CC;
-  --heat-2: #FFC078;
-  --heat-3: #FF922B;
-  --heat-4: #D9480F;
-}
-
 * {
   box-sizing: border-box;
   margin: 0;

@@ -102,9 +102,7 @@ export class GridRenderer {
     const mood = this.paperMood();
     ctx.strokeStyle = mood === 'dark'
       ? 'rgba(168, 186, 204, 0.78)'
-      : mood === 'kids'
-        ? 'rgba(86, 132, 196, 0.82)'
-        : 'rgba(120, 126, 136, 0.92)';
+      : 'rgba(120, 126, 136, 0.92)';
     ctx.lineWidth = layout.width;
     ctx.setLineDash([]);
     for (const stroke of layout.strokes) this.strokePolyline(ctx, stroke);
@@ -193,8 +191,8 @@ export class GridRenderer {
   private ghostColor(mode: GridMode): string {
     const mood = this.paperMood();
     return mode === 'genkouyoushi'
-      ? (mood === 'dark' ? 'rgba(220, 150, 130, 0.7)' : mood === 'kids' ? 'rgba(232, 112, 138, 0.55)' : 'rgba(180, 80, 60, 0.45)')
-      : (mood === 'dark' ? 'rgba(168, 186, 204, 0.62)' : mood === 'kids' ? 'rgba(70, 120, 190, 0.5)' : 'rgba(70, 90, 120, 0.4)');
+      ? (mood === 'dark' ? 'rgba(220, 150, 130, 0.7)' : 'rgba(180, 80, 60, 0.45)')
+      : (mood === 'dark' ? 'rgba(168, 186, 204, 0.62)' : 'rgba(70, 90, 120, 0.4)');
   }
 
   /** Color de un token CSS del tema, con respaldo si el documento no lo define. */
@@ -218,7 +216,7 @@ export class GridRenderer {
     const length = this.polylineLength(points);
     if (length < 8) return;
     const mood = this.paperMood();
-    const ink = mood === 'dark' ? '#f4f7fb' : mood === 'kids' ? '#24356b' : '#2a3140';
+    const ink = mood === 'dark' ? '#f4f7fb' : '#2a3140';
     const ring = Math.max(5.5, xHeight * 0.055);
     const mark = Math.max(9, xHeight * 0.13);
     const start = points[0];
@@ -306,10 +304,9 @@ export class GridRenderer {
     return mapPalmerPoint(point, Math.max(16, (width - palmerCellWidth(row)) / 2), row);
   }
 
-  private paperMood(): 'dark' | 'kids' | 'day' {
+  private paperMood(): 'dark' | 'day' {
     const theme = document.documentElement.dataset.theme;
     if (theme === 'dark') return 'dark';
-    if (theme === 'kids') return 'kids';
     return 'day';
   }
 
@@ -343,9 +340,7 @@ export class GridRenderer {
     const mood = this.paperMood();
     ctx.fillStyle = mood === 'dark'
       ? 'rgba(196, 190, 180, 0.82)'
-      : mood === 'kids'
-        ? 'rgba(36, 53, 107, 0.72)'
-        : 'rgba(70, 64, 56, 0.72)';
+      : 'rgba(70, 64, 56, 0.72)';
     ctx.textBaseline = 'middle';
     for (let rowIndex = 0; rowIndex < rows; rowIndex++) {
       const row = sentenceRowGeometry(rowIndex, height);
@@ -370,9 +365,7 @@ export class GridRenderer {
       const row = sentenceRowGeometry(0, height);
       const color = mood === 'dark'
         ? 'rgba(214, 218, 224, 0.95)'
-        : mood === 'kids'
-          ? 'rgba(61, 122, 196, 0.9)'
-          : 'rgba(62, 68, 80, 0.9)';
+        : 'rgba(62, 68, 80, 0.9)';
       const size = sentenceFontSize(off, text, row.xHeight, width);
       const gap = Math.max(3.4, row.xHeight * 0.07);
       const radius = Math.max(0.9, gap * 0.34);
@@ -415,9 +408,7 @@ export class GridRenderer {
       const mood = this.paperMood();
       ctx.strokeStyle = mood === 'dark'
         ? 'rgba(176, 198, 214, 0.42)'
-        : mood === 'kids'
-          ? 'rgba(61, 139, 253, 0.55)'
-          : 'rgba(70, 130, 180, 0.45)';
+        : 'rgba(70, 130, 180, 0.45)';
       ctx.lineWidth = 1.5;
       ctx.setLineDash([]);
       ctx.beginPath();
@@ -427,9 +418,7 @@ export class GridRenderer {
 
       ctx.strokeStyle = mood === 'dark'
         ? 'rgba(176, 198, 214, 0.28)'
-        : mood === 'kids'
-          ? 'rgba(255, 183, 3, 0.55)'
-          : 'rgba(70, 130, 180, 0.25)';
+        : 'rgba(70, 130, 180, 0.25)';
       ctx.setLineDash([4, 4]);
       ctx.lineWidth = 1;
       ctx.beginPath();
@@ -440,9 +429,7 @@ export class GridRenderer {
       ctx.setLineDash([2, 4]);
       ctx.strokeStyle = mood === 'dark'
         ? 'rgba(176, 198, 214, 0.16)'
-        : mood === 'kids'
-          ? 'rgba(61, 139, 253, 0.22)'
-          : 'rgba(70, 130, 180, 0.15)';
+        : 'rgba(70, 130, 180, 0.15)';
       ctx.beginPath();
       ctx.moveTo(0, ascenderY);
       ctx.lineTo(width, ascenderY);
@@ -453,9 +440,7 @@ export class GridRenderer {
 
       ctx.strokeStyle = mood === 'dark'
         ? 'rgba(214, 176, 122, 0.14)'
-        : mood === 'kids'
-          ? 'rgba(120, 190, 90, 0.22)'
-          : 'rgba(230, 126, 34, 0.18)';
+        : 'rgba(230, 126, 34, 0.18)';
       if (!this.showSlant) continue;
       ctx.lineWidth = 0.8;
       const spacing = 50;
@@ -477,18 +462,14 @@ export class GridRenderer {
       const mood = this.paperMood();
       ctx.strokeStyle = mood === 'dark'
         ? 'rgba(220, 150, 130, 0.55)'
-        : mood === 'kids'
-          ? 'rgba(232, 112, 138, 0.5)'
-          : 'rgba(180, 80, 60, 0.35)';
+        : 'rgba(180, 80, 60, 0.35)';
       ctx.lineWidth = 2;
       ctx.setLineDash([]);
       ctx.strokeRect(box.x, box.y, box.size, box.size);
 
       ctx.strokeStyle = mood === 'dark'
         ? 'rgba(220, 150, 130, 0.35)'
-        : mood === 'kids'
-          ? 'rgba(232, 112, 138, 0.28)'
-          : 'rgba(180, 80, 60, 0.2)';
+        : 'rgba(180, 80, 60, 0.2)';
       ctx.lineWidth = 1;
       ctx.setLineDash([5, 5]);
       ctx.beginPath();

@@ -189,11 +189,224 @@
   margin-top: 4px;
 }
 
+.today-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(300px, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.today-session {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
 .today-plan {
   list-style: none;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.today-plan > li {
+  min-width: 0;
+}
+
+.today-plan .today-kind {
+  min-width: 104px;
+}
+
+/* --- Desafíos ------------------------------------------------------------ */
+
+.quest-card {
+  background: var(--ui2);
+  border: 0.5px solid var(--ub);
+  border-radius: var(--border-radius-lg, 14px);
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.quest-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 8px;
+}
+
+.quest-head .today-title {
+  margin: 0;
+}
+
+.quest-timer {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent-soft);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.quest-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.quest,
+.quest-month {
+  --quest: var(--accent-soft);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.quest + .quest {
+  border-top: 0.5px solid var(--ub);
+}
+
+.quest[data-kind='minutes'] { --quest: #339AF0; }
+.quest[data-kind='strokes'] { --quest: #FF922B; }
+.quest[data-kind='scores80'] { --quest: #40C057; }
+.quest[data-kind='score90'] { --quest: #FAB005; }
+.quest[data-kind='lessons'] { --quest: #9775FA; }
+.quest[data-kind='reviews'] { --quest: #20C997; }
+.quest[data-kind='fresh'] { --quest: #F06595; }
+.quest[data-kind='session'] { --quest: var(--accent-soft); }
+
+.quest-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  color: var(--quest);
+  background: color-mix(in srgb, var(--quest) 18%, transparent);
+}
+
+.quest.is-done .quest-icon {
+  color: #fff;
+  background: var(--accent-green);
+}
+
+.quest-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.quest-name {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.quest.is-done .quest-name {
+  color: var(--um);
+}
+
+.quest-note {
+  font-size: 12px;
+  color: var(--um);
+}
+
+.quest-bar {
+  position: relative;
+  display: block;
+  height: 16px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--ub) 80%, transparent);
+  overflow: hidden;
+}
+
+.quest-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 8px;
+  background: var(--quest);
+  transition: width 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.quest.is-done .quest-fill {
+  background: var(--accent-green);
+}
+
+.quest-count {
+  position: relative;
+  display: block;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 16px;
+  color: var(--ut);
+  font-variant-numeric: tabular-nums;
+}
+
+.quest.is-fresh {
+  animation: quest-pop 0.9s ease-out;
+}
+
+.quest.is-fresh .quest-icon {
+  animation: quest-icon-pop 0.9s ease-out;
+}
+
+@keyframes quest-pop {
+  0% { background: color-mix(in srgb, var(--accent-green) 22%, transparent); }
+  100% { background: transparent; }
+}
+
+@keyframes quest-icon-pop {
+  0% { transform: scale(0.6); }
+  55% { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+
+.quest-month {
+  --quest: #FF922B;
+  border-top: 0.5px solid var(--ub);
+  padding-bottom: 0;
+}
+
+.quest-month.is-earned .quest-fill {
+  background: var(--accent-green);
+}
+
+.quest-medal {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 52px;
+}
+
+.medal {
+  display: block;
+  overflow: visible;
+}
+
+.medal.is-locked {
+  filter: grayscale(1);
+  opacity: 0.45;
+}
+
+.medal.is-pending {
+  filter: saturate(0.55);
+  opacity: 0.8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quest.is-fresh,
+  .quest.is-fresh .quest-icon {
+    animation: none;
+  }
 }
 
 .today-item {
@@ -229,7 +442,6 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--accent-soft);
-  min-width: 84px;
   flex-shrink: 0;
 }
 
@@ -240,7 +452,27 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-family: var(--font-voice);
-  font-size: 18px;
+  font-size: 19px;
+  line-height: 1.4;
+}
+
+.today-letters {
+  display: flex;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.today-letter {
+  flex-shrink: 0;
+}
+
+.today-letter.is-done {
+  color: var(--accent-green);
+  opacity: 0.6;
+}
+
+.today-kind {
+  font-size: 10.5px;
 }
 
 .today-item[data-kind='review'] .today-kind {
@@ -268,7 +500,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 96px;
+  min-height: 92px;
   width: 100%;
   overflow: hidden;
   color: var(--ut);
@@ -297,8 +529,10 @@
   -webkit-box-orient: vertical;
   font-size: 24px;
   font-weight: 500;
-  line-height: 1.15;
-  margin: 2px 0 6px;
+  /* Caveat tiene ascendentes y colas largas (f, j, g, p): necesita aire. */
+  line-height: 1.45;
+  padding: 0.1em 0.15em;
+  margin: 0 0 4px;
   color: var(--ut);
   font-family: var(--font-voice);
   max-width: 100%;
@@ -307,7 +541,11 @@
 }
 
 .glyph-tile:not(.glyph-tile-wide):not(.glyph-tile-full) .glyph-tile-char {
-  font-size: 30px;
+  display: block;
+  font-size: 34px;
+  line-height: 1.6;
+  padding: 0;
+  overflow: visible;
 }
 
 .glyph-tile[data-script='japanese'] .glyph-tile-char {
@@ -326,8 +564,8 @@
 
 .glyph-tile-bar {
   display: block;
-  width: 100%;
-  height: 4px;
+  width: 70%;
+  height: 3px;
   background: var(--ub);
   border-radius: 2px;
   margin-top: 6px;
@@ -349,26 +587,13 @@
 .glyph-tile[data-mastery='3'] .glyph-tile-bar::after { width: 75%; background: var(--accent-green); }
 .glyph-tile[data-mastery='4'] .glyph-tile-bar::after { width: 100%; background: var(--accent-green); }
 
-.tile-check-icon {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  font-size: 16px;
-  color: var(--accent-green);
-  display: none;
-}
-
-.glyph-tile.is-done .tile-check-icon {
-  display: block;
-}
-
 .glyph-tile.is-due::before {
   content: '';
   position: absolute;
   top: 8px;
   left: 8px;
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: var(--accent-soft);
 }
@@ -382,6 +607,12 @@
 
 .source-credit a {
   color: var(--accent-soft);
+}
+
+@media (max-width: 900px) {
+  .today-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 600px) {
@@ -404,8 +635,8 @@
     width: 100%;
   }
 
-  .today-plan {
-    grid-template-columns: 1fr;
+  .today-plan .today-kind {
+    min-width: 0;
   }
 
   .logo-title {

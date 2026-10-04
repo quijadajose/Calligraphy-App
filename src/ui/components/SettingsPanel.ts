@@ -1,3 +1,4 @@
+import { OfflineStatus, formatBytes } from '../../core/offline/OfflinePack';
 import { Settings, SettingsStore, ThemeChoice } from '../../core/settings/SettingsStore';
 
 type Option<T> = { value: T; label: string };
@@ -8,7 +9,11 @@ export class SettingsPanel {
   public onExport?: () => void;
   public onImport?: () => void;
   public onClear?: () => void;
-  public onPrefetch?: (progress: (text: string) => void) => void;
+  /** Estado de la descarga sin conexión: lo pide el panel al dibujarse. */
+  public onOfflineStatus?: () => Promise<OfflineStatus>;
+  /** Baja todo; informa avance y devuelve cuántos archivos fallaron. */
+  public onOfflineDownload?: (progress: (done: number, total: number) => void) => Promise<number>;
+  private offlineBusy = false;
   public onReminder?: (time: string | null) => void;
 
   private theme: ThemeChoice = 'light';
@@ -29,8 +34,7 @@ export class SettingsPanel {
     this.root.replaceChildren(
       this.section('Tema', this.segment<ThemeChoice>('theme', [
         { value: 'light', label: 'Claro' },
-        { value: 'dark', label: 'Oscuro' },
-        { value: 'kids', label: 'Infantil' }
+        { value: 'dark', label: 'Oscuro' }
       ], this.theme, (value) => this.onTheme?.(value))),
       this.section('Pluma', this.segment('tool', [
         { value: 'auto', label: 'La de cada lección' },
@@ -209,23 +213,73 @@ export class SettingsPanel {
 
   private offline(): HTMLElement {
     const wrap = document.createElement('div');
-    wrap.className = 'field-row';
-    const status = document.createElement('span');
-    status.className = 'mu';
+    wrap.className = 'offline-row';
+    const status = document.createElement('p');
+    status.className = 'mu offline-status';
     status.setAttribute('aria-live', 'polite');
-    status.textContent = 'La app y lo que ya abriste funcionan sin red. Descarga además los trazos de kana y kanji N5.';
+    status.textContent = 'Comprobando…';
+    const bar = document.createElement('div');
+    bar.className = 'offline-bar';
+    bar.hidden = true;
+    const fill = document.createElement('span');
+    bar.append(fill);
     const button = document.createElement('button');
     button.type = 'button';
-    button.className = 'b2';
-    button.textContent = 'Descargar kana y N5';
-    button.dataset.key = 'prefetch';
+    button.className = 'go';
+    button.hidden = true;
+    button.dataset.key = 'offline';
+    wrap.append(status, bar, button);
+
+    const show = (state: OfflineStatus) => {
+      if (!state.available) {
+        status.textContent = 'La app y lo que ya abriste funcionan sin red. La descarga completa está disponible en la app publicada.';
+        button.hidden = true;
+        return;
+      }
+      const ready = state.have >= state.total;
+      bar.hidden = ready;
+      fill.style.width = `${state.total ? Math.round((state.have / state.total) * 100) : 100}%`;
+      if (ready) {
+        status.innerHTML = '<i class="ti ti-circle-check" aria-hidden="true"></i> ';
+        status.append(document.createTextNode(`Todo descargado (${formatBytes(state.bytes)}): la app funciona entera sin internet, con todos los kanji y la fuente japonesa.`));
+        button.hidden = true;
+        return;
+      }
+      status.textContent = state.have > 0
+        ? `La app, kana, kanji N5 y vocabulario ya funcionan sin red. Falta parte de los kanji N4–N1 y de la fuente japonesa.`
+        : 'La app, kana, kanji N5 y vocabulario ya funcionan sin red. Para tener también los kanji N4 a N1 y la fuente japonesa completa, descárgalos una vez.';
+      button.hidden = false;
+      button.disabled = this.offlineBusy;
+      button.textContent = `Descargar todo (${formatBytes(state.missingBytes)})`;
+    };
+
     button.addEventListener('click', () => {
+      if (!this.onOfflineDownload || this.offlineBusy) return;
+      this.offlineBusy = true;
       button.disabled = true;
-      this.onPrefetch?.((text) => {
-        status.textContent = text;
-      });
+      bar.hidden = false;
+      void this.onOfflineDownload((done, total) => {
+        fill.style.width = `${total ? Math.round((done / total) * 100) : 100}%`;
+        status.textContent = `Descargando… ${done} de ${total}`;
+      })
+        .then((failed) => {
+          this.offlineBusy = false;
+          if (failed > 0) status.textContent = `Faltaron ${failed} archivos. Revisa la conexión e inténtalo otra vez.`;
+          return this.onOfflineStatus?.();
+        })
+        .then((state) => {
+          if (state && state.have >= state.total) show(state);
+          else button.disabled = false;
+        })
+        .catch(() => {
+          this.offlineBusy = false;
+          button.disabled = false;
+          status.textContent = 'No se pudo descargar. Revisa la conexión e inténtalo otra vez.';
+        });
     });
-    wrap.append(status, button);
+
+    if (this.onOfflineStatus) void this.onOfflineStatus().then(show).catch(() => show({ available: false, have: 0, total: 0, bytes: 0, missingBytes: 0 }));
+    else show({ available: false, have: 0, total: 0, bytes: 0, missingBytes: 0 });
     return wrap;
   }
 

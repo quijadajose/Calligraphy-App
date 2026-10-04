@@ -6,7 +6,7 @@ const STORAGE_KEY = 'calligraphy-settings';
 export type PenChoice = Exclude<BrushTool, 'eraser'> | 'auto';
 export type GridChoice = GridMode | 'auto';
 export type TouchChoice = 'auto' | 'on' | 'off';
-export type ThemeChoice = 'light' | 'dark' | 'kids';
+export type ThemeChoice = 'light' | 'dark';
 
 export interface Settings {
   /** 'auto' deja la pluma que recomienda cada lección. */
