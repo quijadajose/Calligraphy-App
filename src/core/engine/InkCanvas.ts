@@ -123,7 +123,11 @@ export class InkCanvas {
     const bgContext = this.bgCanvas.getContext('2d');
     const inkContext = this.inkCanvas.getContext('2d');
     const predictContext = this.predictCanvas.getContext('2d');
-    const activeContext = this.activeCanvas.getContext('2d', { desynchronized: true });
+    // «desynchronized» baja la latencia del lápiz, pero en Chrome para Android (sobre todo
+    // tablets Samsung) la capa se pinta opaca y tapa la pauta, el modelo y la tinta: la
+    // hoja se ve negra aunque la miniatura de multitarea salga bien. Allí no se usa.
+    const lowLatency = !isAndroid();
+    const activeContext = this.activeCanvas.getContext('2d', lowLatency ? { desynchronized: true } : undefined);
 
     if (!bgContext || !inkContext || !predictContext || !activeContext) {
       throw new Error('No se pudo inicializar el contexto Canvas 2D');
@@ -1020,4 +1024,8 @@ export class InkCanvas {
     }
     return total;
   }
+}
+
+function isAndroid(): boolean {
+  return typeof navigator !== 'undefined' && /Android/i.test(navigator.userAgent);
 }

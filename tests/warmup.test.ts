@@ -27,7 +27,7 @@ describe('soltura', () => {
       expect(Math.max(...xs)).toBeLessThan(W);
       expect(Math.max(...xs) - Math.min(...xs)).toBeGreaterThan(W * 0.6);
       for (const p of stroke) {
-        expect(p.y).toBeLessThanOrEqual(row.baseY + 0.01);
+        expect(p.y).toBeLessThanOrEqual(row.descenderY + 0.01);
         expect(p.y).toBeGreaterThanOrEqual(row.ascenderY - 0.01);
       }
     }
@@ -65,5 +65,21 @@ describe('estilos de letra en Ajustes', () => {
     const two = sanitizeSettings({ scripts: ['Copperplate', 'Ligada', 'x'], sheetScript: 'Imprenta' });
     expect(two.scripts).toEqual(['Ligada', 'Copperplate']);
     expect(two.sheetScript).toBe('Ligada');
+  });
+});
+
+import { cuspIndices } from '../src/core/engine/BrushRenderer';
+
+describe('trazo final', () => {
+  const pt = (x: number, y: number) => ({ x, y, pressure: 0.5, tiltX: 0, tiltY: 0, time: 0 });
+  it('encuentra la vuelta del palito de la a (baja, sube por el mismo camino y baja)', () => {
+    const down = Array.from({ length: 20 }, (_, i) => pt(100, 100 + i * 3));
+    const up = Array.from({ length: 20 }, (_, i) => pt(100.5, 157 - i * 3));
+    const again = Array.from({ length: 20 }, (_, i) => pt(101, 100 + i * 3));
+    expect(cuspIndices([...down, ...up, ...again]).length).toBe(2);
+  });
+  it('una curva suave no se parte', () => {
+    const arc = Array.from({ length: 60 }, (_, i) => pt(100 + 50 * Math.cos(i / 20), 100 + 50 * Math.sin(i / 20)));
+    expect(cuspIndices(arc)).toEqual([]);
   });
 });

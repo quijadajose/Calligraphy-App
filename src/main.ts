@@ -29,6 +29,7 @@ import { MedalOverlay } from './ui/components/MedalOverlay';
 import { ProgressDashboard } from './ui/components/ProgressDashboard';
 import { ScoreModal } from './ui/components/ScoreModal';
 import { SettingsPreview } from './ui/components/SettingsPreview';
+import { confirmDialog } from './ui/confirmDialog';
 import { ScriptStyle } from './core/engine/scriptFonts';
 import { LETTER_STYLES } from './data/groups';
 import { SettingsPanel } from './ui/components/SettingsPanel';
@@ -512,7 +513,13 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   async function handleClear(): Promise<void> {
-    if (!confirm('¿Borrar todo el progreso, las hojas guardadas y los ajustes de este dispositivo? No se puede deshacer.')) return;
+    const sure = await confirmDialog({
+      title: '¿Borrar todo?',
+      message: 'Se borran el progreso, las hojas guardadas y los ajustes de este dispositivo. No se puede deshacer: si quieres conservarlos, exporta un respaldo antes.',
+      confirmLabel: 'Borrar todo',
+      danger: true
+    });
+    if (!sure) return;
     progress.clearAll();
     challenges.clearAll();
     achievementStore.clearAll();

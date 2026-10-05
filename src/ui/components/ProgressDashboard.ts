@@ -1,3 +1,4 @@
+import { confirmDialog } from '../confirmDialog';
 import { SavedSheet } from '../../core/storage/SheetStore';
 import { GroupStat, LessonProgress, MASTERY_LABELS, ProgressView, masteryLevel } from '../../core/progress/ProgressStore';
 import { Lesson } from '../../types/ink';
@@ -210,9 +211,16 @@ export class ProgressDashboard {
       remove.innerHTML = '<i class="ti ti-trash" aria-hidden="true"></i>';
       remove.addEventListener('click', () => {
         const what = list.length === 1 ? 'la hoja guardada' : `las ${list.length} hojas guardadas`;
-        if (!confirm(`¿Borrar ${what} de «${newest.title}»? El progreso de la lección no cambia.`)) return;
-        card.remove();
-        this.onDeleteSheets?.(lessonId);
+        void confirmDialog({
+          title: list.length === 1 ? '¿Borrar esta hoja?' : `¿Borrar ${list.length} hojas?`,
+          message: `Se borra ${what} de «${newest.title}». El progreso de la lección no cambia.`,
+          confirmLabel: 'Borrar',
+          danger: true
+        }).then((sure) => {
+          if (!sure) return;
+          card.remove();
+          this.onDeleteSheets?.(lessonId);
+        });
       });
       head.append(title, remove);
       const pair = document.createElement('span');

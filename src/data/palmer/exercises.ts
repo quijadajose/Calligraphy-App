@@ -176,13 +176,22 @@ function flow(pattern: WarmupPattern, title: string, subTitle: string, instructi
   };
 }
 
+// En orden de dificultad, como en los manuales de grafomotricidad: rectos, ondas y
+// semicírculos, bucles arriba, abajo y combinados.
 export const FLOW_LESSONS: Lesson[] = [
-  flow('ondas', 'Ondas', 'Soltura', 'Una ola suave entre la base y la línea media, siempre del mismo alto.', '∿∿∿'),
+  flow('almenas', 'Almenas', 'Soltura · rectos', 'Sube recto, avanza por la línea media y baja recto, como las torres de un castillo. Esquinas marcadas.', '⊓⊓⊓'),
   flow('zigzag', 'Zigzag', 'Soltura', 'Sube y baja en línea recta. Las puntas tocan la base y la línea media.', '/\\/\\'),
+  flow('sierra', 'Sierra', 'Soltura · rectos', 'Sube inclinado y baja recto, como los dientes de un serrucho. La bajada sigue la inclinación de la pauta.', '◿◿◿'),
+  flow('ondas', 'Ondas', 'Soltura', 'Una ola suave entre la base y la línea media, siempre del mismo alto.', '∿∿∿'),
+  flow('olas-altas', 'Olas altas', 'Soltura', 'Una ola del alto del ascendente: mueve el brazo, no solo los dedos.', '∿∿'),
   flow('arcos', 'Arcos', 'Soltura', 'Puentes como la n: sube redondo y baja recto hasta la base.', 'nnn'),
   flow('guirnaldas', 'Guirnaldas', 'Soltura', 'Copas como la u: baja redondo y sube a la línea media.', 'uuu'),
+  flow('puente-copa', 'Puente y copa', 'Soltura', 'Un arco de n y una copa de u, alternados sin cortar. Es el cambio de giro de «mu» y «nu».', 'nunu'),
+  flow('ochos', 'Ochos', 'Soltura', 'Ochos acostados que avanzan: cruzan por el centro cada vez. Suelta el brazo y mantén el ritmo.', '∞∞∞'),
   flow('espiral', 'Espiral', 'Soltura', 'Óvalos encadenados que se pisan, con el brazo suelto y a ritmo parejo.', 'ℓℓℓ'),
   flow('lazos-e', 'Lazos chicos', 'Soltura', 'Lazos del alto de la e, todos iguales e inclinados.', 'eee'),
   flow('lazos-l', 'Lazos altos', 'Soltura', 'Lazos que suben hasta el ascendente, como la l, y vuelven a la base.', 'lll'),
+  flow('bucles-bajos', 'Lazos bajos', 'Soltura', 'Lazos que bajan al descendente, como en la g y la j, y vuelven a la base.', 'ggg'),
+  flow('bucles-mixtos', 'Lazos arriba y abajo', 'Soltura', 'Un lazo alto y uno bajo sin levantar el lápiz, como la l y la g seguidas.', 'lglg'),
   flow('e-e-l', 'e e l', 'Soltura', 'Dos lazos chicos y uno alto, sin cortar: el cambio de altura es lo que se practica.', 'eel')
 ];
