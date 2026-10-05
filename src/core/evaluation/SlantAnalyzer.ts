@@ -14,8 +14,11 @@ export interface SlantResult {
  * Los enlaces que suben hacia la letra siguiente van a otro ángulo y se ignoran.
  */
 export class SlantAnalyzer {
-  public static analyze(strokes: Stroke[]): SlantResult {
-    const target = scriptSlant();
+  /**
+   * `target`: el ángulo contra el que se juzga. Por defecto, el del estilo; la calificación
+   * pasa el que mide en el propio modelo (las curvas de una a no bajan a 90° aunque sea imprenta).
+   */
+  public static analyze(strokes: Stroke[], target = scriptSlant()): SlantResult {
     let weighted = 0;
     let weightSum = 0;
     let samples = 0;

@@ -123,8 +123,13 @@ export class KanjiOrderValidator {
       };
     }
 
-    const user = userUnits(strokes, width, height);
+    const placed = userUnits(strokes, width, height);
     const ideal = geometry.strokes;
+    // La forma se juzga con el signo centrado y a la escala del modelo: una copia bien hecha
+    // pero algo más chica o corrida en el cuadro no es una forma mala. Eso se mide aparte.
+    // Si faltan trazos, se centra contra los mismos trazos del modelo, no contra el signo entero.
+    const reference = placed.length > 0 && placed.length < ideal.length ? ideal.slice(0, placed.length) : ideal;
+    const { aligned: user, placement } = alignToModel(placed, reference);
     const expected = ideal.length;
     const countGap = Math.abs(user.length - expected);
     const orderScore = Math.max(0, 100 - countGap * 22);
@@ -165,7 +170,17 @@ export class KanjiOrderValidator {
     const direction = avg(directionParts, 0);
     const shape = avg(shapeParts, 0);
     const ending = avg(endingParts, 0);
-    const accuracy = Math.round(orderScore * 0.34 + direction * 0.22 + shape * 0.28 + ending * 0.16);
+    // Con un solo trazo el orden no se puede equivocar: no da puntos. La forma pesa más que
+    // todo lo demás y la nota no la supera por más de 15 (una の en espejo no aprueba).
+    const weights = expected > 1
+      ? { order: 0.2, shape: 0.45, direction: 0.15, ending: 0.1, placement: 0.1 }
+      : { order: 0, shape: 0.55, direction: 0.2, ending: 0.12, placement: 0.13 };
+    const blended = orderScore * weights.order + shape * weights.shape + direction * weights.direction
+      + ending * weights.ending + placement * weights.placement;
+    // Faltar o sobrar trazos no es un detalle: un 日 sin su último trazo no es 日.
+    const completeness = user.length === 0 ? 0 : Math.min(user.length, expected) / Math.max(user.length, expected);
+    const accuracy = Math.round(Math.min(blended, shape + 15) * Math.pow(completeness, 1.5));
+    if (placement < 60) details.push('Tamaño o posición: el signo no ocupa el cuadro como el modelo.');
 
     let startedWrong = false;
     if (user.length > 0 && expected > 1) {
@@ -265,4 +280,40 @@ export class KanjiOrderValidator {
       copies: results.length
     };
   }
+}
+
+function bounds(strokes: Point2[][]): { cx: number; cy: number; size: number } | null {
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  for (const stroke of strokes) {
+    for (const point of stroke) {
+      minX = Math.min(minX, point.x);
+      minY = Math.min(minY, point.y);
+      maxX = Math.max(maxX, point.x);
+      maxY = Math.max(maxY, point.y);
+    }
+  }
+  if (!Number.isFinite(minX)) return null;
+  return { cx: (minX + maxX) / 2, cy: (minY + maxY) / 2, size: Math.max(0.02, maxX - minX, maxY - minY) };
+}
+
+/**
+ * Lleva la copia al centro y la escala del modelo (escala uniforme: las proporciones
+ * se respetan). Devuelve además qué tan bien estaba puesta en el cuadro (0–100).
+ */
+export function alignToModel(user: Point2[][], ideal: Point2[][]): { aligned: Point2[][]; placement: number } {
+  const a = bounds(user);
+  const b = bounds(ideal);
+  if (!a || !b) return { aligned: user, placement: 0 };
+  const scale = b.size / a.size;
+  const aligned = user.map((stroke) => stroke.map((point) => ({
+    x: b.cx + (point.x - a.cx) * scale,
+    y: b.cy + (point.y - a.cy) * scale
+  })));
+  const offset = Math.hypot(a.cx - b.cx, a.cy - b.cy);
+  const sizeGap = Math.abs(Math.log(a.size / b.size));
+  const placement = Math.max(0, Math.min(100, Math.round(100 - offset * 180 - sizeGap * 90)));
+  return { aligned, placement };
 }

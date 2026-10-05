@@ -1,5 +1,6 @@
 import { scriptSlant, mapPalmerPoint, palmerRowGeometry, sentenceFrame, sentenceRowGeometry, sentenceRowIndexAt } from '../engine/gridMetrics';
 import { patternGuideProfile, sheetGuideProfile } from '../engine/SheetGuide';
+import { warmupStroke } from '../engine/warmupPatterns';
 import { EvaluationResult, Lesson, Point2, Stroke } from '../../types/ink';
 import { HeightAnalyzer } from './HeightAnalyzer';
 import { SlantAnalyzer } from './SlantAnalyzer';
@@ -28,18 +29,26 @@ export class ScoringEngine {
   public static scorePalmer(strokes: Stroke[], lesson: Lesson, canvasHeight: number, canvasWidth = 1000, options: SheetOptions = {}): EvaluationResult {
     if (lesson.sheet) return this.scoreSheet(strokes, lesson, canvasWidth, canvasHeight, options);
 
-    const slant = SlantAnalyzer.analyze(strokes);
-    const heightScore = HeightAnalyzer.analyze(strokes, canvasHeight);
+    // Inclinación y altura se comparan con las del propio modelo de la letra: así el modelo
+    // calcado saca 100 y no se castigan las curvas que el estilo tiene a otro ángulo.
+    const model = this.idealInPixels(lesson, canvasHeight).map(asStroke);
+    const modelSlant = model.length ? SlantAnalyzer.analyze(model) : null;
+    const slant = SlantAnalyzer.analyze(strokes, modelSlant && modelSlant.samples > 0 ? modelSlant.avgAngle : scriptSlant());
+    const modelHeight = model.length ? HeightAnalyzer.analyze(model, canvasHeight) : null;
+    const rawHeight = HeightAnalyzer.analyze(strokes, canvasHeight);
+    const heightScore = rawHeight != null && modelHeight != null ? clamp(rawHeight + (100 - modelHeight)) : rawHeight;
     const shape = this.scoreIdeal(strokes, lesson, canvasHeight);
 
+    // La forma es la letra: pesa la mitad, y la nota no la supera por más de 25
+    // (una letra deforme no se salva por estar bien inclinada y del alto justo).
     const blended = blend([
-      slant.samples > 0 ? { score: slant.slantScore, weight: 0.4 } : null,
-      heightScore != null ? { score: heightScore, weight: 0.35 } : null,
-      shape ? { score: shape.score, weight: shape.score < 40 ? 0.6 : 0.25 } : null
+      slant.samples > 0 ? { score: slant.slantScore, weight: 0.25 } : null,
+      heightScore != null ? { score: heightScore, weight: 0.25 } : null,
+      shape ? { score: shape.score, weight: 0.5 } : null
     ]);
     // Sin forma con la que comparar ni nada medible no hay nota que dar.
     let accuracy = blended ?? 0;
-    if (shape && shape.score < 40) accuracy = Math.min(accuracy, shape.score + 15);
+    if (shape) accuracy = Math.min(accuracy, shape.score + (shape.score < 40 ? 15 : 25));
 
     const details: string[] = [];
     const upright = scriptSlant() >= 89.9;
@@ -105,6 +114,10 @@ export class ScoringEngine {
     });
 
     const inkedRows = byRow.filter((indices) => indices.length > 0).length;
+    // Soltura: la inclinación se compara con la del patrón (los arcos y ondas tienen tramos a otros ángulos).
+    const patternSlant = lesson.pattern
+      ? SlantAnalyzer.analyze([asStroke(warmupStroke(lesson.pattern, sentenceRowGeometry(0, height), width))])
+      : null;
     const details: string[] = [];
     let shape: number | null = null;
     if (guide && rowScores.length > 0) {
@@ -112,8 +125,7 @@ export class ScoringEngine {
         shape = Math.max(...rowScores.map((entry) => entry.score));
       } else {
         const mean = rowScores.reduce((sum, entry) => sum + entry.score, 0) / rowScores.length;
-        // Las líneas que quedaron en blanco también cuentan: la plana pide llenarlas.
-        shape = Math.round(mean * (0.55 + 0.45 * Math.min(1, inkedRows / rows)));
+        shape = Math.round(mean);
       }
       for (const entry of rowScores) {
         const label = entry.row < guidedRows ? `Línea ${entry.row + 1} (con guía)` : `Línea ${entry.row + 1}`;
@@ -126,7 +138,7 @@ export class ScoringEngine {
     }
 
     const heightScore = bodyHeightScore(profiles);
-    const slant = SlantAnalyzer.analyze(strokes);
+    const slant = SlantAnalyzer.analyze(strokes, patternSlant && patternSlant.samples > 0 ? patternSlant.avgAngle : scriptSlant());
     const blended = blend([
       shape != null ? { score: shape, weight: 0.55 } : null,
       heightScore != null ? { score: heightScore, weight: 0.2 } : null,
@@ -135,6 +147,8 @@ export class ScoringEngine {
     let accuracy = blended ?? 0;
     if (shape != null) accuracy = Math.min(accuracy, shape + 15);
     else accuracy = Math.min(accuracy, 60);
+    // Las líneas en blanco cuentan, y bastante: escribir sin guía es la mitad del ejercicio.
+    if (!lesson.dictation) accuracy *= 0.3 + 0.7 * Math.min(1, inkedRows / rows);
     accuracy = clamp(Math.round(accuracy));
 
     details.push(heightScore != null ? `Altura de la x en lo escrito: ${heightScore}/100.` : 'No se pudo medir la altura de la x.');
@@ -223,4 +237,14 @@ export class ScoringEngine {
     const penalty = Math.abs(user.length - ideal.length) * 12;
     return { score: clamp(Math.round(average - penalty)), bad };
   }
+}
+
+/** Una polilínea del modelo como trazo, para medirla con los mismos analizadores. */
+function asStroke(points: Point2[]): Stroke {
+  return {
+    points: points.map((point, index) => ({ x: point.x, y: point.y, pressure: 0.5, tiltX: 0, tiltY: 0, time: index * 10 })),
+    color: '#000',
+    baseWidth: 4,
+    tool: 'fountain'
+  };
 }
