@@ -1,11 +1,13 @@
 import { Lesson } from '../../types/ink';
 import { JAPANESE_TABS, KANJI_LEVELS, PALMER_GROUPS } from '../../data/groups';
+import { letterSvg } from '../glyphSvg';
 
 const COPY: Record<string, { title: string; blurb: string }> = {
   Ejercicios: { title: 'Trazos de base', blurb: 'Óvalo, empuje y enlaces, antes de las letras.' },
-  Minúsculas: { title: 'Minúsculas', blurb: 'Cada letra sola, una vez, antes de llenar la plana.' },
-  Mayúsculas: { title: 'Mayúsculas', blurb: 'La mayúscula sola, antes de repetirla en varias líneas.' },
   Imprenta: { title: 'Imprenta', blurb: 'Letra de molde: recta, sin inclinar y con cada letra separada. Primero las minúsculas, luego las mayúsculas.' },
+  Ligada: { title: 'Ligada', blurb: 'La cursiva escolar: cada letra entra desde la base y sale hacia la siguiente, sin levantar el lápiz. Después de cada letra viene su plana.' },
+  Itálica: { title: 'Itálica', blurb: 'Letra de pluma, estrecha y apenas inclinada: los arcos nacen del palote. Mayúsculas romanas estrechas.' },
+  Copperplate: { title: 'Copperplate', blurb: 'La cursiva inglesa clásica, muy inclinada (55°): fina al subir y gruesa al bajar. Mejor con un lápiz con presión.' },
   Enlaces: { title: 'Enlaces', blurb: 'Los pares que más cuestan: br, os, ve, wr… sin levantar la pluma.' },
   Planas: { title: 'Planas', blurb: 'Varias líneas de la misma letra. La primera lleva la guía.' },
   Palabras: { title: 'Palabras', blurb: 'Palabras cortas con las letras ya practicadas.' },
@@ -244,7 +246,14 @@ export class LessonNavigator {
 
     const glyph = document.createElement('span');
     glyph.className = 'glyph-tile-char';
-    glyph.textContent = face.glyph;
+    // Las letras de estilo se dibujan con sus propios trazos: así se ve el estilo real.
+    const model = lesson.slant != null ? lesson.steps?.[lesson.steps.length - 1]?.strokes : undefined;
+    if (model?.length) {
+      glyph.classList.add('is-drawn');
+      glyph.innerHTML = letterSvg(model.map((stroke) => stroke.points), lesson.slant ?? 90);
+    } else {
+      glyph.textContent = face.glyph;
+    }
     glyph.setAttribute('aria-hidden', 'true');
 
     const caption = document.createElement('span');

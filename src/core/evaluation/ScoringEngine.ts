@@ -49,7 +49,7 @@ export class ScoringEngine {
     if (shape) details.push(`Parecido con la curva maestra: ${shape.score}/100.`);
 
     let feedback: string;
-    if (accuracy >= 85) feedback = upright ? 'Trazos rectos y altura muy estable: buena letra de imprenta.' : 'Inclinación y altura muy estables, cerca del Palmer de 52°.';
+    if (accuracy >= 85) feedback = upright ? 'Trazos rectos y altura muy estable: buena letra de imprenta.' : `Inclinación y altura muy estables, cerca de los ${scriptSlant()}° del estilo.`;
     else if (accuracy >= 65) feedback = `Buen ritmo (${slant.avgAngle}°). Iguala la altura de las letras chicas con la línea de la x.`;
     else feedback = upright
       ? `Inclinación ${slant.avgAngle}°. Baja los palotes rectos, sin inclinar, y respeta la línea media y la base.`

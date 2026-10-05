@@ -384,7 +384,7 @@ export class ProgressStore {
   public view(lessons: Lesson[]): ProgressView {
     const byId = new Map(lessons.map((lesson) => [lesson.id, lesson]));
     const sections = [
-      { title: 'Palmer', groups: this.groups(lessons, 'palmer', PALMER_GROUPS) },
+      { title: 'Español', groups: this.groups(lessons, 'palmer', PALMER_GROUPS) },
       { title: 'Japonés', groups: this.groups(lessons, 'japanese', JAPANESE_GROUPS) }
     ];
     const scored = [...this.lessons.values()].filter((record) => record.lastScore != null);

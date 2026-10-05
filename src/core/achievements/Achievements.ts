@@ -62,8 +62,7 @@ function groupDef(id: string, name: string, group: string, icon: string, color: 
     describe: (target, input) => {
       const total = input.groups[group]?.total ?? 0;
       if (target < total) return `Aprende ${target} de ${total}`;
-      if (group === 'Minúsculas' || group === 'Mayúsculas') return `Aprende todas las ${group.toLowerCase()} (${total})`;
-      if (group === 'Imprenta') return `Aprende todas las letras de imprenta (${total})`;
+      if (['Imprenta', 'Ligada', 'Itálica', 'Copperplate'].includes(group)) return `Aprende todas las letras ${group === 'Imprenta' ? 'de imprenta' : group === 'Ligada' ? 'ligadas' : group === 'Itálica' ? 'itálicas' : 'copperplate'} (${total})`;
       if (group === 'Hiragana' || group === 'Katakana') return `Completa el ${group.toLowerCase()} (${total})`;
       return `Aprende todos los kanji ${group} (${total})`;
     }
@@ -143,9 +142,10 @@ const DEFS: Def[] = [
     value: (i) => i.lateDays,
     describe: (t) => `Califica después de las 22:00 en ${plural(t, 'día', 'días')}`
   },
-  groupDef('lower', 'Minúsculas Palmer', 'Minúsculas', 'ti-pencil', '#C2255C'),
-  groupDef('upper', 'Mayúsculas Palmer', 'Mayúsculas', 'ti-pencil', '#A61E4D'),
   groupDef('print', 'Imprenta', 'Imprenta', 'ti-letter-case', '#495057'),
+  groupDef('ligada', 'Ligada', 'Ligada', 'ti-writing', '#C2255C'),
+  groupDef('italica', 'Itálica', 'Itálica', 'ti-pencil', '#A61E4D'),
+  groupDef('copperplate', 'Copperplate', 'Copperplate', 'ti-feather', '#862E9C'),
   groupDef('hiragana', 'Hiragana', 'Hiragana', 'ti-brush', '#D6336C'),
   groupDef('katakana', 'Katakana', 'Katakana', 'ti-brush', '#AE3EC9'),
   groupDef('n5', 'Kanji N5', 'N5', 'ti-books', '#4263EB'),

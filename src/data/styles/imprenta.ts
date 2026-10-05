@@ -1,5 +1,6 @@
-import { Lesson, LessonStep, Point2 } from '../../types/ink';
-import { ASC, BASE, DESC, WAIST, XM, XR, dot, ellipse, pts } from './paths';
+import { Lesson, Point2 } from '../../types/ink';
+import { ASC, BASE, DESC, WAIST, XM, XR, dot, ellipse, pts } from '../palmer/paths';
+import { styleLessons } from './common';
 
 /**
  * Letra de imprenta (manuscrita escolar): vertical, cada letra separada, y el orden de
@@ -11,6 +12,8 @@ import { ASC, BASE, DESC, WAIST, XM, XR, dot, ellipse, pts } from './paths';
  */
 
 type Part = { name: string; points: Point2[] };
+
+export const IMPRENTA_SLANT = 90;
 
 const ROUND = 1.33;
 /** Radio horizontal del cuerpo redondo de la minúscula. */
@@ -247,35 +250,18 @@ const upper: Record<string, Part[]> = {
   ]
 };
 
-function printLessons(chars: Record<string, Part[]>, capital: boolean): Lesson[] {
-  const zone = capital
-    ? 'La mayúscula va de la base al ascendente, recta.'
-    : 'El cuerpo de la minúscula queda entre la línea media y la base, recto.';
-  return Object.entries(chars).map(([char, parts]) => {
-    const steps: LessonStep[] = parts.map((part, index) => ({
-      title: part.name,
-      hint: `Paso ${index + 1} de ${parts.length}: ${part.name}. El trazo oscuro es este paso y los claros ya están hechos. ${zone}`,
-      strokes: parts.slice(0, index + 1).map((item) => ({ points: item.points })),
-      mode: 'sequence'
-    }));
-    const last = steps[steps.length - 1];
-    return {
-      id: `imprenta-${capital ? 'mayus' : 'minus'}-${char}`,
-      category: 'palmer' as const,
-      group: 'Imprenta',
-      title: char,
-      subTitle: capital ? 'Imprenta mayúscula' : 'Imprenta minúscula',
-      instructions: `«${char}» de imprenta: recta, sin inclinar. Las primeras casillas muestran cada trazo en orden; el resto es para copiarlo.`,
-      characterOrWord: char,
-      recommendedTool: 'pencil' as const,
-      suggestedGrid: 'palmer' as const,
-      idealStrokes: last.strokes,
-      idealMode: 'sequence' as const,
-      strokesExpected: parts.length,
-      steps,
-      upright: true
-    };
-  });
-}
+export const IMPRENTA_LETTERS = { lower, upper };
 
-export const PRINT_LESSONS: Lesson[] = [...printLessons(lower, false), ...printLessons(upper, true)];
+export const PRINT_LESSONS: Lesson[] = styleLessons(
+  {
+    id: 'imprenta',
+    group: 'Imprenta',
+    slant: IMPRENTA_SLANT,
+    tool: 'pencil',
+    lowerNote: 'El cuerpo de la minúscula queda entre la línea media y la base, recto.',
+    upperNote: 'La mayúscula va de la base al ascendente, recta.',
+    intro: (char) => `«${char}» de imprenta: recta, sin inclinar. Las primeras casillas muestran cada trazo en orden; el resto es para copiarlo.`
+  },
+  lower,
+  upper
+);

@@ -19,9 +19,10 @@ export const PLAN_LABELS: Record<PlanKind, string> = {
 const MAX_REVIEWS = 5;
 const NEW_PER_DAY = 2;
 
-const LETTER_GROUPS = ['Minúsculas', 'Mayúsculas'];
+/** Las planas (texto cursivo) acompañan a las letras ligadas. */
+const LETTER_GROUPS = ['Ligada'];
 
-/** La plana de una letra Palmer suelta («a» → «plana-a»), si existe. */
+/** La plana de una letra ligada suelta («a» → «plana-a»), si existe. */
 export function planaFor(lessons: Lesson[], lesson: Lesson): Lesson | undefined {
   if (lesson.category !== 'palmer' || !LETTER_GROUPS.includes(lesson.group)) return undefined;
   return lessons.find((item) => item.id === `plana-${lesson.characterOrWord.trim()}`);
@@ -107,7 +108,7 @@ export function buildDailyPlan(
  * al final, la siguiente del grupo.
  */
 export function nextLesson(lessons: Lesson[], plan: PlanItem[], current: Lesson): Lesson | null {
-  // Palmer: letra paso a paso → su plana → siguiente letra.
+  // Ligada: letra paso a paso → su plana → siguiente letra.
   const plana = planaFor(lessons, current);
   if (plana) return plana;
   const inPlan = plan.findIndex((item) => item.lesson.id === current.id);

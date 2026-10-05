@@ -61,8 +61,10 @@ export interface Lesson {
   /** Japonés: lectura y significado, para practicar de memoria. */
   reading?: string;
   meaning?: string;
-  /** Letra vertical (imprenta): sin la inclinación de 52° de Palmer. */
+  /** Letra vertical (imprenta). */
   upright?: boolean;
+  /** Inclinación del estilo en grados (90 = vertical). Sin valor: la cursiva por defecto. */
+  slant?: number;
   /** Texto escrito por el usuario. */
   custom?: boolean;
 }

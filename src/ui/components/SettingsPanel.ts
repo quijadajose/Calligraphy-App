@@ -44,7 +44,7 @@ export class SettingsPanel {
       ], s.tool, (tool) => this.store.set({ tool }))),
       this.section('Pauta', this.segment('grid', [
         { value: 'auto', label: 'La de cada lección' },
-        { value: 'palmer', label: 'Palmer' },
+        { value: 'palmer', label: 'Renglones' },
         { value: 'genkouyoushi', label: 'Genkōyōshi' },
         { value: 'none', label: 'Libre' }
       ], s.grid, (grid) => this.store.set({ grid })),

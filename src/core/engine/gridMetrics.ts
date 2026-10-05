@@ -3,15 +3,16 @@ import { Point2 } from '../../types/ink';
 export const PALMER_ASCENDER_RATIO = 0.35;
 export const PALMER_XHEIGHT_RATIO = 0.35;
 export const PALMER_DESCENDER_RATIO = 0.30;
-export const PALMER_SLANT_DEG = 52;
+/** Inclinación por defecto de la cursiva (ligada): ejercicios, planas, palabras y oraciones. */
+export const CURSIVE_SLANT_DEG = 70;
 /** Grosor del modelo, como fracción de la altura de x. El óvalo se ajusta para que el borde caiga en la pauta. */
 export const PALMER_PEN_RATIO = 0.18;
 
 /**
- * Inclinación del estilo que se está practicando: 52° la cursiva Palmer, 90° la imprenta.
+ * Inclinación del estilo que se está practicando (90° = vertical, como la imprenta).
  * La fija el estudio al abrir cada lección; la usan el modelo, la pauta y la calificación.
  */
-let scriptSlantDeg = PALMER_SLANT_DEG;
+let scriptSlantDeg = CURSIVE_SLANT_DEG;
 
 export function setScriptSlant(deg: number): boolean {
   const changed = deg !== scriptSlantDeg;

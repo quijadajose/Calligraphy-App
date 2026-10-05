@@ -557,6 +557,20 @@
   font-weight: 400;
 }
 
+.glyph-tile .glyph-tile-char.is-drawn {
+  display: block;
+  line-height: 0;
+  padding: 0;
+  margin: 0 0 6px;
+}
+
+.letter-svg {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  overflow: visible;
+}
+
 .glyph-tile-read {
   font-size: 11px;
   color: var(--um);
