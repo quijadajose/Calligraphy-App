@@ -1,3 +1,4 @@
+import { LETTER_STYLES } from '../../data/groups';
 import { Lesson } from '../../types/ink';
 import { ProgressStore } from '../progress/ProgressStore';
 
@@ -19,8 +20,8 @@ export const PLAN_LABELS: Record<PlanKind, string> = {
 const MAX_REVIEWS = 5;
 const NEW_PER_DAY = 2;
 
-/** Las planas (texto cursivo) acompañan a las letras ligadas. */
-const LETTER_GROUPS = ['Ligada'];
+/** Las planas acompañan a las letras sueltas de cualquier estilo (se escriben con la letra elegida). */
+const LETTER_GROUPS = LETTER_STYLES;
 
 /** La plana de una letra ligada suelta («a» → «plana-a»), si existe. */
 export function planaFor(lessons: Lesson[], lesson: Lesson): Lesson | undefined {
@@ -29,10 +30,12 @@ export function planaFor(lessons: Lesson[], lesson: Lesson): Lesson | undefined 
 }
 
 /** La letra de la que sale una plana («plana-a» → la lección de la «a»). */
-function letterForPlana(lessons: Lesson[], plana: Lesson): Lesson | undefined {
+function letterForPlana(lessons: Lesson[], plana: Lesson, style?: string): Lesson | undefined {
   if (!plana.id.startsWith('plana-')) return undefined;
   const char = plana.id.slice('plana-'.length);
-  return lessons.find((item) => item.category === 'palmer' && LETTER_GROUPS.includes(item.group) && item.characterOrWord.trim() === char);
+  const letters = lessons.filter((item) => item.category === 'palmer' && LETTER_GROUPS.includes(item.group) && item.characterOrWord.trim() === char);
+  // La del estilo con que se escribe la plana; si no, la primera.
+  return letters.find((item) => item.group === style) ?? letters[0];
 }
 
 function dayNumber(time: number): number {
@@ -63,8 +66,11 @@ export function buildDailyPlan(
     items.push({ kind, lesson, done: progress.practicedToday(lesson.id) });
   };
 
+  // Antes de las letras, una fila de soltura (lazos, arcos, ondas…) para soltar la mano.
   const drills = lessons.filter((lesson) => lesson.category === 'palmer' && lesson.group === 'Ejercicios');
-  if (drills.length > 0) add('warmup', drills[day % drills.length]);
+  const flows = drills.filter((lesson) => lesson.pattern);
+  const warmups = flows.length > 0 ? flows : drills;
+  if (warmups.length > 0) add('warmup', warmups[day % warmups.length]);
 
   // Lo repasado hoy deja de estar pendiente, pero sigue en la lista como hecho.
   const reviewedToday = lessons.filter((lesson) => {
@@ -107,8 +113,8 @@ export function buildDailyPlan(
  * (salvo que quede algo pendiente en el plan de hoy). Si no, lo que queda del plan y,
  * al final, la siguiente del grupo.
  */
-export function nextLesson(lessons: Lesson[], plan: PlanItem[], current: Lesson): Lesson | null {
-  // Ligada: letra paso a paso → su plana → siguiente letra.
+export function nextLesson(lessons: Lesson[], plan: PlanItem[], current: Lesson, style?: string): Lesson | null {
+  // Letra paso a paso → su plana → siguiente letra del mismo estilo.
   const plana = planaFor(lessons, current);
   if (plana) return plana;
   const inPlan = plan.findIndex((item) => item.lesson.id === current.id);
@@ -116,7 +122,7 @@ export function nextLesson(lessons: Lesson[], plan: PlanItem[], current: Lesson)
     const pending = [...plan.slice(inPlan + 1), ...plan.slice(0, inPlan)].find((item) => !item.done);
     if (pending) return pending.lesson;
   }
-  const source = letterForPlana(lessons, current);
+  const source = letterForPlana(lessons, current, style);
   if (source) {
     const group = lessons.filter((lesson) => lesson.category === 'palmer' && lesson.group === source.group);
     const following = group[group.indexOf(source) + 1];

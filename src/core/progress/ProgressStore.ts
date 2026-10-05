@@ -413,7 +413,7 @@ export class ProgressStore {
       todayMs: this.todayMs(),
       totalMs,
       dueCount: this.dueIds().filter((id) => byId.has(id)).length,
-      days: this.recentDays(84),
+      days: this.recentDays(371),
       sections,
       recent
     };

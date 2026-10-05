@@ -1,5 +1,5 @@
 import { scriptSlant, mapPalmerPoint, palmerRowGeometry, sentenceFrame, sentenceRowGeometry, sentenceRowIndexAt } from '../engine/gridMetrics';
-import { sheetGuideProfile } from '../engine/SheetGuide';
+import { patternGuideProfile, sheetGuideProfile } from '../engine/SheetGuide';
 import { EvaluationResult, Lesson, Point2, Stroke } from '../../types/ink';
 import { HeightAnalyzer } from './HeightAnalyzer';
 import { SlantAnalyzer } from './SlantAnalyzer';
@@ -75,7 +75,13 @@ export class ScoringEngine {
   public static scoreSheet(strokes: Stroke[], lesson: Lesson, width: number, height: number, options: SheetOptions = {}): EvaluationResult {
     const { rows } = sentenceFrame(height);
     const text = lesson.characterOrWord;
-    const guide = options.guide !== undefined ? options.guide : sheetGuideProfile(text, width, height);
+    const guide = options.guide !== undefined
+      ? options.guide
+      : lesson.pattern
+        ? patternGuideProfile(lesson.pattern, width, height)
+        : sheetGuideProfile(text, width, height);
+    // Líneas que traían el modelo punteado: se calcan. Sin dato, la primera (como antes).
+    const guidedRows = lesson.dictation ? 0 : lesson.guidedRows ?? 1;
     const byRow: number[][] = Array.from({ length: rows }, () => []);
     strokes.forEach((stroke, index) => {
       if (stroke.points.length === 0) return;
@@ -93,7 +99,7 @@ export class ScoringEngine {
       profiles.push(profile);
       if (!guide) return;
       // La primera línea se calca: se compara columna a columna. Las demás, ajustadas al ancho.
-      const traced = row === 0 && !lesson.dictation;
+      const traced = row < guidedRows;
       const match = compareProfiles(profile, guide, !traced);
       rowScores.push({ row, score: match.score, widthRatio: match.widthRatio });
     });
@@ -110,9 +116,9 @@ export class ScoringEngine {
         shape = Math.round(mean * (0.55 + 0.45 * Math.min(1, inkedRows / rows)));
       }
       for (const entry of rowScores) {
-        const label = entry.row === 0 && !lesson.dictation ? 'Línea con guía' : `Línea ${entry.row + 1}`;
+        const label = entry.row < guidedRows ? `Línea ${entry.row + 1} (con guía)` : `Línea ${entry.row + 1}`;
         const stretch = entry.widthRatio > 1.5 ? ' (muy ancha)' : entry.widthRatio > 0 && entry.widthRatio < 0.65 ? ' (incompleta o apretada)' : '';
-        details.push(`${label}: parecido con el texto ${entry.score}/100${stretch}.`);
+        details.push(`${label}: parecido con ${lesson.pattern ? 'el trazo modelo' : 'el texto'} ${entry.score}/100${stretch}.`);
       }
       if (!lesson.dictation && inkedRows < rows) details.push(`Quedan ${rows - inkedRows} línea(s) en blanco.`);
     } else if (!guide) {
@@ -138,7 +144,12 @@ export class ScoringEngine {
     const badStrokes = byRow.flatMap((indices, row) => (weakRows.has(row) ? indices : []));
 
     let feedback: string;
-    if (shape != null && shape < 45) feedback = 'Lo escrito no se parece al texto modelo. Escribe la misma frase, letra por letra.';
+    if (lesson.pattern) {
+      if (shape != null && shape < 45) feedback = 'El trazo no sigue el patrón. Repasa despacio las líneas punteadas y después suéltate en las blancas.';
+      else if (accuracy >= 85) feedback = 'Trazo suelto y parejo: la mano ya está lista para las letras.';
+      else if (accuracy >= 65) feedback = 'Va bien. Mantén el mismo tamaño y ritmo de principio a fin del renglón.';
+      else feedback = 'Repite las líneas con guía sin levantar el lápiz, a ritmo constante.';
+    } else if (shape != null && shape < 45) feedback = 'Lo escrito no se parece al texto modelo. Escribe la misma frase, letra por letra.';
     else if (accuracy >= 85) feedback = 'El texto se reconoce bien y la x se mantiene a la misma altura.';
     else if (accuracy >= 65) feedback = 'El texto se reconoce. Cuida que las letras chicas coronen en la línea media.';
     else feedback = 'Repasa la línea con guía antes de escribir las demás sin ella.';

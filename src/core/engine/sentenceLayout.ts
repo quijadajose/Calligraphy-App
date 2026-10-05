@@ -1,16 +1,23 @@
 import { scriptSlant } from './gridMetrics';
+import { sheetFontNativeSlant, sheetFontSpec } from './scriptFonts';
 
 /** Margen izquierdo de la oración punteada: deja sitio a la etiqueta de la línea. */
 export const SHEET_TEXT_X = 100;
 const SHEET_MARGIN = 118;
 
 export function sentenceFont(size: number): string {
-  return `600 ${Math.max(12, size)}px Caveat, cursive`;
+  return sheetFontSpec(size);
 }
 
-/** Cizalla que inclina el texto modelo a la inclinación de la cursiva. */
+/** Cizalla que lleva el texto modelo a la inclinación del estilo (la fuente ya trae la suya). */
 export function sentenceSkew(): number {
-  return -1 / Math.tan((scriptSlant() * Math.PI) / 180);
+  const cot = (deg: number) => (deg >= 89.9 ? 0 : 1 / Math.tan((deg * Math.PI) / 180));
+  return -(cot(scriptSlant()) - cot(sheetFontNativeSlant()));
+}
+
+/** Para saber si la fuente de la hoja ya cargó (y cargarla). */
+export function sentenceFontProbe(): string {
+  return sheetFontSpec(16);
 }
 
 /**
@@ -24,7 +31,7 @@ export function sentenceFontSize(
   canvasWidth: number
 ): number {
   const fit = (px: number): { ascent: number; width: number } => {
-    ctx.font = `600 ${px}px Caveat, cursive`;
+    ctx.font = sheetFontSpec(px);
     const sample = ctx.measureText('x');
     return { ascent: sample.actualBoundingBoxAscent || px * 0.46, width: ctx.measureText(text).width };
   };

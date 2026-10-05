@@ -56,6 +56,10 @@ export interface Lesson {
   steps?: LessonStep[];
   /** Oración en varias líneas: la primera con guía y las siguientes en blanco. */
   sheet?: boolean;
+  /** Hoja de soltura: en vez de texto, un patrón continuo (lazos, arcos…). */
+  pattern?: WarmupPattern;
+  /** Para calificar: cuántas líneas tenían el modelo punteado. Lo pone el estudio. */
+  guidedRows?: number;
   dictation?: boolean;
   dictationSeconds?: number;
   /** Japonés: lectura y significado, para practicar de memoria. */
@@ -70,6 +74,21 @@ export interface Lesson {
 }
 
 export type GuideLevel = 'full' | 'faint' | 'none';
+/** Ajuste de la guía: 'auto' la va apagando según lo asentada que esté cada lección. */
+export type GuideSetting = GuideLevel | 'auto';
+
+/** Ejercicios de soltura en fila continua (ver core/engine/warmupPatterns). */
+export type WarmupPattern = 'lazos-e' | 'lazos-l' | 'e-e-l' | 'espiral' | 'arcos' | 'guirnaldas' | 'zigzag' | 'ondas';
+
+/**
+ * Líneas de una hoja que llevan el modelo punteado para repasar, como en un cuaderno:
+ * con guía completa, dos (si queda al menos una en blanco); tenue, una; sin guía, ninguna.
+ */
+export function guidedRowsFor(rows: number, level: GuideLevel): number {
+  if (level === 'none') return 0;
+  if (level === 'faint') return 1;
+  return rows >= 3 ? 2 : 1;
+}
 
 /** Lo que se toma por un solo signo: cuenta puntos de código, no unidades UTF-16. */
 export function isSingleGlyph(text: string): boolean {

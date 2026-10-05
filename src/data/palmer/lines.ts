@@ -16,8 +16,8 @@ function lineLesson(char: string): Lesson {
     title: char,
     subTitle: 'Varias líneas',
     instructions: lower
-      ? `Repite «${char}» en cada línea. La primera lleva la guía punteada. Las de abajo van en blanco, con la misma letra y el mismo ritmo.`
-      : `Repite «${char}» en cada línea, de la base al ascendente. La primera lleva la guía. Las de abajo van en blanco.`,
+      ? `Repite «${char}» en cada línea. Primero repasa las líneas punteadas; después sigue en las blancas, con la misma letra y el mismo ritmo.`
+      : `Repite «${char}» en cada línea, de la base al ascendente. Repasa las líneas punteadas y sigue en las blancas.`,
     characterOrWord: repeated(char),
     recommendedTool: 'fountain',
     suggestedGrid: 'palmer',
@@ -42,7 +42,7 @@ function extraLesson([id, text, hint]: [string, string, string]): Lesson {
     group: 'Planas',
     title: text,
     subTitle: 'Español y signos',
-    instructions: `${hint} La primera línea lleva la guía.`,
+    instructions: `${hint} Repasa las líneas punteadas y sigue en las blancas.`,
     characterOrWord: Array.from({ length: 3 }, () => text).join('   '),
     recommendedTool: 'fountain',
     suggestedGrid: 'palmer',
@@ -75,7 +75,7 @@ function joinLesson([pair, hint]: [string, string]): Lesson {
     group: 'Enlaces',
     title: pair,
     subTitle: 'Enlace entre letras',
-    instructions: `${hint} La primera línea lleva la guía; repite el par sin levantar la pluma entre las dos letras.`,
+    instructions: `${hint} Repasa las líneas punteadas y repite el par sin levantar la pluma entre las dos letras.`,
     characterOrWord: Array.from({ length: 6 }, () => pair).join('  '),
     recommendedTool: 'fountain',
     suggestedGrid: 'palmer',

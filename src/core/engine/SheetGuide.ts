@@ -1,6 +1,8 @@
-import { ColumnProfile, profileFromAlpha } from '../evaluation/profile';
+import { WarmupPattern } from '../../types/ink';
+import { ColumnProfile, profileFromAlpha, profileFromStrokes } from '../evaluation/profile';
+import { warmupStroke } from './warmupPatterns';
 import { sentenceRowGeometry } from './gridMetrics';
-import { SHEET_TEXT_X, sentenceFont, sentenceFontSize, sentenceSkew } from './sentenceLayout';
+import { SHEET_TEXT_X, sentenceFont, sentenceFontProbe, sentenceFontSize, sentenceSkew } from './sentenceLayout';
 
 const SCALE = 0.5;
 let cache: { key: string; profile: ColumnProfile } | null = null;
@@ -11,8 +13,8 @@ let cache: { key: string; profile: ColumnProfile } | null = null;
  */
 export function sheetGuideProfile(text: string, width: number, height: number): ColumnProfile | null {
   if (typeof document === 'undefined' || !text.trim() || width < 8) return null;
-  if (!document.fonts?.check('600 16px Caveat')) return null;
-  const key = `${Math.round(width)}x${Math.round(height)}:${text}`;
+  if (!document.fonts?.check(sentenceFontProbe())) return null;
+  const key = `${Math.round(width)}x${Math.round(height)}:${sentenceFontProbe()}:${sentenceSkew()}:${text}`;
   if (cache?.key === key) return cache.profile;
 
   const row = sentenceRowGeometry(0, height);
@@ -38,4 +40,11 @@ export function sheetGuideProfile(text: string, width: number, height: number): 
   const profile = profileFromAlpha(image.data, canvas.width, canvas.height, SCALE, baseLocal, row.xHeight, width);
   cache = { key, profile };
   return profile;
+}
+
+/** Silueta del patrón de soltura en la primera línea: con eso se comparan todas. */
+export function patternGuideProfile(pattern: WarmupPattern, width: number, height: number): ColumnProfile | null {
+  if (width < 8) return null;
+  const row = sentenceRowGeometry(0, height);
+  return profileFromStrokes([warmupStroke(pattern, row, width)], row.baseY, row.xHeight, width);
 }

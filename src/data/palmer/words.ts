@@ -9,7 +9,7 @@ function word(id: string, text: string, group: string, dictation = false, sheet 
     subTitle: dictation ? 'Dictado en español' : 'Con guías y sin ellas',
     instructions: dictation
       ? 'Escucha la frase y escríbela sin parar el ritmo. La nota junta la silueta de lo escrito, la inclinación, la altura de la x y el tiempo.'
-      : 'La primera línea es el nivel fácil: calca la oración punteada. En las de abajo escríbela sin guía. Las letras sueltas se practican antes, en Minúsculas y Mayúsculas.',
+      : 'Las líneas punteadas son el nivel fácil: cálcalas. En las de abajo escribe la oración sin guía. Las letras sueltas se practican antes, en su estilo.',
     characterOrWord: text,
     recommendedTool: 'fountain',
     suggestedGrid: 'palmer',
@@ -36,7 +36,7 @@ export const WORD_LESSONS: Lesson[] = [
   ...SHORT_WORDS.map((text) => ({
     ...word(`p-${text}`, text, 'Palabras', false, true),
     subTitle: 'Con las letras ya hechas',
-    instructions: `Escribe «${text}» en cada línea. La primera va punteada. En las de abajo repite la palabra sin guía.`,
+    instructions: `Escribe «${text}» en cada línea. Repasa las líneas punteadas y repite la palabra sin guía en las de abajo.`,
     characterOrWord: wordRow(text)
   })),
   word('w-rio', 'El río baja entre los pinos.', 'Oraciones', false, true),

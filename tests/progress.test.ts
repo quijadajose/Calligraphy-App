@@ -142,19 +142,20 @@ describe('Datos', () => {
   });
 });
 
-describe('Planas de la ligada', () => {
+describe('Planas de cada estilo', () => {
   const byId = (id: string) => LESSONS.find((lesson) => lesson.id === id) as Lesson;
 
   it('cada letra tiene su plana', () => {
     expect(planaFor(LESSONS, byId('ligada-minus-a'))?.id).toBe('plana-a');
     expect(planaFor(LESSONS, byId('ligada-mayus-B'))?.id).toBe('plana-B');
-    expect(planaFor(LESSONS, byId('imprenta-minus-a'))).toBeUndefined();
+    expect(planaFor(LESSONS, byId('imprenta-minus-a'))?.id).toBe('plana-a');
   });
 
   it('letra → su plana → siguiente letra', () => {
     expect(nextLesson(LESSONS, [], byId('ligada-minus-a'))?.id).toBe('plana-a');
-    expect(nextLesson(LESSONS, [], byId('plana-a'))?.id).toBe('ligada-minus-b');
-    expect(nextLesson(LESSONS, [], byId('imprenta-minus-a'))?.id).toBe('imprenta-minus-b');
+    expect(nextLesson(LESSONS, [], byId('plana-a'), 'Ligada')?.id).toBe('ligada-minus-b');
+    expect(nextLesson(LESSONS, [], byId('imprenta-minus-a'))?.id).toBe('plana-a');
+    expect(nextLesson(LESSONS, [], byId('plana-a'), 'Imprenta')?.id).toBe('imprenta-minus-b');
   });
 
   it('una letra nueva en la sesión trae su plana justo detrás', () => {

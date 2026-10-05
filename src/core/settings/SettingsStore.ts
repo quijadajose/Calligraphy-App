@@ -1,4 +1,5 @@
-import { BrushTool, GridMode, GuideLevel } from '../../types/ink';
+import { BrushTool, GridMode, GuideSetting } from '../../types/ink';
+import { SCRIPT_STYLES, ScriptStyle, isScriptStyle } from '../engine/scriptFonts';
 import { KeyValueStore, readJSON, writeJSON } from '../storage/safeStorage';
 
 const STORAGE_KEY = 'calligraphy-settings';
@@ -23,7 +24,11 @@ export interface Settings {
   dailyGoalMinutes: number;
   perfHud: boolean;
   metronomeBpm: number;
-  guideLevel: GuideLevel;
+  guideLevel: GuideSetting;
+  /** Estilos de letra del español que se practican: solo esas pestañas se muestran. */
+  scripts: ScriptStyle[];
+  /** Letra de planas, palabras, oraciones y dictado (una de `scripts`). */
+  sheetScript: ScriptStyle;
   lastLessonId: string | null;
   customTexts: string[];
   /** Aviso del sistema a esta hora (HH:MM) si hoy no se practicó. null = sin recordatorio. */
@@ -42,7 +47,9 @@ export const DEFAULT_SETTINGS: Settings = {
   dailyGoalMinutes: 10,
   perfHud: false,
   metronomeBpm: 60,
-  guideLevel: 'full',
+  guideLevel: 'auto',
+  scripts: ['Imprenta'],
+  sheetScript: 'Imprenta',
   lastLessonId: null,
   customTexts: [],
   reminderTime: null
@@ -51,7 +58,7 @@ export const DEFAULT_SETTINGS: Settings = {
 const PENS: PenChoice[] = ['auto', 'fountain', 'fude', 'pencil'];
 const GRIDS: GridChoice[] = ['auto', 'palmer', 'genkouyoushi', 'none'];
 const TOUCH: TouchChoice[] = ['auto', 'on', 'off'];
-const GUIDES: GuideLevel[] = ['full', 'faint', 'none'];
+const GUIDES: GuideSetting[] = ['auto', 'full', 'faint', 'none'];
 
 function pick<T>(value: unknown, allowed: T[], fallback: T): T {
   return allowed.includes(value as T) ? (value as T) : fallback;
@@ -66,6 +73,10 @@ function numberIn(value: unknown, min: number, max: number, fallback: number): n
 export function sanitizeSettings(input: unknown): Settings {
   const raw = (input && typeof input === 'object' ? input : {}) as Record<string, unknown>;
   const d = DEFAULT_SETTINGS;
+  // En el orden de las pestañas, sin repetir; nunca vacío.
+  const chosen = Array.isArray(raw.scripts) ? SCRIPT_STYLES.filter((style) => (raw.scripts as unknown[]).includes(style)) : [];
+  const scripts: ScriptStyle[] = chosen.length > 0 ? chosen : [...d.scripts];
+  const sheetScript = isScriptStyle(raw.sheetScript) && scripts.includes(raw.sheetScript) ? raw.sheetScript : scripts[0];
   return {
     tool: pick(raw.tool, PENS, d.tool),
     grid: pick(raw.grid, GRIDS, d.grid),
@@ -79,6 +90,8 @@ export function sanitizeSettings(input: unknown): Settings {
     perfHud: raw.perfHud === true,
     metronomeBpm: Math.round(numberIn(raw.metronomeBpm, 30, 200, d.metronomeBpm)),
     guideLevel: pick(raw.guideLevel, GUIDES, d.guideLevel),
+    scripts,
+    sheetScript,
     lastLessonId: typeof raw.lastLessonId === 'string' ? raw.lastLessonId : null,
     customTexts: Array.isArray(raw.customTexts)
       ? raw.customTexts.filter((text): text is string => typeof text === 'string' && text.trim().length > 0).slice(0, 40)

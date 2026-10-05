@@ -1,4 +1,4 @@
-import { Lesson, LessonStep } from '../../types/ink';
+import { Lesson, LessonStep, WarmupPattern } from '../../types/ink';
 import { ASC, BASE, WAIST, XM, XR, bodyOval, ellipse, pts } from './paths';
 
 function step(title: string, hint: string, strokes: LessonStep['strokes'], mode: LessonStep['mode'] = 'repeat'): LessonStep {
@@ -154,4 +154,35 @@ export const EXERCISE_LESSONS: Lesson[] = [
       )
     ]
   )
+];
+
+/**
+ * Soltura: filas continuas para calentar la mano antes de las letras, como las primeras
+ * páginas de un cuaderno. Las primeras líneas se repasan; las de abajo, sin guía.
+ */
+function flow(pattern: WarmupPattern, title: string, subTitle: string, instructions: string, characterOrWord: string): Lesson {
+  return {
+    id: `soltura-${pattern}`,
+    category: 'palmer',
+    group: 'Ejercicios',
+    title,
+    subTitle,
+    instructions: `${instructions} Repasa las líneas punteadas y sigue en las blancas sin levantar el lápiz.`,
+    characterOrWord,
+    recommendedTool: 'pencil',
+    suggestedGrid: 'palmer',
+    sheet: true,
+    pattern
+  };
+}
+
+export const FLOW_LESSONS: Lesson[] = [
+  flow('ondas', 'Ondas', 'Soltura', 'Una ola suave entre la base y la línea media, siempre del mismo alto.', '∿∿∿'),
+  flow('zigzag', 'Zigzag', 'Soltura', 'Sube y baja en línea recta. Las puntas tocan la base y la línea media.', '/\\/\\'),
+  flow('arcos', 'Arcos', 'Soltura', 'Puentes como la n: sube redondo y baja recto hasta la base.', 'nnn'),
+  flow('guirnaldas', 'Guirnaldas', 'Soltura', 'Copas como la u: baja redondo y sube a la línea media.', 'uuu'),
+  flow('espiral', 'Espiral', 'Soltura', 'Óvalos encadenados que se pisan, con el brazo suelto y a ritmo parejo.', 'ℓℓℓ'),
+  flow('lazos-e', 'Lazos chicos', 'Soltura', 'Lazos del alto de la e, todos iguales e inclinados.', 'eee'),
+  flow('lazos-l', 'Lazos altos', 'Soltura', 'Lazos que suben hasta el ascendente, como la l, y vuelven a la base.', 'lll'),
+  flow('e-e-l', 'e e l', 'Soltura', 'Dos lazos chicos y uno alto, sin cortar: el cambio de altura es lo que se practica.', 'eel')
 ];
