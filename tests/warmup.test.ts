@@ -27,7 +27,7 @@ describe('soltura', () => {
       expect(Math.max(...xs)).toBeLessThan(W);
       expect(Math.max(...xs) - Math.min(...xs)).toBeGreaterThan(W * 0.6);
       for (const p of stroke) {
-        expect(p.y).toBeLessThanOrEqual(row.baseY + 0.01);
+        expect(p.y).toBeLessThanOrEqual(row.descenderY + 0.01);
         expect(p.y).toBeGreaterThanOrEqual(row.ascenderY - 0.01);
       }
     }

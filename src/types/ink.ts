@@ -78,7 +78,9 @@ export type GuideLevel = 'full' | 'faint' | 'none';
 export type GuideSetting = GuideLevel | 'auto';
 
 /** Ejercicios de soltura en fila continua (ver core/engine/warmupPatterns). */
-export type WarmupPattern = 'lazos-e' | 'lazos-l' | 'e-e-l' | 'espiral' | 'arcos' | 'guirnaldas' | 'zigzag' | 'ondas';
+export type WarmupPattern =
+  | 'lazos-e' | 'lazos-l' | 'e-e-l' | 'espiral' | 'arcos' | 'guirnaldas' | 'zigzag' | 'ondas'
+  | 'almenas' | 'sierra' | 'olas-altas' | 'puente-copa' | 'bucles-bajos' | 'bucles-mixtos' | 'ochos';
 
 /**
  * Líneas de una hoja que llevan el modelo punteado para repasar, como en un cuaderno:
