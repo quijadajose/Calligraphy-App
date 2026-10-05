@@ -45,52 +45,72 @@ function fromHanziJson(char: string, raw: { medians?: number[][][] }): CharRecor
   };
 }
 
-async function fetchChar(char: string): Promise<CharRecord> {
-  const base = localBase();
-  const urls = [
-    // Kana, N5 y vocabulario vienen empaquetados con la app (scripts/fetch-chardata.mjs).
-    ...(base !== null ? [`${base}chardata/${charFileName(char)}`] : []),
-    `https://cdn.jsdelivr.net/npm/hanzi-writer-data-jp@0/${encodeURIComponent(char)}.json`,
-    `https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/${encodeURIComponent(char)}.json`
-  ];
+/** Lo que no responde en este tiempo se da por perdido: una red lenta no deja la hoja esperando. */
+const NETWORK_TIMEOUT_MS = 6000;
 
-  for (const url of urls) {
-    try {
-      const response = await fetch(url);
-      if (!response.ok) continue;
-      const record = fromHanziJson(char, (await response.json()) as { medians?: number[][][] });
-      if (record) return record;
-    } catch {
-      continue;
-    }
+async function fetchWithTimeout(url: string, remote: boolean): Promise<Response | null> {
+  const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const timer = remote && controller ? setTimeout(() => controller.abort(), NETWORK_TIMEOUT_MS) : null;
+  try {
+    const response = await fetch(url, controller ? { signal: controller.signal } : undefined);
+    return response.ok ? response : null;
+  } catch {
+    return null;
+  } finally {
+    if (timer) clearTimeout(timer);
   }
-  const kanjiVg = await fetchKanjiVg(char);
-  if (kanjiVg) return { geometry: kanjiVg, raw: null };
-  return { geometry: null, raw: null };
 }
 
-async function fetchKanjiVg(char: string): Promise<CharGeometry | null> {
-  const code = char.codePointAt(0);
-  if (code === undefined) return null;
-  const hex = code.toString(16).padStart(5, '0');
+async function hanziFrom(char: string, url: string, remote: boolean): Promise<CharRecord | null> {
+  const response = await fetchWithTimeout(url, remote);
+  if (!response) return null;
+  try {
+    return fromHanziJson(char, (await response.json()) as { medians?: number[][][] });
+  } catch {
+    return null;
+  }
+}
+
+async function kanjiVgFrom(char: string, url: string, remote: boolean): Promise<CharRecord | null> {
+  const response = await fetchWithTimeout(url, remote);
+  if (!response) return null;
+  try {
+    const strokes = strokesFromKanjiVg(await response.text());
+    return strokes.length > 0 ? { geometry: { char, strokes }, raw: null } : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Primero lo que viene con la app o ya se descargó (JSON y luego el SVG de KanjiVG),
+ * y solo si falta, internet. Antes se probaba el CDN antes que el SVG local, y con
+ * la red lenta la hoja se quedaba en «Cargando orden de trazos…» aunque el dato estuviera.
+ */
+async function fetchChar(char: string): Promise<CharRecord> {
   const base = localBase();
-  // Primero la copia que viene con la app; luego una versión fija de KanjiVG en el CDN,
-  // así un cambio aguas arriba no rompe el lector de trazos.
-  const urls = [
-    ...(base !== null ? [`${base}chardata/${code.toString(16)}.svg`] : []),
-    ...[KANJIVG_RELEASE, 'master'].map((ref) => `https://cdn.jsdelivr.net/gh/KanjiVG/kanjivg@${ref}/kanji/${hex}.svg`)
-  ];
-  for (const url of urls) {
-    try {
-      const response = await fetch(url);
-      if (!response.ok) continue;
-      const strokes = strokesFromKanjiVg(await response.text());
-      if (strokes.length > 0) return { char, strokes };
-    } catch {
-      continue;
+  const code = char.codePointAt(0);
+  if (base !== null && code !== undefined) {
+    const local = (await hanziFrom(char, `${base}chardata/${charFileName(char)}`, false))
+      ?? (await kanjiVgFrom(char, `${base}chardata/${code.toString(16)}.svg`, false));
+    if (local) return local;
+  }
+  for (const url of [
+    `https://cdn.jsdelivr.net/npm/hanzi-writer-data-jp@0/${encodeURIComponent(char)}.json`,
+    `https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/${encodeURIComponent(char)}.json`
+  ]) {
+    const record = await hanziFrom(char, url, true);
+    if (record) return record;
+  }
+  if (code !== undefined) {
+    const hex = code.toString(16).padStart(5, '0');
+    // Una versión fija de KanjiVG: un cambio aguas arriba no rompe el lector de trazos.
+    for (const ref of [KANJIVG_RELEASE, 'master']) {
+      const record = await kanjiVgFrom(char, `https://cdn.jsdelivr.net/gh/KanjiVG/kanjivg@${ref}/kanji/${hex}.svg`, true);
+      if (record) return record;
     }
   }
-  return null;
+  return { geometry: null, raw: null };
 }
 
 export function loadCharRecord(char: string): Promise<CharRecord> {
