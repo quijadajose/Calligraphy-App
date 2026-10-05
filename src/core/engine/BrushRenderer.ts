@@ -119,6 +119,28 @@ export class BrushRenderer {
       smooth,
       smooth.map((point) => this.widthAt(point, stroke.tool, stroke.baseWidth))
     );
+    // Donde el trazo vuelve sobre sí mismo (el palito de la a, la d o la t), un solo
+    // contorno se cruza y el relleno resta esa zona: quedan cortes al soltar. Se parte
+    // en cada vuelta y cada tramo se rellena aparte; juntos se ven como un trazo continuo.
+    ctx.save();
+    ctx.fillStyle = color;
+    let from = 0;
+    for (const cusp of [...cuspIndices(smooth), smooth.length - 1]) {
+      if (cusp <= from) continue;
+      this.fillRibbon(ctx, smooth.slice(from, cusp + 1), widths.slice(from, cusp + 1));
+      from = cusp;
+    }
+    ctx.restore();
+  }
+
+  /** Un tramo sin vueltas: contorno de ancho variable con remates redondos. */
+  private fillRibbon(ctx: CanvasRenderingContext2D, smooth: StrokePoint[], widths: number[]): void {
+    if (smooth.length === 1) {
+      ctx.beginPath();
+      ctx.arc(smooth[0].x, smooth[0].y, widths[0] / 2, 0, Math.PI * 2);
+      ctx.fill();
+      return;
+    }
     const left: { x: number; y: number }[] = [];
     const right: { x: number; y: number }[] = [];
     let tx = 1;
@@ -129,12 +151,12 @@ export class BrushRenderer {
       const next = smooth[Math.min(smooth.length - 1, i + 2)];
       let dx = next.x - prev.x;
       let dy = next.y - prev.y;
-      if (dx * tx + dy * ty < 0) {
+      if (i > 0 && dx * tx + dy * ty < 0) {
         dx = -dx;
         dy = -dy;
       }
-      tx = tx * 0.55 + dx * 0.45;
-      ty = ty * 0.55 + dy * 0.45;
+      tx = i === 0 ? dx : tx * 0.55 + dx * 0.45;
+      ty = i === 0 ? dy : ty * 0.55 + dy * 0.45;
       const length = Math.hypot(tx, ty) || 1;
       tx /= length;
       ty /= length;
@@ -154,8 +176,6 @@ export class BrushRenderer {
     }
     const anticlockwise = area < 0;
 
-    ctx.save();
-    ctx.fillStyle = color;
     ctx.beginPath();
     this.curveThrough(ctx, left);
     this.curveThrough(ctx, right.reverse());
@@ -168,7 +188,6 @@ export class BrushRenderer {
     ctx.moveTo(last.x + widths[widths.length - 1] / 2, last.y);
     ctx.arc(last.x, last.y, widths[widths.length - 1] / 2, 0, Math.PI * 2, anticlockwise);
     ctx.fill();
-    ctx.restore();
   }
 
   /** El grosor no puede saltar de muestra en muestra: eso serrucha el borde. */
@@ -216,3 +235,34 @@ export class BrushRenderer {
   }
 }
 
+/** Vecino a por lo menos `reach` píxeles, hacia atrás (step = -1) o adelante (+1). */
+function neighbor(points: StrokePoint[], index: number, step: number, reach: number): StrokePoint | null {
+  const origin = points[index];
+  for (let j = index + step; j >= 0 && j < points.length; j += step) {
+    if (Math.hypot(points[j].x - origin.x, points[j].y - origin.y) >= reach) return points[j];
+  }
+  return null;
+}
+
+/** Índices donde el trazo da media vuelta (más de ~110°): ahí se parte el contorno. */
+export function cuspIndices(points: StrokePoint[], reach = 4): number[] {
+  const cusps: number[] = [];
+  for (let i = 1; i < points.length - 1; i++) {
+    const before = neighbor(points, i, -1, reach);
+    const after = neighbor(points, i, 1, reach);
+    if (!before || !after) continue;
+    const ax = points[i].x - before.x;
+    const ay = points[i].y - before.y;
+    const bx = after.x - points[i].x;
+    const by = after.y - points[i].y;
+    const cos = (ax * bx + ay * by) / ((Math.hypot(ax, ay) || 1) * (Math.hypot(bx, by) || 1));
+    if (cos > -0.35) continue;
+    // Una misma vuelta se marca una sola vez.
+    const lastCusp = cusps[cusps.length - 1];
+    if (lastCusp != null && Math.hypot(points[i].x - points[lastCusp].x, points[i].y - points[lastCusp].y) < reach) {
+      continue;
+    }
+    cusps.push(i);
+  }
+  return cusps;
+}
