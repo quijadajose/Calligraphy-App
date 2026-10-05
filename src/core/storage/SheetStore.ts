@@ -88,6 +88,12 @@ export class SheetStore {
     return (all ?? []).sort((a, b) => b.at - a.at);
   }
 
+  /** Borra todas las hojas guardadas de una lección. */
+  public async deleteLessonSheets(lessonId: string): Promise<void> {
+    const ids = (await this.listSheets()).filter((sheet) => sheet.lessonId === lessonId).map((sheet) => sheet.id);
+    for (const id of ids) if (id != null) await this.run(SHEETS, 'readwrite', (store) => store.delete(id));
+  }
+
   public async saveDraft(draft: SheetDraft): Promise<void> {
     await this.run(DRAFTS, 'readwrite', (store) => store.put(draft));
   }

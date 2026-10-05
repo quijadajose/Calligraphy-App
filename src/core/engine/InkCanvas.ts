@@ -1,4 +1,4 @@
-import { BrushTool, GridMode, GuideLevel, Point2, Stroke, StrokePoint } from '../../types/ink';
+import { BrushTool, GridMode, GuideLevel, Point2, Stroke, StrokePoint, WarmupPattern, guidedRowsFor } from '../../types/ink';
 import {
   PALMER_PEN_RATIO,
   boxIndexFor,
@@ -8,7 +8,7 @@ import {
   sentenceFrame,
   sentenceRowGeometry
 } from './gridMetrics';
-import { SHEET_TEXT_X } from './sentenceLayout';
+import { SHEET_TEXT_X, sentenceFontProbe } from './sentenceLayout';
 import { GridRenderer } from './GridRenderer';
 import { InkRenderer } from './InkRenderer';
 import { PalmRejection } from './PalmRejection';
@@ -68,6 +68,7 @@ export class InkCanvas {
   private palmerActive = 0;
   private sheetText: string | null = null;
   private sheetHidden = false;
+  private sheetPattern: WarmupPattern | null = null;
   private cssWidth = 0;
   private cssHeight = 0;
 
@@ -320,16 +321,17 @@ export class InkCanvas {
   }
 
   /** Hoja de varias líneas. Con `hidden` (dictado) el texto no se muestra en ninguna. */
-  public setSheet(text: string | null, hidden = false): void {
+  public setSheet(text: string | null, hidden = false, pattern: WarmupPattern | null = null): void {
     this.stopGuideAnimation();
     this.sheetText = text;
+    this.sheetPattern = text ? pattern : null;
     this.sheetHidden = hidden;
     this.ghost = [];
     this.ghostGlyphs = [];
     this.palmerSteps = null;
     this.redrawBg();
     if (!text || !document.fonts?.load) return;
-    void document.fonts.load('600 64px Caveat').then(() => {
+    void document.fonts.load(sentenceFontProbe()).then(() => {
       if (this.sheetText === text) this.redrawBg();
     });
   }
@@ -339,6 +341,12 @@ export class InkCanvas {
     if (!this.sheetHidden) return;
     this.sheetHidden = false;
     this.redrawBg();
+  }
+
+  /** Líneas de la hoja con el modelo punteado, según el nivel de guía actual. */
+  public sheetGuidedRows(): number {
+    if (!this.sheetText || this.sheetHidden) return 0;
+    return guidedRowsFor(sentenceFrame(this.cssHeight).rows, this.guideLevel);
   }
 
   public setGuideLevel(level: GuideLevel): void {
@@ -582,7 +590,8 @@ export class InkCanvas {
         this.cssWidth,
         this.cssHeight,
         this.sheetText,
-        this.sheetHidden ? 0 : alpha
+        this.sheetHidden ? 0 : alpha,
+        { guidedRows: this.sheetGuidedRows(), pattern: this.sheetPattern }
       );
       return;
     }

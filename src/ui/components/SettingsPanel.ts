@@ -1,4 +1,5 @@
 import { OfflineStatus, formatBytes } from '../../core/offline/OfflinePack';
+import { SCRIPT_STYLES, ScriptStyle } from '../../core/engine/scriptFonts';
 import { Settings, SettingsStore, ThemeChoice } from '../../core/settings/SettingsStore';
 
 type Option<T> = { value: T; label: string };
@@ -36,6 +37,8 @@ export class SettingsPanel {
         { value: 'light', label: 'Claro' },
         { value: 'dark', label: 'Oscuro' }
       ], this.theme, (value) => this.onTheme?.(value))),
+      this.section('Letra (español)', this.scripts(s),
+        this.hint('Elige los estilos que practicas: solo esos aparecen como pestañas. Planas, palabras, oraciones y dictado se escriben con la letra marcada; si eliges varias, cambias de una a otra en la misma hoja.')),
       this.section('Pluma', this.segment('tool', [
         { value: 'auto', label: 'La de cada lección' },
         { value: 'fountain', label: 'Estilográfica' },
@@ -48,13 +51,15 @@ export class SettingsPanel {
         { value: 'genkouyoushi', label: 'Genkōyōshi' },
         { value: 'none', label: 'Libre' }
       ], s.grid, (grid) => this.store.set({ grid })),
-      this.toggle('slantLines', 'Líneas de inclinación a 52°', s.slantLines, (slantLines) => this.store.set({ slantLines }))),
+      this.toggle('slantLines', 'Líneas de inclinación a 52°', s.slantLines, (slantLines) => this.store.set({ slantLines })),
+      this.hint('Kana y kanji siempre usan genkōyōshi: la calificación mide sobre sus cuadros.')),
       this.section('Ayuda en la hoja', this.segment('guideLevel', [
+        { value: 'auto', label: 'Automática' },
         { value: 'full', label: 'Guía completa' },
         { value: 'faint', label: 'Guía tenue' },
         { value: 'none', label: 'Sin guía (de memoria)' }
       ], s.guideLevel, (guideLevel) => this.store.set({ guideLevel })),
-      this.hint('Baja la ayuda a medida que una lección pasa a «Asentada».')),
+      this.hint('Automática: dos líneas punteadas para repasar mientras aprendes, una tenue cuando la lección está «Asentada» y ninguna al dominarla.')),
       this.section('Escritura', this.segment('touchInput', [
         { value: 'auto', label: 'Dedo hasta que aparezca un lápiz' },
         { value: 'on', label: 'Dedo siempre' },
@@ -76,6 +81,33 @@ export class SettingsPanel {
       this.section('Datos', this.dataButtons())
     );
     if (focusKey) this.root.querySelector<HTMLElement>(`[data-key="${focusKey}"]`)?.focus();
+  }
+
+  /** Varios estilos a la vez; siempre queda al menos uno. */
+  private scripts(s: Settings): HTMLElement {
+    const row = document.createElement('div');
+    row.className = 'chips-row';
+    row.setAttribute('role', 'group');
+    row.setAttribute('aria-label', 'Estilos de letra');
+    for (const style of SCRIPT_STYLES) {
+      const on = s.scripts.includes(style);
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = `chip${on ? ' on' : ''}`;
+      button.dataset.key = `script-${style}`;
+      button.setAttribute('aria-pressed', String(on));
+      button.innerHTML = on ? '<i class="ti ti-check" aria-hidden="true"></i> ' : '';
+      button.append(document.createTextNode(style));
+      button.disabled = on && s.scripts.length === 1;
+      if (button.disabled) button.title = 'Deja al menos un estilo';
+      button.addEventListener('click', () => {
+        const next: ScriptStyle[] = on ? s.scripts.filter((item) => item !== style) : [...s.scripts, style];
+        // Al sumar un estilo, ese pasa a ser la letra de las hojas.
+        this.store.set({ scripts: next, sheetScript: on ? s.sheetScript : style });
+      });
+      row.append(button);
+    }
+    return row;
   }
 
   private section(title: string, ...children: HTMLElement[]): HTMLElement {

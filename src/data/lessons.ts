@@ -1,7 +1,7 @@
 import { Lesson } from '../types/ink';
 import { HIRAGANA_LESSONS, JP_DICTATION_LESSONS, KATAKANA_LESSONS, VOCABULARY_LESSONS } from './japanese/kana';
 import { kanjiLessons } from './japanese/kanjiDatabase';
-import { EXERCISE_LESSONS } from './palmer/exercises';
+import { EXERCISE_LESSONS, FLOW_LESSONS } from './palmer/exercises';
 import { COPPERPLATE_LESSONS } from './styles/copperplate';
 import { PRINT_LESSONS } from './styles/imprenta';
 import { ITALICA_LESSONS } from './styles/italica';
@@ -13,6 +13,7 @@ export type { Lesson };
 export { JAPANESE_GROUPS, PALMER_GROUPS } from './groups';
 
 export const LESSONS: Lesson[] = [
+  ...FLOW_LESSONS,
   ...EXERCISE_LESSONS,
   ...PRINT_LESSONS,
   ...LIGADA_LESSONS,

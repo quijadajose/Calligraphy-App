@@ -14,6 +14,7 @@ function formatMinutes(ms: number): string {
 export class ProgressDashboard {
   public onOpenGroup?: (category: 'palmer' | 'japanese', group: string) => void;
   public onOpenLesson?: (lesson: Lesson) => void;
+  public onDeleteSheets?: (lessonId: string) => void;
   public onExport?: () => void;
   public onImport?: () => void;
 
@@ -193,12 +194,27 @@ export class ProgressDashboard {
     for (const [lessonId, list] of [...byLesson.entries()].slice(0, 12)) {
       const newest = list[0];
       const oldest = list[list.length - 1];
-      const card = document.createElement('button');
-      card.type = 'button';
+      const card = document.createElement('div');
       card.className = 'sheet-card';
-      const title = document.createElement('span');
+      const head = document.createElement('div');
+      head.className = 'sheet-card-head';
+      const title = document.createElement('button');
+      title.type = 'button';
       title.className = 'sheet-card-title';
       title.textContent = `${newest.title} · ${list.length} ${list.length === 1 ? 'hoja' : 'hojas'}`;
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'ib danger sheet-card-delete';
+      remove.setAttribute('aria-label', `Borrar las hojas de ${newest.title}`);
+      remove.title = 'Borrar estas hojas';
+      remove.innerHTML = '<i class="ti ti-trash" aria-hidden="true"></i>';
+      remove.addEventListener('click', () => {
+        const what = list.length === 1 ? 'la hoja guardada' : `las ${list.length} hojas guardadas`;
+        if (!confirm(`¿Borrar ${what} de «${newest.title}»? El progreso de la lección no cambia.`)) return;
+        card.remove();
+        this.onDeleteSheets?.(lessonId);
+      });
+      head.append(title, remove);
       const pair = document.createElement('span');
       pair.className = 'sheet-pair';
       const shots = list.length > 1 ? [oldest, newest] : [newest];
@@ -214,9 +230,12 @@ export class ProgressDashboard {
         figure.append(image, caption);
         pair.append(figure);
       }
-      card.append(title, pair);
+      card.append(head, pair);
       const lesson = this.lessonsById.get(lessonId);
-      if (lesson) card.addEventListener('click', () => this.onOpenLesson?.(lesson));
+      if (lesson) {
+        title.addEventListener('click', () => this.onOpenLesson?.(lesson));
+        pair.addEventListener('click', () => this.onOpenLesson?.(lesson));
+      }
       body.append(card);
     }
   }
@@ -245,29 +264,63 @@ export class ProgressDashboard {
     return wrap;
   }
 
-  /** Mapa de calor de las últimas 12 semanas: cada cuadro es un día, más oscuro cuanto más cerca de la meta. */
+  /** Mapa de calor del último año, como el de GitHub: columnas por semana, filas de lunes a domingo. */
   private calendar(days: { key: string; ms: number }[], goalMinutes: number): HTMLElement {
     const section = document.createElement('section');
     section.className = 'progress-section';
     const heading = document.createElement('h3');
-    heading.textContent = 'Últimas 12 semanas';
+    heading.textContent = 'Último año';
+    const scroller = document.createElement('div');
+    scroller.className = 'heatmap-scroll';
     const grid = document.createElement('div');
     grid.className = 'heatmap';
     grid.setAttribute('role', 'img');
     const active = days.filter((day) => day.ms > 0).length;
-    grid.setAttribute('aria-label', `${active} días con práctica en las últimas 12 semanas`);
+    grid.setAttribute('aria-label', `${active} días con práctica en el último año`);
     const first = new Date(`${days[0]?.key ?? ''}T12:00:00`);
     const offset = Number.isNaN(first.getTime()) ? 0 : (first.getDay() + 6) % 7;
-    for (let i = 0; i < offset; i++) grid.append(document.createElement('span'));
-    for (const day of days) {
+    const weeks = Math.ceil((days.length + offset) / 7);
+    grid.style.setProperty('--weeks', String(weeks));
+
+    for (const [row, label] of [[0, 'L'], [2, 'X'], [4, 'V']] as const) {
+      const name = document.createElement('span');
+      name.className = 'heat-day';
+      name.textContent = label;
+      name.style.gridRow = String(row + 2);
+      grid.append(name);
+    }
+
+    let lastMonth = -1;
+    days.forEach((day, index) => {
+      const slot = index + offset;
+      const week = Math.floor(slot / 7);
+      const date = new Date(`${day.key}T12:00:00`);
+      const month = date.getMonth();
+      // El nombre del mes va sobre la primera semana que empieza en él.
+      if (slot % 7 === 0 && month !== lastMonth) {
+        if (lastMonth !== -1 || date.getDate() <= 7) {
+          const label = document.createElement('span');
+          label.className = 'heat-month';
+          label.textContent = MONTH_NAMES[month].slice(0, 3);
+          label.style.gridColumn = `${week + 2} / span 4`;
+          grid.append(label);
+        }
+        lastMonth = month;
+      }
       const cell = document.createElement('span');
       const level = day.ms <= 0 ? 0 : Math.min(4, 1 + Math.floor((day.ms / (goalMinutes * 60000)) * 3));
       cell.className = 'heat-cell';
       cell.dataset.level = String(level);
-      cell.title = `${day.key}: ${formatMinutes(day.ms)}`;
+      cell.style.gridColumn = String(week + 2);
+      cell.style.gridRow = String((slot % 7) + 2);
+      cell.title = `${date.toLocaleDateString()}: ${formatMinutes(day.ms)}`;
       grid.append(cell);
-    }
-    section.append(heading, grid);
+    });
+
+    scroller.append(grid);
+    section.append(heading, scroller);
+    // En pantallas angostas se ve primero lo más reciente.
+    requestAnimationFrame(() => { scroller.scrollLeft = scroller.scrollWidth; });
     return section;
   }
 

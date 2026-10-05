@@ -1,17 +1,17 @@
 import { Lesson } from '../../types/ink';
-import { JAPANESE_TABS, KANJI_LEVELS, PALMER_GROUPS } from '../../data/groups';
+import { JAPANESE_TABS, KANJI_LEVELS, LETTER_STYLES, PALMER_GROUPS } from '../../data/groups';
 import { letterSvg } from '../glyphSvg';
 
 const COPY: Record<string, { title: string; blurb: string }> = {
-  Ejercicios: { title: 'Trazos de base', blurb: 'Óvalo, empuje y enlaces, antes de las letras.' },
+  Ejercicios: { title: 'Trazos de base', blurb: 'Soltura (lazos, arcos, ondas…) y trazos de base: calientan la mano antes de las letras.' },
   Imprenta: { title: 'Imprenta', blurb: 'Letra de molde: recta, sin inclinar y con cada letra separada. Primero las minúsculas, luego las mayúsculas.' },
   Ligada: { title: 'Ligada', blurb: 'La cursiva escolar: cada letra entra desde la base y sale hacia la siguiente, sin levantar el lápiz. Después de cada letra viene su plana.' },
   Itálica: { title: 'Itálica', blurb: 'Letra de pluma, estrecha y apenas inclinada: los arcos nacen del palote. Mayúsculas romanas estrechas.' },
   Copperplate: { title: 'Copperplate', blurb: 'La cursiva inglesa clásica, muy inclinada (55°): fina al subir y gruesa al bajar. Mejor con un lápiz con presión.' },
   Enlaces: { title: 'Enlaces', blurb: 'Los pares que más cuestan: br, os, ve, wr… sin levantar la pluma.' },
-  Planas: { title: 'Planas', blurb: 'Varias líneas de la misma letra. La primera lleva la guía.' },
+  Planas: { title: 'Planas', blurb: 'La misma letra muchas veces: primero se repasa el punteado y después se escribe sin guía.' },
   Palabras: { title: 'Palabras', blurb: 'Palabras cortas con las letras ya practicadas.' },
-  Oraciones: { title: 'Oraciones', blurb: 'La primera línea lleva la guía. Las de abajo van en blanco. Tus textos también aparecen aquí.' },
+  Oraciones: { title: 'Oraciones', blurb: 'Las líneas punteadas se repasan y las de abajo van en blanco. Tus textos también aparecen aquí.' },
   Dictado: { title: 'Dictado', blurb: 'Escucha la frase y escríbela. El texto aparece al entregar.' },
   Hiragana: { title: 'Hiragana', blurb: 'Básicos, sonoros (が, ぱ), pequeños (ゃ, っ) y combinaciones (きゃ).' },
   Katakana: { title: 'Katakana', blurb: 'Los signos de los préstamos, con sonoros y pequeños.' },
@@ -106,9 +106,26 @@ export class LessonNavigator {
     this.search.value = '';
   }
 
+  /** Estilos de letra elegidos en Ajustes: las demás pestañas de estilo se esconden. */
+  private scripts: string[] = [...LETTER_STYLES];
+
+  public setScripts(scripts: string[]): void {
+    this.scripts = scripts;
+    if (this.category === 'palmer' && !this.palmerTabs().includes(this.tab)) this.tab = this.palmerTabs()[0];
+    this.render();
+  }
+
+  private palmerTabs(): string[] {
+    return PALMER_GROUPS.filter((name) => !LETTER_STYLES.includes(name) || this.scripts.includes(name));
+  }
+
+  private hiddenStyle(group: string): boolean {
+    return LETTER_STYLES.includes(group) && !this.scripts.includes(group);
+  }
+
   private setCategory(category: 'palmer' | 'japanese'): void {
     this.category = category;
-    this.tab = category === 'palmer' ? PALMER_GROUPS[0] : JAPANESE_TABS[0];
+    this.tab = category === 'palmer' ? this.palmerTabs()[0] : JAPANESE_TABS[0];
     this.clearQuery();
     this.render();
   }
@@ -121,6 +138,7 @@ export class LessonNavigator {
       return;
     }
     const tabs = lesson.category === 'palmer' ? PALMER_GROUPS : JAPANESE_TABS;
+    // Una lección de un estilo escondido (desde Hoy o un repaso) igual muestra su pestaña.
     this.tab = tabs.includes(lesson.group) ? lesson.group : tabs[0];
   }
 
@@ -132,6 +150,7 @@ export class LessonNavigator {
   private visible(): Lesson[] {
     const list = this.lessons.filter((lesson) => {
       if (lesson.category !== this.category) return false;
+      if (this.hiddenStyle(lesson.group) && lesson.group !== this.tab) return false;
       if (!this.query) return lesson.group === this.currentGroup();
       const haystack = `${lesson.title} ${lesson.subTitle} ${lesson.characterOrWord} ${lesson.meaning ?? ''}`.toLowerCase();
       return haystack.includes(this.query);
@@ -160,7 +179,9 @@ export class LessonNavigator {
   }
 
   private renderTabs(): void {
-    const names = this.category === 'palmer' ? PALMER_GROUPS : JAPANESE_TABS;
+    const base = this.category === 'palmer' ? this.palmerTabs() : JAPANESE_TABS;
+    // Si se llegó a una lección de un estilo escondido, su pestaña se ve mientras tanto.
+    const names = this.category === 'palmer' && !base.includes(this.tab) ? PALMER_GROUPS.filter((name) => base.includes(name) || name === this.tab) : base;
     this.tabs.replaceChildren(
       ...names.map((name) => {
         const button = document.createElement('button');

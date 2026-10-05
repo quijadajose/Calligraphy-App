@@ -1,4 +1,5 @@
-import { GridMode, Point2 } from '../../types/ink';
+import { warmupStroke } from './warmupPatterns';
+import { GridMode, Point2, WarmupPattern } from '../../types/ink';
 import {
   PALMER_PEN_RATIO,
   scriptSlant,
@@ -11,7 +12,7 @@ import {
   sentenceFrame,
   sentenceRowGeometry
 } from './gridMetrics';
-import { SHEET_TEXT_X, sentenceFont, sentenceFontSize, sentenceSkew } from './sentenceLayout';
+import { SHEET_TEXT_X, sentenceFont, sentenceFontProbe, sentenceFontSize, sentenceSkew } from './sentenceLayout';
 
 export class GridRenderer {
   private sheetCache: { key: string; canvas: HTMLCanvasElement } | null = null;
@@ -322,18 +323,42 @@ export class GridRenderer {
     width: number,
     height: number,
     text: string,
-    guideAlpha = 1
+    guideAlpha = 1,
+    options: { guidedRows?: number; pattern?: WarmupPattern | null } = {}
   ): void {
+    const { rows } = sentenceFrame(height);
+    const guided = guideAlpha > 0 ? Math.min(rows, options.guidedRows ?? 1) : 0;
     this.drawPalmerLines(ctx, width, height, 'sentence');
-    this.drawSheetLabels(ctx, height, guideAlpha > 0);
-    if (guideAlpha <= 0) return;
+    this.drawSheetLabels(ctx, height, guided);
+    if (guided === 0) return;
     ctx.save();
     ctx.globalAlpha = guideAlpha;
-    this.drawDottedSentence(ctx, width, height, text);
+    if (options.pattern) this.drawDottedPattern(ctx, width, height, options.pattern, guided);
+    else this.drawDottedSentence(ctx, width, height, text, guided);
     ctx.restore();
   }
 
-  private drawSheetLabels(ctx: CanvasRenderingContext2D, height: number, guided: boolean): void {
+  /** Patrón de soltura punteado en las líneas para repasar. */
+  private drawDottedPattern(ctx: CanvasRenderingContext2D, width: number, height: number, pattern: WarmupPattern, guided: number): void {
+    const mood = this.paperMood();
+    ctx.save();
+    ctx.strokeStyle = mood === 'dark' ? 'rgba(214, 218, 224, 0.9)' : 'rgba(62, 68, 80, 0.85)';
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    for (let r = 0; r < guided; r++) {
+      const row = sentenceRowGeometry(r, height);
+      const gap = Math.max(5, row.xHeight * 0.11);
+      ctx.lineWidth = Math.max(2, row.xHeight * 0.06);
+      ctx.setLineDash([0.1, gap]);
+      const stroke = warmupStroke(pattern, row, width);
+      ctx.beginPath();
+      stroke.forEach((point, index) => (index === 0 ? ctx.moveTo(point.x, point.y) : ctx.lineTo(point.x, point.y)));
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  private drawSheetLabels(ctx: CanvasRenderingContext2D, height: number, guided: number): void {
     const { rows } = sentenceFrame(height);
     ctx.save();
     ctx.font = '600 11px Outfit, sans-serif';
@@ -344,17 +369,17 @@ export class GridRenderer {
     ctx.textBaseline = 'middle';
     for (let rowIndex = 0; rowIndex < rows; rowIndex++) {
       const row = sentenceRowGeometry(rowIndex, height);
-      ctx.fillText(rowIndex === 0 && guided ? 'Con guías' : 'Sin guías', 14, (row.waistY + row.baseY) / 2);
+      ctx.fillText(rowIndex < guided ? 'Con guías' : 'Sin guías', 14, (row.waistY + row.baseY) / 2);
     }
     ctx.restore();
   }
 
-  private drawDottedSentence(ctx: CanvasRenderingContext2D, width: number, height: number, text: string): void {
+  private drawDottedSentence(ctx: CanvasRenderingContext2D, width: number, height: number, text: string, guided = 1): void {
     if (width < 8 || height < 8 || !text) return;
     const mood = this.paperMood();
     const dpr = window.devicePixelRatio || 1;
-    const ready = typeof document !== 'undefined' && document.fonts?.check('600 16px Caveat') ? 1 : 0;
-    const key = `${Math.round(width)}x${Math.round(height)}@${dpr}:${mood}:${ready}:${text}`;
+    const ready = typeof document !== 'undefined' && document.fonts?.check(sentenceFontProbe()) ? 1 : 0;
+    const key = `${Math.round(width)}x${Math.round(height)}@${dpr}:${mood}:${ready}:${guided}:${sentenceFontProbe()}:${sentenceSkew()}:${text}`;
     if (!this.sheetCache || this.sheetCache.key !== key) {
       const canvas = document.createElement('canvas');
       canvas.width = Math.ceil(width * dpr);
@@ -384,9 +409,14 @@ export class GridRenderer {
       off.font = sentenceFont(size);
       off.fillStyle = dots ? off.createPattern(tile, 'repeat') ?? color : color;
       off.textBaseline = 'alphabetic';
-      off.translate(SHEET_TEXT_X, row.baseY);
-      off.transform(1, 0, sentenceSkew(), 1, 0, 0);
-      off.fillText(text, 0, 0);
+      // La misma frase en cada línea para repasar; el tamaño se mide en la primera.
+      for (let r = 0; r < guided; r++) {
+        off.save();
+        off.translate(SHEET_TEXT_X, sentenceRowGeometry(r, height).baseY);
+        off.transform(1, 0, sentenceSkew(), 1, 0, 0);
+        off.fillText(text, 0, 0);
+        off.restore();
+      }
       this.sheetCache = { key, canvas };
     }
     ctx.drawImage(this.sheetCache.canvas, 0, 0, width, height);

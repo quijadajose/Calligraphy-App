@@ -10,9 +10,10 @@ import { StrokeEvaluator } from '../core/evaluation/StrokeEvaluator';
 import { baseWidthMatching } from '../core/engine/BrushRenderer';
 import { InkCanvas } from '../core/engine/InkCanvas';
 import { CURSIVE_SLANT_DEG, scriptSlant, setScriptSlant } from '../core/engine/gridMetrics';
+import { ScriptStyle, scriptSlantFor, setSheetScript } from '../core/engine/scriptFonts';
 import { Settings } from '../core/settings/SettingsStore';
 import { SheetStore } from '../core/storage/SheetStore';
-import { BrushTool, CharGeometry, EvaluationResult, GridMode, Lesson, Stroke, glyphsOf, isSingleGlyph } from '../types/ink';
+import { BrushTool, CharGeometry, EvaluationResult, GridMode, GuideLevel, Lesson, Stroke, glyphsOf, isSingleGlyph } from '../types/ink';
 import { DictationOverlay } from '../ui/components/DictationOverlay';
 import { PalmerStrokePreview } from '../ui/components/PalmerStrokePreview';
 import { Toolbar } from '../ui/components/Toolbar';
@@ -111,11 +112,12 @@ export class Studio {
     const previous = this.settings;
     this.settings = settings;
     this.ink.setSlantLines(settings.slantLines);
-    this.ink.setGuideLevel(settings.guideLevel);
+    this.ink.setGuideLevel(this.resolveGuide());
     this.ink.perfOverlay.setVisible(settings.perfHud);
     this.ink.setAllowTouch(settings.touchInput === 'on' || (settings.touchInput === 'auto' && !settings.penSeen));
     this.el.wrapper.dataset.dock = settings.dockSide;
     if (this.lesson && (previous.tool !== settings.tool || previous.grid !== settings.grid)) this.applyTool(this.lesson);
+    if (previous.sheetScript !== settings.sheetScript || previous.scripts.join() !== settings.scripts.join()) this.applySheetScript();
     if (this.metronome.running && previous.metronomeBpm !== settings.metronomeBpm) this.metronome.start(settings.metronomeBpm);
   }
 
@@ -140,10 +142,68 @@ export class Studio {
     this.el.toolbar.exitZen();
   }
 
+  /** Se eligió otra letra para las hojas de texto (desde la hoja o desde Ajustes). */
+  public onScriptChange?: (style: ScriptStyle) => void;
+  private scriptSwitch: HTMLElement | null = null;
+
+  /** Cambia la letra de la hoja abierta sin borrar lo escrito. */
+  private applySheetScript(): void {
+    const lesson = this.lesson;
+    this.renderScriptSwitch();
+    if (!lesson || !isTextSheet(lesson)) return;
+    setSheetScript(this.settings.sheetScript);
+    setScriptSlant(scriptSlantFor(this.settings.sheetScript));
+    this.ink.redrawAll();
+    this.ink.setSheet(lesson.characterOrWord, this.dictating || !!lesson.dictation);
+  }
+
+  /** Selector de letra en la barra de la hoja: solo si se practican varios estilos. */
+  private renderScriptSwitch(): void {
+    if (!this.scriptSwitch) {
+      const anchor = document.getElementById('stroke-steps');
+      if (!anchor) return;
+      this.scriptSwitch = document.createElement('div');
+      this.scriptSwitch.className = 'chips-row practice-chips script-switch';
+      this.scriptSwitch.setAttribute('role', 'group');
+      this.scriptSwitch.setAttribute('aria-label', 'Letra de la hoja');
+      anchor.after(this.scriptSwitch);
+    }
+    const lesson = this.lesson;
+    const styles = this.settings.scripts;
+    const show = !!lesson && isTextSheet(lesson) && styles.length > 1;
+    this.scriptSwitch.hidden = !show;
+    if (!show) return;
+    this.scriptSwitch.replaceChildren(...styles.map((style) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      const on = style === this.settings.sheetScript;
+      button.className = `chip${on ? ' on' : ''}`;
+      button.setAttribute('aria-pressed', String(on));
+      button.textContent = style;
+      button.addEventListener('click', () => { if (!on) this.onScriptChange?.(style); });
+      return button;
+    }));
+  }
+
+  /** Nivel de maestría de una lección (0 sin empezar … 4 dominada). Lo da main. */
+  public masteryOf?: (lesson: Lesson) => number;
+
+  /**
+   * Guía de la hoja. En automático se apaga sola, como en un cuaderno: con guía completa
+   * mientras se aprende, tenue cuando la lección está «Asentada» y sin guía al dominarla.
+   */
+  private resolveGuide(): GuideLevel {
+    const setting = this.settings.guideLevel;
+    if (setting !== 'auto') return setting;
+    const level = this.lesson ? this.masteryOf?.(this.lesson) ?? 0 : 0;
+    return level >= 4 ? 'none' : level >= 3 ? 'faint' : 'full';
+  }
+
   public async open(lesson: Lesson): Promise<void> {
     this.flushDraft();
     const token = ++this.token;
     this.lesson = lesson;
+    this.ink.setGuideLevel(this.resolveGuide());
     this.stepIndex = 0;
     this.penMatchesModel = true;
     this.retryOnNextStroke = false;
@@ -157,7 +217,14 @@ export class Studio {
     this.kanjiWriter = null;
     this.palmerPreview.stop();
     // Cada estilo tiene su inclinación (imprenta vertical, copperplate 55°…). Va antes de dibujar la pauta y el modelo.
-    setScriptSlant(lesson.slant ?? (lesson.upright ? 90 : CURSIVE_SLANT_DEG));
+    if (isTextSheet(lesson)) {
+      // Planas, palabras, oraciones y dictado: con la letra elegida en Ajustes.
+      setSheetScript(this.settings.sheetScript);
+      setScriptSlant(scriptSlantFor(this.settings.sheetScript));
+    } else {
+      setScriptSlant(lesson.slant ?? (lesson.upright ? 90 : CURSIVE_SLANT_DEG));
+    }
+    this.renderScriptSwitch();
     this.ink.redrawAll();
     if (this.el.dictation.isOpen()) this.el.dictation.dismiss();
     this.showGuide(lesson);
@@ -170,7 +237,7 @@ export class Studio {
     } else if (lesson.steps?.length) {
       this.applyPalmerStep(lesson);
     } else if (lesson.sheet) {
-      this.ink.setSheet(lesson.characterOrWord, !!lesson.dictation);
+      this.ink.setSheet(lesson.characterOrWord, !!lesson.dictation, lesson.pattern ?? null);
       if (this.penMatchesModel) this.applyModelPen();
       if (lesson.dictation) this.say('Pulsa «Dictado» para escuchar la frase. El texto aparece al entregar.');
     } else if (lesson.idealStrokes?.length) {
@@ -413,7 +480,7 @@ export class Studio {
     if (!lesson) return;
     this.ink.reset();
     this.dictating = true;
-    if (lesson.sheet) this.ink.setSheet(lesson.characterOrWord, true);
+    if (lesson.sheet) this.ink.setSheet(lesson.characterOrWord, true, lesson.pattern ?? null);
     else if (lesson.category === 'japanese') this.ink.setGhost([]);
     this.el.liveTip.hidden = true;
     this.el.dictation.start({
@@ -425,6 +492,7 @@ export class Studio {
 
   private canDictate(lesson: Lesson): boolean {
     if (!this.dictationService.canSpeak()) return false;
+    if (lesson.pattern) return false;
     return !!lesson.dictation || !!lesson.sheet || (lesson.category === 'japanese' && glyphsOf(lesson.characterOrWord).length > 1);
   }
 
@@ -438,7 +506,11 @@ export class Studio {
     const tool: BrushTool = this.settings.tool === 'auto' ? lesson.recommendedTool : this.settings.tool;
     this.ink.currentTool = tool;
     this.el.toolbar.setTool(tool);
-    const grid: GridMode = this.settings.grid === 'auto' ? lesson.suggestedGrid : this.settings.grid;
+    // Kana y kanji se califican sobre los cuadros del genkōyōshi: con otra pauta la guía
+    // y la medición no coincidirían (y los trazos bien hechos se tomarían por incompletos).
+    const grid: GridMode = lesson.category === 'japanese'
+      ? 'genkouyoushi'
+      : this.settings.grid === 'auto' ? lesson.suggestedGrid : this.settings.grid;
     this.ink.setGrid(grid);
     if (this.penMatchesModel) this.applyModelPen();
   }
@@ -633,6 +705,7 @@ export class Studio {
   }
 
   private lessonForScore(lesson: Lesson): Lesson {
+    if (lesson.sheet) return { ...lesson, guidedRows: this.ink.sheetGuidedRows() };
     const step = lesson.steps?.[this.stepIndex];
     if (!step) return lesson;
     return {
@@ -674,4 +747,9 @@ export class Studio {
     this.el.toolbar.setHistory(true);
     this.say('Se recuperó la hoja que dejaste a medias. «Borrar hoja» empieza de cero.');
   }
+}
+
+/** Hoja de texto en español (no la de soltura): se escribe con la letra elegida. */
+function isTextSheet(lesson: Lesson): boolean {
+  return lesson.category === 'palmer' && !!lesson.sheet && !lesson.pattern;
 }

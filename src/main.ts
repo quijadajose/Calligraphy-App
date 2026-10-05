@@ -3,6 +3,11 @@ import '@fontsource/outfit/400.css';
 import '@fontsource/outfit/500.css';
 import '@fontsource/outfit/600.css';
 import '@fontsource/noto-serif-jp/400.css';
+// Letras de las hojas de texto, una por estilo (se bajan solo al usarse). Solo latín: incluye ñ y tildes.
+import '@fontsource/andika/latin-400.css';
+import '@fontsource/playwrite-es/latin-400.css';
+import '@fontsource/cormorant-garamond/latin-600-italic.css';
+import '@fontsource/pinyon-script/latin-400.css';
 import './styles/icons.css';
 import './styles/main.css';
 import { Studio } from './app/Studio';
@@ -23,6 +28,9 @@ import { LessonNavigator } from './ui/components/LessonNavigator';
 import { MedalOverlay } from './ui/components/MedalOverlay';
 import { ProgressDashboard } from './ui/components/ProgressDashboard';
 import { ScoreModal } from './ui/components/ScoreModal';
+import { SettingsPreview } from './ui/components/SettingsPreview';
+import { ScriptStyle } from './core/engine/scriptFonts';
+import { LETTER_STYLES } from './data/groups';
 import { SettingsPanel } from './ui/components/SettingsPanel';
 import { TodayPanel } from './ui/components/TodayPanel';
 import { toast } from './ui/toast';
@@ -141,13 +149,17 @@ window.addEventListener('DOMContentLoaded', () => {
   const today = new TodayPanel(byId('today-panel'));
   const dashboard = new ProgressDashboard(byId('progress-body'));
   const settingsPanel = new SettingsPanel(byId('settings-body'), settingsStore);
+  const settingsPreview = new SettingsPreview(byId('settings-preview'));
   const scoreModal = new ScoreModal(byId('score-modal'));
   const finish = new FinishOverlay(byId('finish-layer'));
   const medalOverlay = new MedalOverlay();
 
   // ---------------------------------------------------------------- Progreso y plan del día
   function refreshPlan(): void {
-    plan = buildDailyPlan(lessons, progress, settingsStore.get().lastLessonId, Date.now());
+    // Las lecciones de estilos que no se practican no entran al plan.
+    const { scripts } = settingsStore.get();
+    const practiced = lessons.filter((lesson) => !(LETTER_STYLES.includes(lesson.group) && !scripts.includes(lesson.group as ScriptStyle)));
+    plan = buildDailyPlan(practiced, progress, settingsStore.get().lastLessonId, Date.now());
   }
 
   // ---------------------------------------------------------------- Desafíos
@@ -216,7 +228,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   function lessonNext(lesson: Lesson): Lesson | null {
     refreshPlan();
-    return nextLesson(lessons, plan, lesson);
+    return nextLesson(lessons, plan, lesson, settingsStore.get().sheetScript);
   }
 
   function publishProgress(): void {
@@ -331,6 +343,13 @@ window.addEventListener('DOMContentLoaded', () => {
   catalog.onSelect = (lesson) => go('studio', lesson);
   today.onOpen = (lesson) => go('studio', lesson);
   dashboard.onOpenLesson = (lesson) => go('studio', lesson);
+  studio.masteryOf = (lesson) => masteryLevel(progress.get(lesson.id));
+  studio.onScriptChange = (sheetScript) => settingsStore.set({ sheetScript });
+  dashboard.onDeleteSheets = (lessonId) => {
+    void sheets.deleteLessonSheets(lessonId).then(() => sheets.listSheets()).then((list) => {
+      if (screen === 'progress') dashboard.renderSheets(list);
+    });
+  };
   dashboard.onOpenGroup = (category, group) => {
     catalog.showGroup(category, group);
     go('home');
@@ -409,12 +428,15 @@ window.addEventListener('DOMContentLoaded', () => {
       studio.ink.recolor((color) => (color.toLowerCase() === INK_BY_THEME[before] ? INK_BY_THEME[next] : null));
     }
     studio.ink.redrawAll();
+    settingsPreview.setInkColor(custom || INK_BY_THEME[next]);
     settingsPanel.setTheme(next);
   }
 
   settingsPanel.onTheme = applyTheme;
   settingsStore.onChange((settings) => {
     studio.applySettings(settings);
+    settingsPreview.update(settings);
+    catalog.setScripts(settings.scripts);
     const texts = settings.customTexts.join('\n');
     if (texts !== lessons.filter((lesson) => lesson.custom).map((lesson) => lesson.characterOrWord).join('\n')) {
       lessons = allLessons(settings.customTexts);
@@ -565,6 +587,9 @@ window.addEventListener('DOMContentLoaded', () => {
   // ---------------------------------------------------------------- Arranque
   const initial = settingsStore.get();
   studio.applySettings(initial);
+  catalog.setScripts(initial.scripts);
+  settingsPreview.setInkColor(initial.inkColor || INK_BY_THEME[theme]);
+  settingsPreview.update(initial);
   applyTheme(theme);
   if (initial.inkColor) studio.setInkColor(initial.inkColor);
   const last = initial.lastLessonId ? lessonsById.get(initial.lastLessonId) : undefined;
