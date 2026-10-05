@@ -3,9 +3,31 @@ import { Point2 } from '../../types/ink';
 export const PALMER_ASCENDER_RATIO = 0.35;
 export const PALMER_XHEIGHT_RATIO = 0.35;
 export const PALMER_DESCENDER_RATIO = 0.30;
-export const PALMER_SLANT_DEG = 52;
+/** Inclinación por defecto de la cursiva (ligada): ejercicios, planas, palabras y oraciones. */
+export const CURSIVE_SLANT_DEG = 70;
 /** Grosor del modelo, como fracción de la altura de x. El óvalo se ajusta para que el borde caiga en la pauta. */
 export const PALMER_PEN_RATIO = 0.18;
+
+/**
+ * Inclinación del estilo que se está practicando (90° = vertical, como la imprenta).
+ * La fija el estudio al abrir cada lección; la usan el modelo, la pauta y la calificación.
+ */
+let scriptSlantDeg = CURSIVE_SLANT_DEG;
+
+export function setScriptSlant(deg: number): boolean {
+  const changed = deg !== scriptSlantDeg;
+  scriptSlantDeg = deg;
+  return changed;
+}
+
+export function scriptSlant(): number {
+  return scriptSlantDeg;
+}
+
+/** Desplazamiento horizontal de un punto a la altura `dy` sobre la base, según la inclinación. */
+export function slantOffset(dy: number): number {
+  return scriptSlantDeg >= 89.9 ? 0 : dy / Math.tan((scriptSlantDeg * Math.PI) / 180);
+}
 
 /** Hueco que se deja arriba para el aviso flotante y abajo como margen de la hoja. */
 let practiceChrome = { top: 56, bottom: 20 };
@@ -82,7 +104,7 @@ export function palmerCellWidth(row: PalmerRow): number {
 export function mapPalmerPoint(point: Point2, originX: number, row: PalmerRow): Point2 {
   const span = row.descenderY - row.ascenderY;
   const y = row.ascenderY + point.y * span;
-  const lean = (row.baseY - y) / Math.tan((PALMER_SLANT_DEG * Math.PI) / 180);
+  const lean = slantOffset(row.baseY - y);
   const glyphX = 0.08 + point.x * 0.58;
   return {
     x: originX + glyphX * palmerCellWidth(row) + lean,

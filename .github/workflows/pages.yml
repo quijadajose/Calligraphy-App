@@ -30,6 +30,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Los datos de trazo (unos 2.400 archivos) se guardan entre despliegues:
+      # el script solo baja los que falten.
+      - name: Cache stroke data
+        uses: actions/cache@v4
+        with:
+          path: public/chardata
+          key: chardata-${{ hashFiles('scripts/fetch-chardata.mjs', 'src/data/japanese/**') }}
+          restore-keys: chardata-
+
       - name: Build
         run: npm run build
 

@@ -1,4 +1,4 @@
-import { PALMER_SLANT_DEG } from './gridMetrics';
+import { scriptSlant } from './gridMetrics';
 
 /** Margen izquierdo de la oración punteada: deja sitio a la etiqueta de la línea. */
 export const SHEET_TEXT_X = 100;
@@ -8,9 +8,9 @@ export function sentenceFont(size: number): string {
   return `600 ${Math.max(12, size)}px Caveat, cursive`;
 }
 
-/** Cizalla que inclina el texto modelo a los 52° de Palmer. */
+/** Cizalla que inclina el texto modelo a la inclinación de la cursiva. */
 export function sentenceSkew(): number {
-  return -1 / Math.tan((PALMER_SLANT_DEG * Math.PI) / 180);
+  return -1 / Math.tan((scriptSlant() * Math.PI) / 180);
 }
 
 /**

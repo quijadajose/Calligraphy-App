@@ -10,7 +10,7 @@
       (function () {
         var saved = null;
         try { saved = localStorage.getItem('calligraphy-theme'); } catch (e) {}
-        var theme = saved === 'dark' || saved === 'light' || saved === 'kids' ? saved : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        var theme = saved === 'dark' || saved === 'light' ? saved : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         document.documentElement.dataset.theme = theme;
       })();
     </script>
@@ -18,11 +18,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <link rel="manifest" href="%BASE_URL%manifest.webmanifest" />
     <link rel="icon" href="%BASE_URL%icon.svg" type="image/svg+xml" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Caveat y Outfit van empaquetadas (@fontsource). Noto Serif JP y los iconos los guarda el service worker la primera vez. -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.42.0/dist/tabler-icons.min.css" />
+    <!-- Fuentes e íconos van empaquetados con la app: no se pide nada a otros servidores. -->
   </head>
   <body>
     <a class="skip-link" href="#main">Saltar al contenido</a>
@@ -46,7 +42,7 @@
             <section id="today-panel" class="today-panel" aria-label="Práctica de hoy"></section>
             <div class="board-top">
               <div class="board-tracks" role="group" aria-label="Curso">
-                <button id="filter-palmer" class="board-track active" type="button" aria-pressed="true">Palmer</button>
+                <button id="filter-palmer" class="board-track active" type="button" aria-pressed="true">Español</button>
                 <button id="filter-kanji" class="board-track" type="button" aria-pressed="false">Japonés</button>
               </div>
               <div id="lesson-tabs" class="board-tabs" role="tablist" aria-label="Grupos"></div>

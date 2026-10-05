@@ -73,10 +73,16 @@ async function fetchKanjiVg(char: string): Promise<CharGeometry | null> {
   const code = char.codePointAt(0);
   if (code === undefined) return null;
   const hex = code.toString(16).padStart(5, '0');
-  // Versión fija de KanjiVG: un cambio aguas arriba no rompe el lector de trazos.
-  for (const ref of [KANJIVG_RELEASE, 'master']) {
+  const base = localBase();
+  // Primero la copia que viene con la app; luego una versión fija de KanjiVG en el CDN,
+  // así un cambio aguas arriba no rompe el lector de trazos.
+  const urls = [
+    ...(base !== null ? [`${base}chardata/${code.toString(16)}.svg`] : []),
+    ...[KANJIVG_RELEASE, 'master'].map((ref) => `https://cdn.jsdelivr.net/gh/KanjiVG/kanjivg@${ref}/kanji/${hex}.svg`)
+  ];
+  for (const url of urls) {
     try {
-      const response = await fetch(`https://cdn.jsdelivr.net/gh/KanjiVG/kanjivg@${ref}/kanji/${hex}.svg`);
+      const response = await fetch(url);
       if (!response.ok) continue;
       const strokes = strokesFromKanjiVg(await response.text());
       if (strokes.length > 0) return { char, strokes };

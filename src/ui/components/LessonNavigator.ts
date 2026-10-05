@@ -1,10 +1,13 @@
 import { Lesson } from '../../types/ink';
 import { JAPANESE_TABS, KANJI_LEVELS, PALMER_GROUPS } from '../../data/groups';
+import { letterSvg } from '../glyphSvg';
 
 const COPY: Record<string, { title: string; blurb: string }> = {
   Ejercicios: { title: 'Trazos de base', blurb: 'Óvalo, empuje y enlaces, antes de las letras.' },
-  Minúsculas: { title: 'Minúsculas', blurb: 'Cada letra sola, una vez, antes de llenar la plana.' },
-  Mayúsculas: { title: 'Mayúsculas', blurb: 'La mayúscula sola, antes de repetirla en varias líneas.' },
+  Imprenta: { title: 'Imprenta', blurb: 'Letra de molde: recta, sin inclinar y con cada letra separada. Primero las minúsculas, luego las mayúsculas.' },
+  Ligada: { title: 'Ligada', blurb: 'La cursiva escolar: cada letra entra desde la base y sale hacia la siguiente, sin levantar el lápiz. Después de cada letra viene su plana.' },
+  Itálica: { title: 'Itálica', blurb: 'Letra de pluma, estrecha y apenas inclinada: los arcos nacen del palote. Mayúsculas romanas estrechas.' },
+  Copperplate: { title: 'Copperplate', blurb: 'La cursiva inglesa clásica, muy inclinada (55°): fina al subir y gruesa al bajar. Mejor con un lápiz con presión.' },
   Enlaces: { title: 'Enlaces', blurb: 'Los pares que más cuestan: br, os, ve, wr… sin levantar la pluma.' },
   Planas: { title: 'Planas', blurb: 'Varias líneas de la misma letra. La primera lleva la guía.' },
   Palabras: { title: 'Palabras', blurb: 'Palabras cortas con las letras ya practicadas.' },
@@ -238,12 +241,19 @@ export class LessonNavigator {
     const card = document.createElement('button');
     card.type = 'button';
     card.className = `lesson-card glyph-tile${face.span}`;
-    card.dataset.script = lesson.category;
+    card.dataset.script = lesson.upright ? 'print' : lesson.category;
     card.dataset.label = `${lesson.title} ${lesson.subTitle}`.trim();
 
     const glyph = document.createElement('span');
     glyph.className = 'glyph-tile-char';
-    glyph.textContent = face.glyph;
+    // Las letras de estilo se dibujan con sus propios trazos: así se ve el estilo real.
+    const model = lesson.slant != null ? lesson.steps?.[lesson.steps.length - 1]?.strokes : undefined;
+    if (model?.length) {
+      glyph.classList.add('is-drawn');
+      glyph.innerHTML = letterSvg(model.map((stroke) => stroke.points), lesson.slant ?? 90);
+    } else {
+      glyph.textContent = face.glyph;
+    }
     glyph.setAttribute('aria-hidden', 'true');
 
     const caption = document.createElement('span');
@@ -255,11 +265,9 @@ export class LessonNavigator {
     bar.className = 'glyph-tile-bar';
     bar.setAttribute('aria-hidden', 'true');
 
-    const check = document.createElement('i');
-    check.className = 'ti ti-circle-check tile-check-icon';
-    check.setAttribute('aria-hidden', 'true');
-
-    card.append(glyph, caption, bar, check);
+    card.append(glyph);
+    if (face.caption) card.append(caption);
+    card.append(bar);
     this.paintState(card, lesson.id);
     this.tiles.set(lesson.id, card);
     card.addEventListener('click', () => {
@@ -278,8 +286,7 @@ export class LessonNavigator {
     const single = Array.from(text).length === 1;
     const reading = lesson.reading ?? (lesson.title.includes('  ') ? lesson.title.split('  ').slice(1).join(' ').trim() : '');
     if (single && lesson.group !== 'Ejercicios') {
-      const steps = lesson.steps?.length ?? 0;
-      return { glyph: text, caption: reading || (steps ? `${steps} pasos` : ''), span: '' };
+      return { glyph: text, caption: reading, span: '' };
     }
     if (lesson.category === 'japanese' && !lesson.dictation) {
       return { glyph: text, caption: [reading, lesson.meaning].filter(Boolean).join(' · '), span: Array.from(text).length > 3 ? ' glyph-tile-wide' : '' };

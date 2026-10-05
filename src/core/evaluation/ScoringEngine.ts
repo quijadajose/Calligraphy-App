@@ -1,4 +1,4 @@
-import { mapPalmerPoint, palmerRowGeometry, sentenceFrame, sentenceRowGeometry, sentenceRowIndexAt } from '../engine/gridMetrics';
+import { scriptSlant, mapPalmerPoint, palmerRowGeometry, sentenceFrame, sentenceRowGeometry, sentenceRowIndexAt } from '../engine/gridMetrics';
 import { sheetGuideProfile } from '../engine/SheetGuide';
 import { EvaluationResult, Lesson, Point2, Stroke } from '../../types/ink';
 import { HeightAnalyzer } from './HeightAnalyzer';
@@ -42,15 +42,18 @@ export class ScoringEngine {
     if (shape && shape.score < 40) accuracy = Math.min(accuracy, shape.score + 15);
 
     const details: string[] = [];
-    if (slant.samples > 0) details.push(`Inclinación media ${slant.avgAngle}° (objetivo 52°).`);
+    const upright = scriptSlant() >= 89.9;
+    if (slant.samples > 0) details.push(`Inclinación media ${slant.avgAngle}° (objetivo ${upright ? 'vertical, 90°' : `${scriptSlant()}°`}).`);
     else details.push('No hay trazos descendentes para medir la inclinación.');
     details.push(heightScore != null ? `Altura de la x: ${heightScore}/100.` : 'Ningún trazo cabe en la altura de la x.');
     if (shape) details.push(`Parecido con la curva maestra: ${shape.score}/100.`);
 
     let feedback: string;
-    if (accuracy >= 85) feedback = 'Inclinación y altura muy estables, cerca del Palmer de 52°.';
+    if (accuracy >= 85) feedback = upright ? 'Trazos rectos y altura muy estable: buena letra de imprenta.' : `Inclinación y altura muy estables, cerca de los ${scriptSlant()}° del estilo.`;
     else if (accuracy >= 65) feedback = `Buen ritmo (${slant.avgAngle}°). Iguala la altura de las letras chicas con la línea de la x.`;
-    else feedback = `Inclinación ${slant.avgAngle}°. Apóyate en las líneas naranjas y no dejes que la x cambie de tamaño.`;
+    else feedback = upright
+      ? `Inclinación ${slant.avgAngle}°. Baja los palotes rectos, sin inclinar, y respeta la línea media y la base.`
+      : `Inclinación ${slant.avgAngle}°. Apóyate en las líneas naranjas y no dejes que la x cambie de tamaño.`;
 
     return {
       score: accuracy,
@@ -129,7 +132,7 @@ export class ScoringEngine {
     accuracy = clamp(Math.round(accuracy));
 
     details.push(heightScore != null ? `Altura de la x en lo escrito: ${heightScore}/100.` : 'No se pudo medir la altura de la x.');
-    if (slant.samples > 0) details.push(`Inclinación de los trazos que bajan: ${slant.avgAngle}° (objetivo 52°).`);
+    if (slant.samples > 0) details.push(`Inclinación de los trazos que bajan: ${slant.avgAngle}° (objetivo ${scriptSlant()}°).`);
 
     const weakRows = new Set(rowScores.filter((entry) => entry.score < 50).map((entry) => entry.row));
     const badStrokes = byRow.flatMap((indices, row) => (weakRows.has(row) ? indices : []));

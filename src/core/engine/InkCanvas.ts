@@ -1,5 +1,14 @@
 import { BrushTool, GridMode, GuideLevel, Point2, Stroke, StrokePoint } from '../../types/ink';
-import { PALMER_PEN_RATIO, sentenceRowGeometry } from './gridMetrics';
+import {
+  PALMER_PEN_RATIO,
+  boxIndexFor,
+  dominantBox,
+  genkouyoushiLayout,
+  palmerFrame,
+  sentenceFrame,
+  sentenceRowGeometry
+} from './gridMetrics';
+import { SHEET_TEXT_X } from './sentenceLayout';
 import { GridRenderer } from './GridRenderer';
 import { InkRenderer } from './InkRenderer';
 import { PalmRejection } from './PalmRejection';
@@ -63,7 +72,8 @@ export class InkCanvas {
   private cssHeight = 0;
 
   // Animación de guía
-  private guideAnim: { strokes: Point2[][]; width: number } | null = null;
+  /** `copies`: el mismo modelo en otros cuadros, animado a la vez para comparar. */
+  private guideAnim: { strokes: Point2[][]; width: number; copies?: Point2[][][] } | null = null;
   private guideReveal = 0;
   private animToken = 0;
   private animFrame = 0;
@@ -163,8 +173,10 @@ export class InkCanvas {
 
     this.stopGuideAnimation(false);
     const dpr = window.devicePixelRatio || 1;
+    const previous = { width: this.cssWidth, height: this.cssHeight };
     this.cssWidth = rect.width;
     this.cssHeight = rect.height;
+    if (previous.width > 0 && previous.height > 0) this.remapStrokes(previous);
 
     const w = Math.max(1, Math.floor(rect.width * dpr));
     const h = Math.max(1, Math.floor(rect.height * dpr));
@@ -185,6 +197,89 @@ export class InkCanvas {
     this.redrawBg();
     this.redrawInk();
     this.onResize?.();
+  }
+
+  /**
+   * La pauta se recalcula con el tamaño (p. ej. al asomar la barra del navegador en
+   * pantalla completa). La tinta se lleva al mismo cuadro o línea de la pauta nueva,
+   * con su misma escala, para que no quede desplazada.
+   */
+  private remapStrokes(previous: { width: number; height: number }): void {
+    const all = new Set<Stroke>(this.strokes);
+    for (const op of [...this.history, ...this.redoStack]) {
+      if (op.kind === 'add') all.add(op.stroke);
+      else if (op.kind === 'erase') op.removed.forEach((item) => all.add(item.stroke));
+      else op.strokes.forEach((stroke) => all.add(stroke));
+    }
+    if (all.size === 0) return;
+    if (this.currentStroke) this.abandonStroke();
+
+    const transform = this.layoutTransform(previous);
+    if (!transform) return;
+    for (const stroke of all) {
+      const map = transform(stroke.points);
+      if (!map) continue;
+      for (const point of stroke.points) {
+        const next = map.point(point);
+        point.x = next.x;
+        point.y = next.y;
+      }
+      stroke.baseWidth *= map.scale;
+    }
+  }
+
+  private layoutTransform(
+    previous: { width: number; height: number }
+  ): ((points: Point2[]) => { point: (p: Point2) => Point2; scale: number } | null) | null {
+    const width = this.cssWidth;
+    const height = this.cssHeight;
+
+    if (this.gridMode === 'genkouyoushi') {
+      const before = genkouyoushiLayout(previous.width, previous.height);
+      const after = genkouyoushiLayout(width, height);
+      return (points) => {
+        const index = boxIndexFor(points, before);
+        const from = before.boxes[index];
+        const to = after.boxes[index] ?? after.boxes[after.boxes.length - 1];
+        if (!from || !to) return null;
+        const scale = to.size / from.size;
+        return {
+          scale,
+          point: (p) => ({ x: to.x + (p.x - from.x) * scale, y: to.y + (p.y - from.y) * scale })
+        };
+      };
+    }
+
+    if (this.gridMode === 'palmer') {
+      // Hojas de varias líneas: el texto parte del margen izquierdo. Modelo Palmer: centrado.
+      const frame = this.sheetText ? sentenceFrame : palmerFrame;
+      const before = frame(previous.height);
+      const after = frame(height);
+      const scale = after.rowHeight / before.rowHeight;
+      const anchorBefore = this.sheetText ? SHEET_TEXT_X : previous.width / 2;
+      const anchorAfter = this.sheetText ? SHEET_TEXT_X : width / 2;
+      return (points) => {
+        let cy = 0;
+        for (const p of points) cy += p.y;
+        cy /= Math.max(1, points.length);
+        const row = Math.max(0, Math.min(before.rows - 1, Math.floor((cy - before.topOffset) / before.rowHeight)));
+        const target = Math.min(row, after.rows - 1);
+        const fromTop = before.topOffset + row * before.rowHeight;
+        const toTop = after.topOffset + target * after.rowHeight;
+        return {
+          scale,
+          point: (p) => ({
+            x: anchorAfter + (p.x - anchorBefore) * scale,
+            y: toTop + (p.y - fromTop) * scale
+          })
+        };
+      };
+    }
+
+    const sx = width / previous.width;
+    const sy = height / previous.height;
+    const scale = Math.min(sx, sy);
+    return () => ({ scale, point: (p) => ({ x: p.x * sx, y: p.y * sy }) });
   }
 
   public getSize(): { width: number; height: number } {
@@ -283,8 +378,31 @@ export class InkCanvas {
     this.animToken += 1;
     cancelAnimationFrame(this.animFrame);
     window.clearTimeout(this.animTimer);
-    this.guideAnim = layout;
+    this.guideAnim = { ...layout, copies: this.practiceCopies(layout.strokes) };
     this.playGuide(0, this.animToken);
+  }
+
+  /**
+   * Cuadrícula japonesa con un solo signo: el modelo se repite en cada cuadro donde
+   * hay tinta, para comparar el orden y la forma con lo escrito.
+   */
+  private practiceCopies(strokes: Point2[][]): Point2[][][] {
+    if (this.gridMode !== 'genkouyoushi' || this.ghostGlyphs.length > 1 || this.strokes.length === 0) return [];
+    const layout = genkouyoushiLayout(this.cssWidth, this.cssHeight);
+    const example = layout.boxes[0];
+    if (!example) return [];
+    const used = new Set<(typeof layout.boxes)[number]>();
+    for (const stroke of this.strokes) {
+      const box = dominantBox(stroke.points, layout);
+      if (box && box !== example) used.add(box);
+    }
+    return layout.boxes
+      .filter((box) => used.has(box))
+      .map((box) => {
+        const dx = box.x - example.x;
+        const dy = box.y - example.y;
+        return strokes.map((stroke) => stroke.map((point) => ({ x: point.x + dx, y: point.y + dy })));
+      });
   }
 
   public stopGuideAnimation(redraw = true): void {
@@ -372,12 +490,17 @@ export class InkCanvas {
   }
 
   /** Recupera una hoja guardada. Los trazos entran como recién escritos, sin historial previo. */
-  public loadStrokes(strokes: Stroke[]): void {
+  public loadStrokes(strokes: Stroke[], from?: { width: number; height: number }): void {
     this.abandonStroke();
     this.strokes = strokes;
     this.history = strokes.map((stroke) => ({ kind: 'add', stroke }));
     this.redoStack = [];
     this.highlights.clear();
+    // Se escribió con otro tamaño de hoja: se lleva a la pauta actual, cuadro por cuadro.
+    if (from && from.width > 0 && from.height > 0 && this.cssWidth > 0 && this.cssHeight > 0
+      && (Math.abs(from.width - this.cssWidth) > 0.5 || Math.abs(from.height - this.cssHeight) > 0.5)) {
+      this.remapStrokes(from);
+    }
     this.redrawInk();
   }
 
@@ -876,6 +999,9 @@ export class InkCanvas {
       this.guideAnim.width,
       this.guideReveal
     );
+    for (const copy of this.guideAnim.copies ?? []) {
+      this.gridRenderer.drawRevealedStrokes(this.activeCtx, copy, this.guideAnim.width, this.guideReveal);
+    }
   }
 
   private polylineLength(points: Point2[]): number {

@@ -1,6 +1,9 @@
 import { SavedSheet } from '../../core/storage/SheetStore';
 import { GroupStat, LessonProgress, MASTERY_LABELS, ProgressView, masteryLevel } from '../../core/progress/ProgressStore';
 import { Lesson } from '../../types/ink';
+import { MONTH_NAMES, MonthStatus } from '../../core/challenges/Challenges';
+import { medalName, medalSvg } from '../medals';
+import { Achievement } from '../../core/achievements/Achievements';
 
 function formatMinutes(ms: number): string {
   const minutes = Math.round(ms / 60000);
@@ -18,9 +21,17 @@ export class ProgressDashboard {
 
   constructor(private root: HTMLElement) {}
 
-  public render(view: ProgressView, goalMinutes: number, lessonsById: Map<string, Lesson>): void {
+  public render(
+    view: ProgressView,
+    goalMinutes: number,
+    lessonsById: Map<string, Lesson>,
+    medals?: { earned: Set<string>; current: MonthStatus },
+    achievements?: Achievement[]
+  ): void {
     this.root.replaceChildren();
     this.root.append(this.summary(view));
+    if (medals) this.root.append(this.medalShelf(medals.earned, medals.current));
+    if (achievements?.length) this.root.append(this.achievementGrid(achievements));
     this.root.append(this.calendar(view.days, goalMinutes));
     if (view.complete === 0 && view.started === 0) {
       const empty = document.createElement('p');
@@ -75,6 +86,94 @@ export class ProgressDashboard {
   }
 
   private lessonsById = new Map<string, Lesson>();
+
+  private achievementGrid(list: Achievement[]): HTMLElement {
+    const section = document.createElement('section');
+    section.className = 'progress-section';
+    const heading = document.createElement('h3');
+    const levels = list.reduce((sum, item) => sum + item.level, 0);
+    const max = list.reduce((sum, item) => sum + item.maxLevel, 0);
+    heading.textContent = `Logros · ${levels} de ${max} niveles`;
+    const grid = document.createElement('ul');
+    grid.className = 'ach-grid';
+    // Primero los que ya tienen algún nivel; dentro, el orden de siempre.
+    const ordered = [...list].sort((a, b) => Number(b.level > 0) - Number(a.level > 0));
+    for (const item of ordered) {
+      const card = document.createElement('li');
+      card.className = `ach-card${item.level === 0 ? ' is-locked' : ''}${item.next === null ? ' is-max' : ''}`;
+      card.style.setProperty('--ach', item.color);
+      const badge = document.createElement('span');
+      badge.className = 'ach-badge';
+      badge.setAttribute('aria-hidden', 'true');
+      badge.innerHTML = `<svg viewBox="0 0 64 64"><path class="ach-hex" d="M32 3 L57 17.5 V46.5 L32 61 L7 46.5 V17.5 Z"/><path class="ach-hex-in" d="M32 10 L51 21 V43 L32 54 L13 43 V21 Z"/></svg><i class="ti ${item.icon}"></i>`;
+      const level = document.createElement('span');
+      level.className = 'ach-level';
+      level.textContent = item.next === null ? '★' : String(item.level);
+      badge.append(level);
+      const body = document.createElement('div');
+      body.className = 'ach-body';
+      const name = document.createElement('span');
+      name.className = 'ach-name';
+      name.textContent = item.name;
+      const meta = document.createElement('span');
+      meta.className = 'ach-meta';
+      meta.textContent = item.next === null ? `Nivel máximo (${item.maxLevel})` : `Nivel ${item.level} de ${item.maxLevel}`;
+      const text = document.createElement('span');
+      text.className = 'ach-text';
+      text.textContent = item.description;
+      body.append(name, meta, text);
+      if (item.next !== null) {
+        const bar = document.createElement('span');
+        bar.className = 'ach-bar';
+        const fill = document.createElement('span');
+        const from = item.reached;
+        const ratio = (item.value - from) / Math.max(1, item.next - from);
+        fill.style.width = `${Math.round(Math.max(0, Math.min(1, ratio)) * 100)}%`;
+        const count = document.createElement('span');
+        count.className = 'ach-count';
+        count.textContent = `${item.value.toLocaleString('es')} / ${item.next.toLocaleString('es')}`;
+        bar.append(fill);
+        body.append(bar, count);
+      }
+      card.append(badge, body);
+      card.setAttribute('aria-label', `${item.name}: ${meta.textContent}. ${item.description}${item.next !== null ? `, ${item.value} de ${item.next}` : ''}`);
+      grid.append(card);
+    }
+    section.append(heading, grid);
+    return section;
+  }
+
+  /** Las doce medallas del año: ganadas en color, el mes en curso con su avance. */
+  private medalShelf(earned: Set<string>, current: MonthStatus): HTMLElement {
+    const section = document.createElement('section');
+    section.className = 'progress-section';
+    const heading = document.createElement('h3');
+    heading.textContent = `Medallas de ${current.year}`;
+    const shelf = document.createElement('ul');
+    shelf.className = 'medal-shelf';
+    for (let month = 0; month < 12; month++) {
+      const key = `${current.year}-${String(month + 1).padStart(2, '0')}`;
+      const won = earned.has(key);
+      const item = document.createElement('li');
+      item.className = `medal-slot${won ? ' is-earned' : ''}${month === current.month ? ' is-current' : ''}`;
+      const caption = document.createElement('span');
+      caption.className = 'medal-slot-name';
+      caption.textContent = MONTH_NAMES[month];
+      const note = document.createElement('span');
+      note.className = 'medal-slot-note';
+      note.textContent = won
+        ? medalName(month)
+        : month === current.month
+          ? `${current.count} / ${current.target}`
+          : '';
+      item.innerHTML = medalSvg(month, won || (month === current.month ? 'pending' : false), 64);
+      item.append(caption, note);
+      item.setAttribute('aria-label', `${MONTH_NAMES[month]}: ${won ? `medalla ganada, ${medalName(month)}` : note.textContent || 'por llegar'}`);
+      shelf.append(item);
+    }
+    section.append(heading, shelf);
+    return section;
+  }
 
   /** Galería de hojas: por lección, la primera y la última lado a lado. */
   public renderSheets(sheets: SavedSheet[]): void {

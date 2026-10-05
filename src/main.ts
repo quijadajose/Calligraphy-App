@@ -2,20 +2,25 @@ import '@fontsource/caveat/600.css';
 import '@fontsource/outfit/400.css';
 import '@fontsource/outfit/500.css';
 import '@fontsource/outfit/600.css';
+import '@fontsource/noto-serif-jp/400.css';
+import './styles/icons.css';
 import './styles/main.css';
 import { Studio } from './app/Studio';
 import { DictationService } from './core/audio/DictationService';
 import { PlanItem, buildDailyPlan, nextLesson } from './core/daily/DailyPlan';
-import { prefetchChars } from './core/evaluation/CharDataLoader';
-import { MASTERY_LABELS, PASSING_SCORE, ProgressStore, masteryLevel } from './core/progress/ProgressStore';
+import { Achievement, AchievementStore, evaluateAchievements } from './core/achievements/Achievements';
+import { ChallengeStore, DayActivity, SyncResult } from './core/challenges/Challenges';
+import { downloadOffline, offlineStatus } from './core/offline/OfflinePack';
+import { MASTERY_LABELS, PASSING_SCORE, ProgressStore, dayKey, masteryLevel } from './core/progress/ProgressStore';
 import { DEFAULT_SETTINGS, SettingsStore, ThemeChoice } from './core/settings/SettingsStore';
 import { browserStore } from './core/storage/safeStorage';
 import { SheetStore } from './core/storage/SheetStore';
 import { allLessons } from './data/lessons';
-import { Lesson, glyphsOf } from './types/ink';
+import { Lesson } from './types/ink';
 import { DictationOverlay } from './ui/components/DictationOverlay';
 import { FinishOverlay } from './ui/components/FinishOverlay';
 import { LessonNavigator } from './ui/components/LessonNavigator';
+import { MedalOverlay } from './ui/components/MedalOverlay';
 import { ProgressDashboard } from './ui/components/ProgressDashboard';
 import { ScoreModal } from './ui/components/ScoreModal';
 import { SettingsPanel } from './ui/components/SettingsPanel';
@@ -24,8 +29,8 @@ import { toast } from './ui/toast';
 import { Toolbar } from './ui/components/Toolbar';
 
 const THEME_KEY = 'calligraphy-theme';
-const INK_BY_THEME: Record<ThemeChoice, string> = { light: '#1a1a1a', dark: '#f3efe6', kids: '#24356b' };
-const PAPER_BY_THEME: Record<ThemeChoice, string> = { light: '#f4efe4', dark: '#1a1e26', kids: '#8fd4ff' };
+const INK_BY_THEME: Record<ThemeChoice, string> = { light: '#1a1a1a', dark: '#f3efe6' };
+const PAPER_BY_THEME: Record<ThemeChoice, string> = { light: '#f4efe4', dark: '#1a1e26' };
 
 type Screen = 'home' | 'progress' | 'settings' | 'studio';
 
@@ -39,6 +44,8 @@ window.addEventListener('DOMContentLoaded', () => {
   const kv = browserStore();
   const settingsStore = new SettingsStore(kv);
   const progress = new ProgressStore(kv);
+  const challenges = new ChallengeStore(kv);
+  const achievementStore = new AchievementStore(kv);
   const sheets = new SheetStore();
   const dictationService = new DictationService();
 
@@ -51,7 +58,12 @@ window.addEventListener('DOMContentLoaded', () => {
   const themeMeta = document.getElementById('theme-color') as HTMLMetaElement | null;
   const readTheme = (): ThemeChoice => {
     const saved = kv.getItem(THEME_KEY);
-    if (saved === 'light' || saved === 'dark' || saved === 'kids') return saved;
+    if (saved === 'light' || saved === 'dark') return saved;
+    // El tema infantil se retiró: quien lo tenía pasa al claro.
+    if (saved === 'kids') {
+      kv.setItem(THEME_KEY, 'light');
+      return 'light';
+    }
     return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
   };
   let theme = readTheme();
@@ -131,10 +143,75 @@ window.addEventListener('DOMContentLoaded', () => {
   const settingsPanel = new SettingsPanel(byId('settings-body'), settingsStore);
   const scoreModal = new ScoreModal(byId('score-modal'));
   const finish = new FinishOverlay(byId('finish-layer'));
+  const medalOverlay = new MedalOverlay();
 
   // ---------------------------------------------------------------- Progreso y plan del día
   function refreshPlan(): void {
     plan = buildDailyPlan(lessons, progress, settingsStore.get().lastLessonId, Date.now());
+  }
+
+  // ---------------------------------------------------------------- Desafíos
+  /** Desafíos completados desde que se vio Hoy por última vez: se marcan al volver. */
+  const freshQuests = new Set<string>();
+  let questDay = '';
+
+  function dayActivity(): DayActivity {
+    if (plan.length === 0) refreshPlan();
+    const log = progress.dayLog();
+    const count = (kinds: string[]) => {
+      const items = plan.filter((item) => kinds.includes(item.kind));
+      return { done: items.filter((item) => item.done).length, total: items.length };
+    };
+    return {
+      ms: log.ms,
+      strokes: log.strokes,
+      lessonsPracticed: log.lessons.length,
+      scores: progress.scoresOn(),
+      reviews: count(['review']),
+      fresh: count(['new']),
+      session: count(['warmup', 'review', 'new', 'sheet']),
+      goalMinutes: settingsStore.get().dailyGoalMinutes
+    };
+  }
+
+  function syncChallenges(announce: boolean): SyncResult {
+    const day = dayKey(Date.now());
+    if (day !== questDay) {
+      freshQuests.clear();
+      questDay = day;
+    }
+    const result = challenges.sync(day, dayActivity());
+    for (const challenge of result.completed) {
+      freshQuests.add(challenge.kind);
+      if (announce) toast(`Desafío completado: ${challenge.title}`, 'success');
+    }
+    if (result.medalEarned) medalOverlay.show(result.month.month, result.month.count);
+    return result;
+  }
+
+  function currentAchievements(view = progress.view(lessons)): Achievement[] {
+    const life = progress.lifetime();
+    const groups: Record<string, { complete: number; total: number }> = {};
+    for (const section of view.sections) for (const group of section.groups) groups[group.id] = { complete: group.complete, total: group.total };
+    return evaluateAchievements({
+      longestStreak: life.longestStreak,
+      strokes: life.strokes,
+      minutes: Math.floor(life.ms / 60000),
+      highScores: life.highScores,
+      challenges: challenges.totalCompleted(),
+      medals: challenges.medals().length,
+      earlyDays: life.earlyDays,
+      lateDays: life.lateDays,
+      groups
+    });
+  }
+
+  /** Avisa de los logros que subieron de nivel. */
+  function checkAchievements(list = currentAchievements()): Achievement[] {
+    for (const item of achievementStore.update(list)) {
+      toast(item.next === null ? `¡Logro completado: ${item.name}!` : `Logro: ${item.name} · nivel ${item.level}`, 'success');
+    }
+    return list;
   }
 
   function lessonNext(lesson: Lesson): Lesson | null {
@@ -148,7 +225,14 @@ window.addEventListener('DOMContentLoaded', () => {
       catalog.setProgress(mastery, new Set(progress.dueIds()));
       refreshPlan();
       const resumeId = settingsStore.get().lastLessonId;
+      const quests = syncChallenges(false);
+      checkAchievements();
+      const fresh = new Set(freshQuests);
+      freshQuests.clear();
       today.render({
+        challenges: quests.challenges,
+        month: quests.month,
+        fresh,
         streak: progress.streak(),
         todayMs: progress.todayMs(),
         goalMinutes: settingsStore.get().dailyGoalMinutes,
@@ -157,7 +241,12 @@ window.addEventListener('DOMContentLoaded', () => {
         resume: resumeId ? lessonsById.get(resumeId) ?? null : null
       });
     } else if (screen === 'progress') {
-      dashboard.render(progress.view(lessons), settingsStore.get().dailyGoalMinutes, lessonsById);
+      const current = syncChallenges(false).month;
+      const view = progress.view(lessons);
+      dashboard.render(view, settingsStore.get().dailyGoalMinutes, lessonsById, {
+        earned: new Set(challenges.medals()),
+        current
+      }, checkAchievements(currentAchievements(view)));
       void sheets.listSheets().then((list) => {
         if (screen === 'progress') dashboard.renderSheets(list);
       });
@@ -259,6 +348,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
   studio.onScored = (lesson, result, snapshot) => {
     progress.recordReview(lesson, result.score);
+    refreshPlan();
+    syncChallenges(true);
+    checkAchievements();
     if (result.score > 0) {
       const thumb = snapshot.toDataURL('image/webp', 0.72);
       void sheets.saveSheet({ lessonId: lesson.id, title: lesson.title, at: Date.now(), score: result.score, thumb });
@@ -282,6 +374,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
   studio.onStepsCompleted = (info) => {
     progress.recordReview(info.lesson, null);
+    refreshPlan();
+    syncChallenges(true);
+    checkAchievements();
     const next = lessonNext(info.lesson);
     finish.onNext = next ? () => go('studio', next) : undefined;
     finish.show({ title: info.lesson.title, elapsedMs: info.elapsedMs, averagePressure: info.averagePressure, nextTitle: next?.title ?? null });
@@ -293,7 +388,10 @@ window.addEventListener('DOMContentLoaded', () => {
   studio.onPracticed = (lesson) => {
     if (!progress.practicedToday(lesson.id) || !progress.get(lesson.id)?.practiced) progress.record(lesson, { practiced: true });
   };
-  studio.onActivity = (lesson, ms, strokes) => progress.addActivity(lesson.id, ms, strokes);
+  studio.onActivity = (lesson, ms, strokes) => {
+    progress.addActivity(lesson.id, ms, strokes);
+    syncChallenges(true);
+  };
   studio.onPenSeen = () => {
     if (!settingsStore.get().penSeen) settingsStore.set({ penSeen: true });
   };
@@ -336,6 +434,7 @@ window.addEventListener('DOMContentLoaded', () => {
       version: 2,
       exportedAt: new Date().toISOString(),
       progress: progress.exportData(),
+      challenges: challenges.exportData(),
       settings: settingsStore.get(),
       theme,
       sheets: (await sheets.listSheets()).map(({ id: _id, ...sheet }) => sheet)
@@ -364,14 +463,15 @@ window.addEventListener('DOMContentLoaded', () => {
         return;
       }
       const wrapped = data && typeof data === 'object' && (data as { app?: string }).app === 'calligraphy';
-      const body = data as { progress?: unknown; settings?: unknown; theme?: unknown; sheets?: unknown };
+      const body = data as { progress?: unknown; settings?: unknown; theme?: unknown; sheets?: unknown; challenges?: unknown };
       const result = progress.importData(wrapped ? body.progress : data);
       if (!result.ok) {
         toast('El archivo no es un respaldo válido.', 'error');
         return;
       }
+      if (wrapped && body.challenges) challenges.importData(body.challenges);
       if (wrapped && body.settings) settingsStore.replace({ ...settingsStore.get(), ...(body.settings as object), penSeen: settingsStore.get().penSeen });
-      if (wrapped && (body.theme === 'light' || body.theme === 'dark' || body.theme === 'kids')) applyTheme(body.theme);
+      if (wrapped && (body.theme === 'light' || body.theme === 'dark')) applyTheme(body.theme);
       let sheetCount = 0;
       if (wrapped && Array.isArray(body.sheets)) {
         const known = new Set((await sheets.listSheets()).map((sheet) => `${sheet.lessonId}@${sheet.at}`));
@@ -392,6 +492,8 @@ window.addEventListener('DOMContentLoaded', () => {
   async function handleClear(): Promise<void> {
     if (!confirm('¿Borrar todo el progreso, las hojas guardadas y los ajustes de este dispositivo? No se puede deshacer.')) return;
     progress.clearAll();
+    challenges.clearAll();
+    achievementStore.clearAll();
     await sheets.clearAll();
     settingsStore.replace(DEFAULT_SETTINGS);
     publishProgress();
@@ -403,14 +505,8 @@ window.addEventListener('DOMContentLoaded', () => {
   dashboard.onExport = () => void handleExport();
   dashboard.onImport = handleImport;
 
-  settingsPanel.onPrefetch = (report) => {
-    const chars = lessons
-      .filter((lesson) => lesson.category === 'japanese' && (['Hiragana', 'Katakana', 'N5', 'Vocabulario'].includes(lesson.group)))
-      .flatMap((lesson) => glyphsOf(lesson.characterOrWord));
-    void prefetchChars(chars, (done, total) => report(`Descargando… ${done}/${total}`)).then((ok) => {
-      report(ok === new Set(chars).size ? `Listo: ${ok} signos disponibles sin conexión.` : `Descargados ${ok} de ${new Set(chars).size}. Los demás necesitan conexión.`);
-    });
-  };
+  settingsPanel.onOfflineStatus = offlineStatus;
+  settingsPanel.onOfflineDownload = downloadOffline;
 
   // ---------------------------------------------------------------- Recordatorio diario
   let reminderTimer = 0;

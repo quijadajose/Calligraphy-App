@@ -2,7 +2,9 @@
 // - Precarga todo el build (lo inyecta vite.config.ts al compilar), así la app abre sin red.
 // - La app y sus archivos: primero caché, y se actualiza en segundo plano.
 // - Datos de trazo y fuentes de otros orígenes: primero caché; se guardan la primera vez.
-const VERSION = 'calligraphy-v3';
+// - «Descargar todo» (Ajustes) guarda el resto en OFFLINE, que sobrevive a las versiones.
+const VERSION = 'calligraphy-v4';
+const OFFLINE = 'calligraphy-offline';
 const PRECACHE = /*__PRECACHE__*/[];
 const STATIC = `${VERSION}-static`;
 const RUNTIME = `${VERSION}-runtime`;
@@ -20,7 +22,7 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
-      Promise.all(keys.filter((key) => !key.startsWith(VERSION)).map((key) => caches.delete(key)))
+      Promise.all(keys.filter((key) => !key.startsWith(VERSION) && key !== OFFLINE).map((key) => caches.delete(key)))
     )
   );
   self.clients.claim();
@@ -56,7 +58,8 @@ async function staleWhileRevalidate(request) {
       }
       return response;
     })
-    .catch(() => cached ?? caches.match('./'));
+    // Sin red, una página que no está guardada abre la app; un archivo que falta, falla.
+    .catch(() => cached ?? (request.mode === 'navigate' ? caches.match('./') : Response.error()));
   return cached ?? network;
 }
 

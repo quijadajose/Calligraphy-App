@@ -19,6 +19,22 @@ export const PLAN_LABELS: Record<PlanKind, string> = {
 const MAX_REVIEWS = 5;
 const NEW_PER_DAY = 2;
 
+/** Las planas (texto cursivo) acompañan a las letras ligadas. */
+const LETTER_GROUPS = ['Ligada'];
+
+/** La plana de una letra ligada suelta («a» → «plana-a»), si existe. */
+export function planaFor(lessons: Lesson[], lesson: Lesson): Lesson | undefined {
+  if (lesson.category !== 'palmer' || !LETTER_GROUPS.includes(lesson.group)) return undefined;
+  return lessons.find((item) => item.id === `plana-${lesson.characterOrWord.trim()}`);
+}
+
+/** La letra de la que sale una plana («plana-a» → la lección de la «a»). */
+function letterForPlana(lessons: Lesson[], plana: Lesson): Lesson | undefined {
+  if (!plana.id.startsWith('plana-')) return undefined;
+  const char = plana.id.slice('plana-'.length);
+  return lessons.find((item) => item.category === 'palmer' && LETTER_GROUPS.includes(item.group) && item.characterOrWord.trim() === char);
+}
+
 function dayNumber(time: number): number {
   const date = new Date(time);
   return Math.floor(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86_400_000);
@@ -72,21 +88,39 @@ export function buildDailyPlan(
     if (record?.complete && !startedToday) continue;
     if (chosen.has(lesson.id)) continue;
     add('new', lesson);
+    // Una letra nueva se aprende paso a paso y enseguida se repite en su plana.
+    const plana = planaFor(lessons, lesson);
+    if (plana) add('sheet', plana);
     fresh += 1;
   }
 
-  const sheets = lessons.filter((lesson) => lesson.category === category && (lesson.sheet || lesson.group === 'Vocabulario'));
-  if (sheets.length > 0) add('sheet', sheets[day % sheets.length]);
+  if (!items.some((item) => item.kind === 'sheet')) {
+    const sheets = lessons.filter((lesson) => lesson.category === category && (lesson.sheet || lesson.group === 'Vocabulario'));
+    if (sheets.length > 0) add('sheet', sheets[day % sheets.length]);
+  }
 
   return items;
 }
 
-/** La lección que sigue: lo que queda del plan de hoy y, si no, la siguiente del grupo. */
+/**
+ * La lección que sigue. Una letra Palmer lleva a su plana, y la plana a la letra siguiente
+ * (salvo que quede algo pendiente en el plan de hoy). Si no, lo que queda del plan y,
+ * al final, la siguiente del grupo.
+ */
 export function nextLesson(lessons: Lesson[], plan: PlanItem[], current: Lesson): Lesson | null {
+  // Ligada: letra paso a paso → su plana → siguiente letra.
+  const plana = planaFor(lessons, current);
+  if (plana) return plana;
   const inPlan = plan.findIndex((item) => item.lesson.id === current.id);
   if (inPlan >= 0) {
     const pending = [...plan.slice(inPlan + 1), ...plan.slice(0, inPlan)].find((item) => !item.done);
     if (pending) return pending.lesson;
+  }
+  const source = letterForPlana(lessons, current);
+  if (source) {
+    const group = lessons.filter((lesson) => lesson.category === 'palmer' && lesson.group === source.group);
+    const following = group[group.indexOf(source) + 1];
+    if (following) return following;
   }
   const index = lessons.findIndex((lesson) => lesson.id === current.id);
   if (index < 0) return null;
