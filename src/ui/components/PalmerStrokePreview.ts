@@ -1,9 +1,10 @@
-import { PALMER_ASCENDER_RATIO, PALMER_SLANT_DEG, PALMER_XHEIGHT_RATIO } from '../../core/engine/gridMetrics';
+import { PALMER_ASCENDER_RATIO, PALMER_XHEIGHT_RATIO, slantOffset } from '../../core/engine/gridMetrics';
 import { Point2 } from '../../types/ink';
 
 const VIEW = 72;
 const BASE_Y = PALMER_ASCENDER_RATIO + PALMER_XHEIGHT_RATIO;
-const SLANT = (PALMER_SLANT_DEG * Math.PI) / 180;
+/** En la hoja una unidad de x mide 0,58 × 3,7 alturas de x (de 0,35): así la vista previa guarda la misma proporción. */
+const X_ASPECT = 0.58 * 3.7 * PALMER_XHEIGHT_RATIO;
 
 function themeColor(name: string, fallback: string): string {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
@@ -140,7 +141,7 @@ export class PalmerStrokePreview {
   }
 
   private slant(point: Point2): Point2 {
-    return { x: point.x + (BASE_Y - point.y) / Math.tan(SLANT), y: point.y };
+    return { x: point.x * X_ASPECT + slantOffset(BASE_Y - point.y), y: point.y };
   }
 
   private trace(points: Point2[]): void {

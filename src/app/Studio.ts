@@ -9,6 +9,7 @@ import { SlantAnalyzer } from '../core/evaluation/SlantAnalyzer';
 import { StrokeEvaluator } from '../core/evaluation/StrokeEvaluator';
 import { baseWidthMatching } from '../core/engine/BrushRenderer';
 import { InkCanvas } from '../core/engine/InkCanvas';
+import { PALMER_SLANT_DEG, scriptSlant, setScriptSlant } from '../core/engine/gridMetrics';
 import { Settings } from '../core/settings/SettingsStore';
 import { SheetStore } from '../core/storage/SheetStore';
 import { BrushTool, CharGeometry, EvaluationResult, GridMode, Lesson, Stroke, glyphsOf, isSingleGlyph } from '../types/ink';
@@ -155,6 +156,9 @@ export class Studio {
     this.glyphs = [];
     this.kanjiWriter = null;
     this.palmerPreview.stop();
+    // Imprenta: vertical. Cursiva: 52°. Hay que fijarlo antes de dibujar la pauta y el modelo.
+    setScriptSlant(lesson.upright ? 90 : PALMER_SLANT_DEG);
+    this.ink.redrawAll();
     if (this.el.dictation.isOpen()) this.el.dictation.dismiss();
     this.showGuide(lesson);
     this.applyTool(lesson);
@@ -284,7 +288,9 @@ export class Studio {
     }
     if (!this.dictating) {
       const slant = SlantAnalyzer.analyze(strokes);
-      this.say(slant.samples > 0 ? `Inclinación ${slant.avgAngle}° · objetivo 52°` : 'Sigue escribiendo: los trazos que bajan marcan la inclinación.');
+      const target = scriptSlant();
+      const goal = target >= 89.9 ? 'objetivo: vertical (90°)' : `objetivo ${target}°`;
+      this.say(slant.samples > 0 ? `Inclinación ${slant.avgAngle}° · ${goal}` : 'Sigue escribiendo: los trazos que bajan marcan la inclinación.');
     }
   }
 
@@ -460,8 +466,9 @@ export class Studio {
     el.animateButton.hidden = !(singleJp || palmerGlyph || (lesson.category === 'japanese' && !lesson.dictation));
     el.dictationButton.hidden = !this.canDictate(lesson);
     el.glyphMark.textContent = lesson.dictation ? 'Dictado' : lesson.title;
+    el.glyphMark.classList.toggle('is-print', !!lesson.upright);
     el.subLabel.textContent = lesson.category === 'palmer'
-      ? `Palmer · ${lesson.group}`
+      ? (lesson.upright ? lesson.subTitle : `Palmer · ${lesson.group}`)
       : [lesson.group, lesson.reading, lesson.meaning].filter(Boolean).join(' · ');
     this.say(singleJp ? 'Cargando orden de trazos…' : lesson.instructions || 'Sigue la guía y escribe.');
     if (!lesson.steps?.length) {

@@ -8,6 +8,7 @@ import './styles/main.css';
 import { Studio } from './app/Studio';
 import { DictationService } from './core/audio/DictationService';
 import { PlanItem, buildDailyPlan, nextLesson } from './core/daily/DailyPlan';
+import { Achievement, AchievementStore, evaluateAchievements } from './core/achievements/Achievements';
 import { ChallengeStore, DayActivity, SyncResult } from './core/challenges/Challenges';
 import { downloadOffline, offlineStatus } from './core/offline/OfflinePack';
 import { MASTERY_LABELS, PASSING_SCORE, ProgressStore, dayKey, masteryLevel } from './core/progress/ProgressStore';
@@ -44,6 +45,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const settingsStore = new SettingsStore(kv);
   const progress = new ProgressStore(kv);
   const challenges = new ChallengeStore(kv);
+  const achievementStore = new AchievementStore(kv);
   const sheets = new SheetStore();
   const dictationService = new DictationService();
 
@@ -187,6 +189,31 @@ window.addEventListener('DOMContentLoaded', () => {
     return result;
   }
 
+  function currentAchievements(view = progress.view(lessons)): Achievement[] {
+    const life = progress.lifetime();
+    const groups: Record<string, { complete: number; total: number }> = {};
+    for (const section of view.sections) for (const group of section.groups) groups[group.id] = { complete: group.complete, total: group.total };
+    return evaluateAchievements({
+      longestStreak: life.longestStreak,
+      strokes: life.strokes,
+      minutes: Math.floor(life.ms / 60000),
+      highScores: life.highScores,
+      challenges: challenges.totalCompleted(),
+      medals: challenges.medals().length,
+      earlyDays: life.earlyDays,
+      lateDays: life.lateDays,
+      groups
+    });
+  }
+
+  /** Avisa de los logros que subieron de nivel. */
+  function checkAchievements(list = currentAchievements()): Achievement[] {
+    for (const item of achievementStore.update(list)) {
+      toast(item.next === null ? `¡Logro completado: ${item.name}!` : `Logro: ${item.name} · nivel ${item.level}`, 'success');
+    }
+    return list;
+  }
+
   function lessonNext(lesson: Lesson): Lesson | null {
     refreshPlan();
     return nextLesson(lessons, plan, lesson);
@@ -199,6 +226,7 @@ window.addEventListener('DOMContentLoaded', () => {
       refreshPlan();
       const resumeId = settingsStore.get().lastLessonId;
       const quests = syncChallenges(false);
+      checkAchievements();
       const fresh = new Set(freshQuests);
       freshQuests.clear();
       today.render({
@@ -214,10 +242,11 @@ window.addEventListener('DOMContentLoaded', () => {
       });
     } else if (screen === 'progress') {
       const current = syncChallenges(false).month;
-      dashboard.render(progress.view(lessons), settingsStore.get().dailyGoalMinutes, lessonsById, {
+      const view = progress.view(lessons);
+      dashboard.render(view, settingsStore.get().dailyGoalMinutes, lessonsById, {
         earned: new Set(challenges.medals()),
         current
-      });
+      }, checkAchievements(currentAchievements(view)));
       void sheets.listSheets().then((list) => {
         if (screen === 'progress') dashboard.renderSheets(list);
       });
@@ -321,6 +350,7 @@ window.addEventListener('DOMContentLoaded', () => {
     progress.recordReview(lesson, result.score);
     refreshPlan();
     syncChallenges(true);
+    checkAchievements();
     if (result.score > 0) {
       const thumb = snapshot.toDataURL('image/webp', 0.72);
       void sheets.saveSheet({ lessonId: lesson.id, title: lesson.title, at: Date.now(), score: result.score, thumb });
@@ -346,6 +376,7 @@ window.addEventListener('DOMContentLoaded', () => {
     progress.recordReview(info.lesson, null);
     refreshPlan();
     syncChallenges(true);
+    checkAchievements();
     const next = lessonNext(info.lesson);
     finish.onNext = next ? () => go('studio', next) : undefined;
     finish.show({ title: info.lesson.title, elapsedMs: info.elapsedMs, averagePressure: info.averagePressure, nextTitle: next?.title ?? null });
@@ -462,6 +493,7 @@ window.addEventListener('DOMContentLoaded', () => {
     if (!confirm('¿Borrar todo el progreso, las hojas guardadas y los ajustes de este dispositivo? No se puede deshacer.')) return;
     progress.clearAll();
     challenges.clearAll();
+    achievementStore.clearAll();
     await sheets.clearAll();
     settingsStore.replace(DEFAULT_SETTINGS);
     publishProgress();

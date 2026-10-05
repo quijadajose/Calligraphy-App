@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { MemoryStore } from '../src/core/storage/safeStorage';
 import { PASSING_SCORE, ProgressStore, masteryLevel, nextInterval } from '../src/core/progress/ProgressStore';
-import { buildDailyPlan, nextLesson } from '../src/core/daily/DailyPlan';
+import { buildDailyPlan, nextLesson, planaFor } from '../src/core/daily/DailyPlan';
 import { sanitizeSettings } from '../src/core/settings/SettingsStore';
 import { LESSONS } from '../src/data/lessons';
 import { Lesson } from '../src/types/ink';
@@ -139,5 +139,51 @@ describe('Datos', () => {
   it('cada grupo del catálogo tiene lecciones', () => {
     const groups = new Set(LESSONS.map((l) => l.group));
     for (const name of ['Enlaces', 'Vocabulario', 'Hiragana', 'Katakana', 'N5']) expect(groups.has(name)).toBe(true);
+  });
+});
+
+describe('Planas del español', () => {
+  const byId = (id: string) => LESSONS.find((lesson) => lesson.id === id) as Lesson;
+
+  it('cada letra tiene su plana', () => {
+    expect(planaFor(LESSONS, byId('palmer-Minúsculas-a'))?.id).toBe('plana-a');
+    expect(planaFor(LESSONS, byId('palmer-Mayúsculas-B'))?.id).toBe('plana-B');
+  });
+
+  it('letra → su plana → siguiente letra', () => {
+    expect(nextLesson(LESSONS, [], byId('palmer-Minúsculas-a'))?.id).toBe('plana-a');
+    expect(nextLesson(LESSONS, [], byId('plana-a'))?.id).toBe('palmer-Minúsculas-b');
+    expect(nextLesson(LESSONS, [], byId('plana-Z'))?.id).not.toBe('palmer-Mayúsculas-A');
+  });
+
+  it('una letra nueva en la sesión trae su plana justo detrás', () => {
+    const time = clock();
+    const store = new ProgressStore(new MemoryStore(), time.now);
+    const plan = buildDailyPlan(LESSONS, store, 'palmer-Minúsculas-a', time.now());
+    const index = plan.findIndex((item) => item.kind === 'new' && item.lesson.id === 'palmer-Minúsculas-a');
+    expect(index).toBeGreaterThan(-1);
+    expect(plan[index + 1]?.lesson.id).toBe('plana-a');
+  });
+});
+
+
+describe('Imprenta', () => {
+  const print = LESSONS.filter((lesson) => lesson.group === 'Imprenta');
+
+  it('tiene minúsculas y mayúsculas rectas, con ids únicos', () => {
+    expect(print.length).toBe(54);
+    expect(print.every((lesson) => lesson.upright && (lesson.steps?.length ?? 0) > 0)).toBe(true);
+    expect(new Set(LESSONS.map((lesson) => lesson.id)).size).toBe(LESSONS.length);
+  });
+
+  it('la inclinación de imprenta es vertical y la de Palmer vuelve a 52°', async () => {
+    const { mapPalmerPoint, palmerRowGeometry, setScriptSlant, PALMER_SLANT_DEG } = await import('../src/core/engine/gridMetrics');
+    const row = palmerRowGeometry(0, 800);
+    setScriptSlant(90);
+    const top = mapPalmerPoint({ x: 0.5, y: 0.1 }, 0, row);
+    const bottom = mapPalmerPoint({ x: 0.5, y: 0.7 }, 0, row);
+    expect(top.x).toBeCloseTo(bottom.x);
+    setScriptSlant(PALMER_SLANT_DEG);
+    expect(mapPalmerPoint({ x: 0.5, y: 0.1 }, 0, row).x).toBeGreaterThan(mapPalmerPoint({ x: 0.5, y: 0.7 }, 0, row).x);
   });
 });

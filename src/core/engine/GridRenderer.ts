@@ -1,7 +1,7 @@
 import { GridMode, Point2 } from '../../types/ink';
 import {
   PALMER_PEN_RATIO,
-  PALMER_SLANT_DEG,
+  scriptSlant,
   exampleBox,
   genkouyoushiLayout,
   mapPalmerPoint,
@@ -399,7 +399,8 @@ export class GridRenderer {
     staff: 'practice' | 'sentence' = 'practice'
   ): void {
     const numRows = staff === 'sentence' ? sentenceFrame(height).rows : palmerRowCount(height);
-    const slantAngleRad = (PALMER_SLANT_DEG * Math.PI) / 180;
+    const slantDeg = scriptSlant();
+    const slantAngleRad = (slantDeg * Math.PI) / 180;
 
     for (let r = 0; r < numRows; r++) {
       const { ascenderY, waistY, baseY, descenderY } =
@@ -441,7 +442,8 @@ export class GridRenderer {
       ctx.strokeStyle = mood === 'dark'
         ? 'rgba(214, 176, 122, 0.14)'
         : 'rgba(230, 126, 34, 0.18)';
-      if (!this.showSlant) continue;
+      // La imprenta es vertical: sin líneas de inclinación.
+      if (!this.showSlant || slantDeg >= 89.9) continue;
       ctx.lineWidth = 0.8;
       const spacing = 50;
       const deltaX = (descenderY - ascenderY) / Math.tan(slantAngleRad);

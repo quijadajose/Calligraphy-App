@@ -1,5 +1,5 @@
 import { Stroke } from '../../types/ink';
-import { PALMER_SLANT_DEG } from '../engine/gridMetrics';
+import { scriptSlant } from '../engine/gridMetrics';
 import { clamp } from './geometry';
 
 export interface SlantResult {
@@ -15,7 +15,7 @@ export interface SlantResult {
  */
 export class SlantAnalyzer {
   public static analyze(strokes: Stroke[]): SlantResult {
-    const target = PALMER_SLANT_DEG;
+    const target = scriptSlant();
     let weighted = 0;
     let weightSum = 0;
     let samples = 0;

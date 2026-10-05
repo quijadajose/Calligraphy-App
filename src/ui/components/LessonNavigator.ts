@@ -5,6 +5,7 @@ const COPY: Record<string, { title: string; blurb: string }> = {
   Ejercicios: { title: 'Trazos de base', blurb: 'Óvalo, empuje y enlaces, antes de las letras.' },
   Minúsculas: { title: 'Minúsculas', blurb: 'Cada letra sola, una vez, antes de llenar la plana.' },
   Mayúsculas: { title: 'Mayúsculas', blurb: 'La mayúscula sola, antes de repetirla en varias líneas.' },
+  Imprenta: { title: 'Imprenta', blurb: 'Letra de molde: recta, sin inclinar y con cada letra separada. Primero las minúsculas, luego las mayúsculas.' },
   Enlaces: { title: 'Enlaces', blurb: 'Los pares que más cuestan: br, os, ve, wr… sin levantar la pluma.' },
   Planas: { title: 'Planas', blurb: 'Varias líneas de la misma letra. La primera lleva la guía.' },
   Palabras: { title: 'Palabras', blurb: 'Palabras cortas con las letras ya practicadas.' },
@@ -238,7 +239,7 @@ export class LessonNavigator {
     const card = document.createElement('button');
     card.type = 'button';
     card.className = `lesson-card glyph-tile${face.span}`;
-    card.dataset.script = lesson.category;
+    card.dataset.script = lesson.upright ? 'print' : lesson.category;
     card.dataset.label = `${lesson.title} ${lesson.subTitle}`.trim();
 
     const glyph = document.createElement('span');

@@ -552,6 +552,11 @@
   font-family: var(--font-serif);
 }
 
+.glyph-tile[data-script='print'] .glyph-tile-char {
+  font-family: var(--font-sans);
+  font-weight: 400;
+}
+
 .glyph-tile-read {
   font-size: 11px;
   color: var(--um);

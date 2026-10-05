@@ -302,3 +302,136 @@
   min-height: 1.3em;
   font-variant-numeric: tabular-nums;
 }
+
+/* Logros */
+.ach-grid {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px;
+}
+
+.ach-card {
+  --ach: var(--accent-soft);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px;
+  border-radius: var(--border-radius-md);
+  background: var(--ui2);
+  border: 0.5px solid var(--ub);
+}
+
+.ach-badge {
+  position: relative;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+}
+
+.ach-badge svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.ach-hex {
+  fill: var(--ach);
+}
+
+.ach-hex-in {
+  fill: color-mix(in srgb, var(--ach) 70%, #fff);
+  opacity: 0.35;
+}
+
+.ach-badge .ti {
+  position: relative;
+  font-size: 24px;
+  color: #fff;
+  margin-top: -4px;
+}
+
+.ach-level {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 22px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--ui);
+  border: 1.5px solid var(--ach);
+  color: var(--ut);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 15px;
+  text-align: center;
+}
+
+.ach-card.is-max .ach-level {
+  background: #FAB005;
+  border-color: #E67700;
+  color: #1b1a18;
+}
+
+.ach-card.is-locked .ach-badge {
+  filter: grayscale(1);
+  opacity: 0.45;
+}
+
+.ach-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.ach-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ach-meta {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ach);
+}
+
+.ach-card.is-locked .ach-meta {
+  color: var(--um);
+}
+
+.ach-text {
+  font-size: 12px;
+  color: var(--um);
+}
+
+.ach-bar {
+  position: relative;
+  display: block;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--ub);
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.ach-bar > span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--ach);
+  border-radius: 3px;
+}
+
+.ach-count {
+  font-size: 11px;
+  color: var(--um);
+  font-variant-numeric: tabular-nums;
+}

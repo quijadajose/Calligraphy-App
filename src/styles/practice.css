@@ -46,6 +46,11 @@
   max-width: 260px;
 }
 
+.practice-glyph-mark.is-print {
+  font-family: var(--font-sans);
+  font-weight: 500;
+}
+
 .practice-sub-label {
   font-size: 13px;
   color: var(--um);

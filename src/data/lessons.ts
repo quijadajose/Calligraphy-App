@@ -3,6 +3,7 @@ import { HIRAGANA_LESSONS, JP_DICTATION_LESSONS, KATAKANA_LESSONS, VOCABULARY_LE
 import { kanjiLessons } from './japanese/kanjiDatabase';
 import { LOWERCASE_LESSONS, UPPERCASE_LESSONS } from './palmer/alphabet';
 import { EXERCISE_LESSONS } from './palmer/exercises';
+import { PRINT_LESSONS } from './palmer/print';
 import { JOIN_LESSONS, LINE_LESSONS } from './palmer/lines';
 import { PALMER_DICTATION_LESSONS, WORD_LESSONS, customLesson } from './palmer/words';
 
@@ -13,6 +14,7 @@ export const LESSONS: Lesson[] = [
   ...EXERCISE_LESSONS,
   ...LOWERCASE_LESSONS,
   ...UPPERCASE_LESSONS,
+  ...PRINT_LESSONS,
   ...JOIN_LESSONS,
   ...LINE_LESSONS,
   ...WORD_LESSONS,

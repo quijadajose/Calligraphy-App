@@ -253,6 +253,13 @@ export class ChallengeStore {
     };
   }
 
+  /** Desafíos completados en total. */
+  public totalCompleted(): number {
+    let count = 0;
+    for (const record of Object.values(this.state.days)) count += record.done.length;
+    return count;
+  }
+
   /** Meses con medalla ganada, AAAA-MM. */
   public medals(): string[] {
     return Object.keys(this.state.medals).sort();

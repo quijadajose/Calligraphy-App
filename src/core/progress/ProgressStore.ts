@@ -313,6 +313,48 @@ export class ProgressStore {
     return result;
   }
 
+  /** Cifras de toda la historia, para los logros. */
+  public lifetime(): {
+    longestStreak: number;
+    strokes: number;
+    ms: number;
+    highScores: number;
+    earlyDays: number;
+    lateDays: number;
+  } {
+    let strokes = 0;
+    let ms = 0;
+    for (const log of this.days.values()) {
+      strokes += log.strokes;
+      ms += log.ms;
+    }
+    // Racha más larga: días activos seguidos en el calendario.
+    const active = [...this.days.keys()].filter((key) => this.activeDay(key)).sort();
+    let longestStreak = 0;
+    let run = 0;
+    let previous = Number.NaN;
+    for (const key of active) {
+      const [y, m, d] = key.split('-').map(Number);
+      const day = Math.round(Date.UTC(y, m - 1, d) / DAY_MS);
+      run = day === previous + 1 ? run + 1 : 1;
+      previous = day;
+      longestStreak = Math.max(longestStreak, run);
+    }
+    // Madrugador / noctámbulo: días con alguna calificación antes de las 8 o desde las 22.
+    const early = new Set<string>();
+    const late = new Set<string>();
+    let highScores = 0;
+    for (const record of this.lessons.values()) {
+      if ((record.bestScore ?? 0) >= 95) highScores += 1;
+      for (const entry of record.scores) {
+        const hour = new Date(entry.at).getHours();
+        if (hour < 8 && hour >= 4) early.add(dayKey(entry.at));
+        if (hour >= 22 || hour < 4) late.add(dayKey(entry.at));
+      }
+    }
+    return { longestStreak, strokes, ms, highScores, earlyDays: early.size, lateDays: late.size };
+  }
+
   public todayMs(): number {
     return this.days.get(dayKey(this.now()))?.ms ?? 0;
   }
