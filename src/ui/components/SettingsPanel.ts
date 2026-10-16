@@ -273,13 +273,13 @@ export class SettingsPanel {
       fill.style.width = `${state.total ? Math.round((state.have / state.total) * 100) : 100}%`;
       if (ready) {
         status.innerHTML = '<i class="ti ti-circle-check" aria-hidden="true"></i> ';
-        status.append(document.createTextNode(`Todo descargado (${formatBytes(state.bytes)}): la app funciona entera sin internet, con todos los kanji y la fuente japonesa.`));
+        status.append(document.createTextNode(`Todo descargado (${formatBytes(state.bytes)}): la app funciona entera sin internet, con todos los kanji, la fuente japonesa y el audio de los dictados.`));
         button.hidden = true;
         return;
       }
       status.textContent = state.have > 0
-        ? `La app, kana, kanji N5 y vocabulario ya funcionan sin red. Falta parte de los kanji N4–N1 y de la fuente japonesa.`
-        : 'La app, kana, kanji N5 y vocabulario ya funcionan sin red. Para tener también los kanji N4 a N1 y la fuente japonesa completa, descárgalos una vez.';
+        ? `La app, kana, kanji N5 y vocabulario ya funcionan sin red. Falta parte de los kanji N4–N1, de la fuente japonesa o del audio de los dictados.`
+        : 'La app, kana, kanji N5 y vocabulario ya funcionan sin red. Para tener también los kanji N4 a N1, la fuente japonesa completa y el audio de los dictados, descárgalos una vez.';
       button.hidden = false;
       button.disabled = this.offlineBusy;
       button.textContent = `Descargar todo (${formatBytes(state.missingBytes)})`;

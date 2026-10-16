@@ -132,13 +132,30 @@ export interface GenkouLayout {
   rows: number;
 }
 
+/**
+ * Cuántos cuadros necesita la hoja japonesa. En un dictado son los signos de la frase:
+ * solo se dibujan esos (una fila si caben), no la hoja entera. `null`: la hoja completa.
+ */
+let boxLimit: number | null = null;
+
+export function setBoxLimit(limit: number | null): boolean {
+  const next = limit && limit > 0 ? Math.round(limit) : null;
+  const changed = next !== boxLimit;
+  boxLimit = next;
+  return changed;
+}
+
 export function genkouyoushiLayout(width: number, height: number): GenkouLayout {
   const top = practiceChrome.top;
   const usableH = Math.max(180, height - top - practiceChrome.bottom);
   const boxSize = Math.min(200, Math.floor(Math.min(width, usableH) * 0.34));
   const gap = 16;
-  const cols = Math.max(1, Math.floor((width - gap) / (boxSize + gap)));
-  const rows = Math.max(1, Math.floor((usableH - gap) / (boxSize + gap)));
+  const maxCols = Math.max(1, Math.floor((width - gap) / (boxSize + gap)));
+  const maxRows = Math.max(1, Math.floor((usableH - gap) / (boxSize + gap)));
+  // Con límite, la hoja se encoge a lo justo; si la frase no cabe, se usa la hoja entera.
+  const limit = boxLimit !== null && boxLimit <= maxCols * maxRows ? boxLimit : null;
+  const cols = limit !== null ? Math.min(maxCols, limit) : maxCols;
+  const rows = limit !== null ? Math.ceil(limit / cols) : maxRows;
   const gridW = cols * (boxSize + gap) - gap;
   const gridH = rows * (boxSize + gap) - gap;
   const offsetX = (width - gridW) / 2;
@@ -147,6 +164,7 @@ export function genkouyoushiLayout(width: number, height: number): GenkouLayout 
 
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
+      if (limit !== null && boxes.length >= limit) break;
       boxes.push({
         x: offsetX + c * (boxSize + gap),
         y: offsetY + r * (boxSize + gap),

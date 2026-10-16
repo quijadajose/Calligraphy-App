@@ -76,7 +76,9 @@ function precacheManifest(): Plugin {
         return !!match && coreFont.has(Number(match[1]));
       };
       const isExtraChar = (file: string) => file.startsWith('chardata/') && file !== 'chardata/index.json' && !core.has(file);
-      const later = files.filter((file) => isExtraChar(file) || (isJapaneseFont(file) && !isCoreFont(file)));
+      // Los audios de dictado (public/audio) tampoco se precargan: se guardan al oírlos o con «Descargar todo».
+      const isAudio = (file: string) => file.startsWith('audio/');
+      const later = files.filter((file) => isExtraChar(file) || isAudio(file) || (isJapaneseFont(file) && !isCoreFont(file)));
       const deferred = new Set(later);
       const precache = files.filter((file) => !deferred.has(file));
 
@@ -100,6 +102,8 @@ export default defineConfig({
       output: {
         // Los datos de kanji van aparte: cambian poco y el navegador los guarda en caché.
         manualChunks(id) {
+          // Los dictados generados se cargan después de abrir la app, en su propio archivo.
+          if (id.includes('/src/data/japanese/dictation/')) return id.endsWith('.json') ? 'dictation-data' : undefined;
           if (id.includes('/src/data/japanese/')) return 'kanji-data';
           if (id.includes('node_modules/hanzi-writer')) return 'hanzi-writer';
           return undefined;

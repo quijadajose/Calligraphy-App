@@ -1,5 +1,5 @@
 import { Lesson } from '../../types/ink';
-import { JAPANESE_TABS, KANJI_LEVELS, LETTER_STYLES, PALMER_GROUPS } from '../../data/groups';
+import { DICTATION_LEVELS, JAPANESE_TABS, KANJI_LEVELS, LETTER_STYLES, PALMER_GROUPS } from '../../data/groups';
 import { letterSvg } from '../glyphSvg';
 
 const COPY: Record<string, { title: string; blurb: string }> = {
@@ -21,8 +21,17 @@ const COPY: Record<string, { title: string; blurb: string }> = {
   N4: { title: 'Kanji N4', blurb: 'El siguiente nivel, todavía trazo a trazo.' },
   N3: { title: 'Kanji N3', blurb: 'Más piezas. El orden sigue contando.' },
   N2: { title: 'Kanji N2', blurb: 'Formas largas. Empieza por el primer trazo.' },
-  N1: { title: 'Kanji N1', blurb: 'Los más densos del curso.' }
+  N1: { title: 'Kanji N1', blurb: 'Los más densos del curso.' },
+  'Dictado Kana': { title: 'Dictado · Kana', blurb: 'Frases solo en hiragana y katakana. Escucha, escribe un signo por cuadro y entrega.' },
+  'Dictado N5': { title: 'Dictado · N5', blurb: 'Frases con kanji de N5 y kana. La pista en español aclara las palabras que suenan igual.' },
+  'Dictado N4': { title: 'Dictado · N4', blurb: 'Frases con kanji hasta N4.' },
+  'Dictado N3': { title: 'Dictado · N3', blurb: 'Frases con kanji hasta N3.' },
+  'Dictado N2': { title: 'Dictado · N2', blurb: 'Frases con kanji hasta N2.' },
+  'Dictado N1': { title: 'Dictado · N1', blurb: 'Frases con cualquier kanji del curso.' }
 };
+
+const JP_DICTATION = 'Dictado';
+const dictationGroup = (level: string) => `Dictado ${level}`;
 
 /**
  * Catálogo de lecciones. Las tarjetas se construyen solo al cambiar de grupo o de búsqueda;
@@ -32,6 +41,8 @@ export class LessonNavigator {
   private category: 'palmer' | 'japanese' = 'palmer';
   private tab = 'Ejercicios';
   private level = 'N5';
+  /** Nivel elegido en la pestaña Dictado de japonés. */
+  private dictationLevel = 'Kana';
   private activeId = '';
   private query = '';
   /** Kanji: por frecuencia (el orden de la fuente) o de menos a más trazos. */
@@ -83,6 +94,9 @@ export class LessonNavigator {
     if (category === 'japanese' && KANJI_LEVELS.includes(group)) {
       this.tab = 'Kanji';
       this.level = group;
+    } else if (category === 'japanese' && group.startsWith(`${JP_DICTATION} `)) {
+      this.tab = JP_DICTATION;
+      this.dictationLevel = group.slice(JP_DICTATION.length + 1);
     } else {
       this.tab = group;
     }
@@ -137,6 +151,11 @@ export class LessonNavigator {
       this.level = lesson.group;
       return;
     }
+    if (lesson.category === 'japanese' && lesson.group.startsWith(`${JP_DICTATION} `)) {
+      this.tab = JP_DICTATION;
+      this.dictationLevel = lesson.group.slice(JP_DICTATION.length + 1);
+      return;
+    }
     const tabs = lesson.category === 'palmer' ? PALMER_GROUPS : JAPANESE_TABS;
     // Una lección de un estilo escondido (desde Hoy o un repaso) igual muestra su pestaña.
     this.tab = tabs.includes(lesson.group) ? lesson.group : tabs[0];
@@ -144,6 +163,7 @@ export class LessonNavigator {
 
   private currentGroup(): string {
     if (this.category === 'japanese' && this.tab === 'Kanji') return this.level;
+    if (this.category === 'japanese' && this.tab === JP_DICTATION) return dictationGroup(this.dictationLevel);
     return this.tab;
   }
 
@@ -201,6 +221,10 @@ export class LessonNavigator {
   }
 
   private renderLevels(): void {
+    if (this.category === 'japanese' && this.tab === JP_DICTATION && !this.query) {
+      this.renderDictationLevels();
+      return;
+    }
     const show = this.category === 'japanese' && this.tab === 'Kanji' && !this.query;
     this.levels.hidden = !show;
     if (!show) {
@@ -233,6 +257,31 @@ export class LessonNavigator {
     );
   }
 
+  /** Niveles del dictado japonés, con cuántas frases tiene cada uno. */
+  private renderDictationLevels(): void {
+    this.levels.hidden = false;
+    const counts = new Map<string, number>();
+    for (const lesson of this.lessons) {
+      if (lesson.category === 'japanese' && lesson.dictation) counts.set(lesson.group, (counts.get(lesson.group) ?? 0) + 1);
+    }
+    this.levels.replaceChildren(
+      ...DICTATION_LEVELS.map((level) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        const active = level === this.dictationLevel;
+        const count = counts.get(dictationGroup(level)) ?? 0;
+        button.className = `board-level${active ? ' active' : ''}`;
+        button.setAttribute('aria-pressed', String(active));
+        button.textContent = count > 0 ? `${level} · ${count}` : level;
+        button.addEventListener('click', () => {
+          this.dictationLevel = level;
+          this.render();
+        });
+        return button;
+      })
+    );
+  }
+
   private renderCopy(): void {
     if (this.query) {
       this.heading.textContent = 'Resultados';
@@ -242,7 +291,8 @@ export class LessonNavigator {
     const key = this.currentGroup();
     const copy = COPY[key] ?? COPY[this.tab] ?? { title: key, blurb: '' };
     this.heading.textContent = copy.title;
-    this.blurb.textContent = copy.blurb;
+    const empty = this.category === 'japanese' && this.tab === JP_DICTATION && this.visible().length === 0;
+    this.blurb.textContent = empty ? 'Todavía no hay dictados de este nivel. Se generan con «npm run dictation».' : copy.blurb;
   }
 
   private paintState(card: HTMLButtonElement, id: string): void {
@@ -311,6 +361,10 @@ export class LessonNavigator {
     }
     if (lesson.category === 'japanese' && !lesson.dictation) {
       return { glyph: text, caption: [reading, lesson.meaning].filter(Boolean).join(' · '), span: Array.from(text).length > 3 ? ' glyph-tile-wide' : '' };
+    }
+    // Dictado japonés: la tarjeta muestra la pista en español, nunca el texto. Todas del mismo ancho.
+    if (lesson.category === 'japanese' && lesson.dictation) {
+      return { glyph: lesson.title, caption: lesson.subTitle, span: ' glyph-tile-wide' };
     }
     const titleChars = Array.from(lesson.title);
     if (titleChars.length === 1) {

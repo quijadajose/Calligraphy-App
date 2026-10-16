@@ -1,15 +1,16 @@
 import HanziWriter from 'hanzi-writer';
 import { DictationService, suggestedSeconds } from '../core/audio/DictationService';
 import { Metronome } from '../core/audio/Metronome';
+import { isDictatable } from '../core/audio/speech';
 import { loadCharRecord } from '../core/evaluation/CharDataLoader';
 import { guideDirection, strokeCoversGuide } from '../core/evaluation/geometry';
-import { lastBox, lastStrokeIsIncomplete } from '../core/evaluation/KanjiOrderValidator';
+import { groupByBox, lastBox, lastStrokeIsIncomplete } from '../core/evaluation/KanjiOrderValidator';
 import { ScoringEngine } from '../core/evaluation/ScoringEngine';
 import { SlantAnalyzer } from '../core/evaluation/SlantAnalyzer';
 import { StrokeEvaluator } from '../core/evaluation/StrokeEvaluator';
 import { baseWidthMatching } from '../core/engine/BrushRenderer';
 import { InkCanvas } from '../core/engine/InkCanvas';
-import { CURSIVE_SLANT_DEG, scriptSlant, setScriptSlant } from '../core/engine/gridMetrics';
+import { CURSIVE_SLANT_DEG, genkouyoushiLayout, scriptSlant, setBoxLimit, setScriptSlant } from '../core/engine/gridMetrics';
 import { ScriptStyle, scriptSlantFor, setSheetScript } from '../core/engine/scriptFonts';
 import { Settings } from '../core/settings/SettingsStore';
 import { SheetStore } from '../core/storage/SheetStore';
@@ -20,6 +21,8 @@ import { Toolbar } from '../ui/components/Toolbar';
 
 /** Tiempo máximo entre dos trazos que todavía cuenta como práctica. */
 const IDLE_GAP_MS = 5000;
+/** Pausa tras el último trazo antes de calificar sola la hoja llena (deja ver el trazo final). */
+const AUTO_GRADE_DELAY_MS = 700;
 const DOCK_WIDTHS = [2, 3, 4, 6, 8, 12];
 
 export interface StudioElements {
@@ -77,7 +80,6 @@ export class Studio {
   private kanjiWriter: HanziWriter | null = null;
   private palmerPreview: PalmerStrokePreview;
   private metronome = new Metronome();
-  private dictationService: DictationService;
   private token = 0;
   private stepIndex = 0;
   private penMatchesModel = true;
@@ -92,10 +94,12 @@ export class Studio {
   private lastStrokeEnd = 0;
   private dockWidthIndex = 2;
   private draftTimer = 0;
+  private autoGradeTimer = 0;
+  /** La hoja llena ya se calificó sola; no se repite hasta que vuelva a quedar un hueco. */
+  private autoGraded = false;
 
-  constructor(private el: StudioElements, settings: Settings, private sheets: SheetStore, dictationService: DictationService) {
+  constructor(private el: StudioElements, settings: Settings, private sheets: SheetStore, _dictationService: DictationService) {
     this.settings = settings;
-    this.dictationService = dictationService;
     this.ink = new InkCanvas(el.paper);
     this.palmerPreview = new PalmerStrokePreview(el.animatorBox);
     this.wireCanvas();
@@ -134,6 +138,7 @@ export class Studio {
   /** Sale de la hoja: guarda el borrador y para lo que esté sonando. */
   public leave(): void {
     this.flushDraft();
+    this.cancelAutoGrade();
     this.metronome.stop();
     this.el.metronomeButton.classList.remove('on');
     this.el.metronomeButton.setAttribute('aria-pressed', 'false');
@@ -208,6 +213,8 @@ export class Studio {
     this.penMatchesModel = true;
     this.retryOnNextStroke = false;
     this.celebrated = false;
+    this.cancelAutoGrade();
+    this.autoGraded = false;
     this.dictating = false;
     this.startedAt = performance.now();
     this.pressureSum = 0;
@@ -225,6 +232,8 @@ export class Studio {
       setScriptSlant(lesson.slant ?? (lesson.upright ? 90 : CURSIVE_SLANT_DEG));
     }
     this.renderScriptSwitch();
+    // Un dictado japonés solo necesita un cuadro por signo de la frase.
+    setBoxLimit(lesson.category === 'japanese' && lesson.dictation ? glyphsOf(lesson.characterOrWord).length : null);
     this.ink.redrawAll();
     if (this.el.dictation.isOpen()) this.el.dictation.dismiss();
     this.showGuide(lesson);
@@ -260,6 +269,44 @@ export class Studio {
       glyphs: this.glyphs
     });
     this.finishScoring(lesson, result);
+  }
+
+  /**
+   * Cuadros de copia (los que siguen al ejemplo) con todos sus trazos. Solo para kana/kanji
+   * fuera del dictado y con el número de trazos conocido de cada signo.
+   */
+  private sheetIsFull(): boolean {
+    const lesson = this.lesson;
+    if (!lesson || lesson.category !== 'japanese' || this.dictating || lesson.dictation) return false;
+    if (this.glyphs.length === 0 || this.glyphs.some((glyph) => !glyph)) return false;
+    const size = this.ink.getSize();
+    const boxes = genkouyoushiLayout(size.width, size.height).boxes.length;
+    const first = Math.min(this.glyphs.length, boxes - 1);
+    if (boxes - first <= 0) return false;
+    const counts = new Map(groupByBox(this.ink.getStrokes(), size.width, size.height).map((group) => [group.box, group.indices.length]));
+    for (let box = first; box < boxes; box++) {
+      const need = this.glyphs[box % this.glyphs.length]?.strokes.length ?? 0;
+      if (need === 0 || (counts.get(box) ?? 0) < need) return false;
+    }
+    return true;
+  }
+
+  /** Con todos los cuadros llenos, califica sola tras una breve pausa (una vez por hoja llena). */
+  private maybeAutoGrade(): void {
+    if (this.autoGraded || !this.sheetIsFull()) return;
+    this.cancelAutoGrade();
+    this.autoGradeTimer = window.setTimeout(() => {
+      this.autoGradeTimer = 0;
+      if (this.autoGraded || !this.sheetIsFull()) return;
+      if (document.querySelector('.score-modal-backdrop:not([hidden])')) return;
+      this.autoGraded = true;
+      this.evaluate();
+    }, AUTO_GRADE_DELAY_MS);
+  }
+
+  private cancelAutoGrade(): void {
+    if (this.autoGradeTimer) window.clearTimeout(this.autoGradeTimer);
+    this.autoGradeTimer = 0;
   }
 
   /** Lo que se tarda en promedio y la presión, para el cierre de una lección por pasos. */
@@ -303,6 +350,7 @@ export class Studio {
     };
     ink.onStrokeStart = () => {
       this.strokeStart = performance.now();
+      this.cancelAutoGrade();
       if (!this.retryOnNextStroke) return;
       // Solo se quita el trazo que no siguió la guía; lo bien hecho se queda en la hoja.
       this.retryOnNextStroke = false;
@@ -310,6 +358,10 @@ export class Studio {
     };
     ink.onHistoryChange = () => {
       this.el.toolbar.setHistory(ink.canUndo());
+      if (!this.sheetIsFull()) {
+        this.cancelAutoGrade();
+        this.autoGraded = false;
+      }
       this.scheduleDraft();
     };
     ink.onResize = () => {
@@ -345,6 +397,7 @@ export class Studio {
       }
       if (!this.dictating) this.say(StrokeEvaluator.liveKanjiMessage(strokes, this.glyphs, size.width, size.height));
       this.onPracticed?.(lesson);
+      this.maybeAutoGrade();
       return;
     }
     this.onPracticed?.(lesson);
@@ -464,11 +517,14 @@ export class Studio {
         glyphs: this.glyphs
       });
       const result = ScoringEngine.applyDictation(base, finish.timedOut, finish.wpm);
-      result.details = [`Texto: ${lesson.characterOrWord}`, ...(result.details ?? [])];
+      const reading = lesson.speech && lesson.speech !== lesson.characterOrWord ? [`Lectura: ${lesson.speech}`] : [];
+      result.details = [`Texto: ${lesson.characterOrWord}`, ...reading, ...(result.details ?? [])];
       this.finishScoring(lesson, result);
     };
     el.dictation.onCancel = () => {
       this.dictating = false;
+      const current = this.lesson;
+      if (current?.category === 'japanese' && !current.dictation && setBoxLimit(null)) this.ink.redrawAll();
       this.ink.revealSheet();
       if (this.lesson?.category === 'japanese') this.showJapaneseGhost();
     };
@@ -480,6 +536,7 @@ export class Studio {
     if (!lesson) return;
     this.ink.reset();
     this.dictating = true;
+    if (lesson.category === 'japanese' && setBoxLimit(glyphsOf(lesson.characterOrWord).length)) this.ink.redrawAll();
     if (lesson.sheet) this.ink.setSheet(lesson.characterOrWord, true, lesson.pattern ?? null);
     else if (lesson.category === 'japanese') this.ink.setGhost([]);
     this.el.liveTip.hidden = true;
@@ -490,10 +547,9 @@ export class Studio {
     });
   }
 
+  /** Con audio grabado o con la voz del sistema; si no hay ninguno, el aviso lo dice al empezar. */
   private canDictate(lesson: Lesson): boolean {
-    if (!this.dictationService.canSpeak()) return false;
-    if (lesson.pattern) return false;
-    return !!lesson.dictation || !!lesson.sheet || (lesson.category === 'japanese' && glyphsOf(lesson.characterOrWord).length > 1);
+    return isDictatable(lesson);
   }
 
   private setWidth(width: number): void {

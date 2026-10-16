@@ -33,7 +33,8 @@ function isStrokeData(url) {
     url.hostname === 'cdn.jsdelivr.net' ||
     url.hostname === 'fonts.googleapis.com' ||
     url.hostname === 'fonts.gstatic.com' ||
-    url.pathname.includes('/chardata/')
+    url.pathname.includes('/chardata/') ||
+    url.pathname.includes('/audio/')
   );
 }
 

@@ -65,6 +65,8 @@ export interface Lesson {
   /** Japonés: lectura y significado, para practicar de memoria. */
   reading?: string;
   meaning?: string;
+  /** Dictado: lo que se lee en voz alta (la lectura en kana) si no es el mismo texto. */
+  speech?: string;
   /** Letra vertical (imprenta). */
   upright?: boolean;
   /** Inclinación del estilo en grados (90 = vertical). Sin valor: la cursiva por defecto. */

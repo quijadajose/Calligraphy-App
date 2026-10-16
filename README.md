@@ -35,3 +35,10 @@ Todo vive en el dispositivo: progreso y ajustes en `localStorage`, hojas calific
 ## Créditos
 
 Trazos de [hanzi-writer-data](https://github.com/chanind/hanzi-writer-data) y [KanjiVG](https://kanjivg.tagaini.net/) (CC BY-SA 3.0).
+
+## Dictados japoneses
+
+Los dictados de japonés (Kana, N5 … N1) se generan con un LLM y se validan antes de entrar a la app.
+Ver [scripts/dictation/README.md](scripts/dictation/README.md). Resumen: `npm run dictation -- status`,
+`npm run dictation -- generate --level N4`, `npm run dictation:build`.
+

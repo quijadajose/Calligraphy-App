@@ -37,7 +37,9 @@ export const WORD_LESSONS: Lesson[] = [
     ...word(`p-${text}`, text, 'Palabras', false, true),
     subTitle: 'Con las letras ya hechas',
     instructions: `Escribe «${text}» en cada línea. Repasa las líneas punteadas y repite la palabra sin guía en las de abajo.`,
-    characterOrWord: wordRow(text)
+    characterOrWord: wordRow(text),
+    // En el dictado se oye la palabra una vez, no la fila entera.
+    speech: text
   })),
   word('w-rio', 'El río baja entre los pinos.', 'Oraciones', false, true),
   word('w-ventana', 'Mi hermana abre la ventana.', 'Oraciones', false, true),

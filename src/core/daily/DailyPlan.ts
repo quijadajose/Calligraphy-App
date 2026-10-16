@@ -1,5 +1,5 @@
-import { LETTER_STYLES } from '../../data/groups';
-import { Lesson } from '../../types/ink';
+import { KANJI_LEVELS, LETTER_STYLES } from '../../data/groups';
+import { Lesson, glyphsOf } from '../../types/ink';
 import { ProgressStore } from '../progress/ProgressStore';
 
 export type PlanKind = 'warmup' | 'review' | 'new' | 'sheet';
@@ -105,7 +105,36 @@ export function buildDailyPlan(
     if (sheets.length > 0) add('sheet', sheets[day % sheets.length]);
   }
 
+  // En japonés, además, un dictado que solo use kanji ya aprendidos.
+  if (category === 'japanese') add('sheet', pickDictation(lessons, progress, day, chosen));
+
   return items;
+}
+
+const KANJI = /[\u3400-\u9fff\u3005]/u;
+
+/**
+ * Un dictado japonés para hoy: sin hacer todavía y con todos sus kanji aprendidos.
+ * Prefiere los que tienen kanji (repasan lo estudiado); si no hay, uno solo en kana.
+ */
+export function pickDictation(lessons: Lesson[], progress: ProgressStore, day: number, chosen = new Set<string>()): Lesson | undefined {
+  const known = new Set<string>();
+  for (const lesson of lessons) {
+    if (lesson.category === 'japanese' && KANJI_LEVELS.includes(lesson.group) && progress.get(lesson.id)?.complete) {
+      known.add(lesson.characterOrWord.trim());
+    }
+  }
+  const withKanji: Lesson[] = [];
+  const kanaOnly: Lesson[] = [];
+  for (const lesson of lessons) {
+    if (lesson.category !== 'japanese' || !lesson.dictation || chosen.has(lesson.id)) continue;
+    if (progress.get(lesson.id)?.complete) continue;
+    const kanji = glyphsOf(lesson.characterOrWord).filter((char) => KANJI.test(char));
+    if (kanji.length === 0) kanaOnly.push(lesson);
+    else if (kanji.every((char) => known.has(char))) withKanji.push(lesson);
+  }
+  const pool = withKanji.length > 0 ? withKanji : kanaOnly;
+  return pool.length > 0 ? pool[day % pool.length] : undefined;
 }
 
 /**

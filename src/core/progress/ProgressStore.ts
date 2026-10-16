@@ -381,11 +381,13 @@ export class ProgressStore {
     return result;
   }
 
-  public view(lessons: Lesson[]): ProgressView {
-    const byId = new Map(lessons.map((lesson) => [lesson.id, lesson]));
+  public view(allLessons: Lesson[]): ProgressView {
+    const byId = new Map(allLessons.map((lesson) => [lesson.id, lesson]));
+    // Los dictados generados son miles: cuentan en su sección, no en el total del curso.
+    const lessons = allLessons.filter((lesson) => !lesson.id.startsWith('jpd-'));
     const sections = [
       { title: 'Español', groups: this.groups(lessons, 'palmer', PALMER_GROUPS) },
-      { title: 'Japonés', groups: this.groups(lessons, 'japanese', JAPANESE_GROUPS) }
+      { title: 'Japonés', groups: this.groups(allLessons, 'japanese', JAPANESE_GROUPS) }
     ];
     const scored = [...this.lessons.values()].filter((record) => record.lastScore != null);
     const averageScore = scored.length
@@ -501,7 +503,7 @@ export class ProgressStore {
         else if (record?.practiced) started += 1;
       }
       return { id, label: id, category, total: members.length, complete, started };
-    });
+    }).filter((group) => group.total > 0);
   }
 
   private load(): void {

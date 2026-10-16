@@ -30,7 +30,7 @@ export const LESSONS: Lesson[] = [
   ...JP_DICTATION_LESSONS
 ];
 
-/** Lecciones fijas más las oraciones que escribió el usuario. */
-export function allLessons(customTexts: string[]): Lesson[] {
-  return [...LESSONS, ...customTexts.map((text) => customLesson(text))];
+/** Lecciones fijas, las oraciones que escribió el usuario y los dictados generados (se cargan aparte). */
+export function allLessons(customTexts: string[], extra: Lesson[] = []): Lesson[] {
+  return [...LESSONS, ...extra, ...customTexts.map((text) => customLesson(text))];
 }

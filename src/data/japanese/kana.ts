@@ -142,57 +142,64 @@ export const VOCABULARY_LESSONS: Lesson[] = WORDS.map(([text, reading, meaning, 
   meaning
 }));
 
+/** Los primeros dictados, escritos a mano. Los demás se generan (ver data/japanese/dictation). */
 export const JP_DICTATION_LESSONS: Lesson[] = [
   {
     id: 'jp-d-1',
     category: 'japanese',
-    group: 'Dictado',
-    title: 'きょうは いい てんき',
-    subTitle: 'Frase corta',
+    group: 'Dictado Kana',
+    title: 'Hoy hace buen tiempo',
+    subTitle: 'Kana · 9 signos',
     instructions: 'Escucha y escribe la frase, un signo por cuadrado. Los espacios no ocupan cuadro.',
     characterOrWord: 'きょうは いい てんき',
     recommendedTool: 'fude',
     suggestedGrid: 'genkouyoushi',
     dictation: true,
-    strokesExpected: 16
-  },
-  {
-    id: 'jp-d-2',
-    category: 'japanese',
-    group: 'Dictado',
-    title: 'みず と き',
-    subTitle: 'Agua y árbol',
-    instructions: 'Escribe las dos palabras con el orden de trazo de cada kanji o kana, un signo por cuadrado.',
-    characterOrWord: '水 と 木',
-    recommendedTool: 'fude',
-    suggestedGrid: 'genkouyoushi',
-    dictation: true,
-    strokesExpected: 10
-  },
-  {
-    id: 'jp-d-3',
-    category: 'japanese',
-    group: 'Dictado',
-    title: 'やまと かわ',
-    subTitle: 'Montaña y río',
-    instructions: 'Escucha y escribe en kanji: montaña y río.',
-    characterOrWord: '山 川',
-    recommendedTool: 'fude',
-    suggestedGrid: 'genkouyoushi',
-    dictation: true,
-    strokesExpected: 6
+    strokesExpected: 16,
+    meaning: 'Hoy hace buen tiempo'
   },
   {
     id: 'jp-d-4',
     category: 'japanese',
-    group: 'Dictado',
-    title: 'にほんご',
-    subTitle: 'Idioma japonés',
+    group: 'Dictado Kana',
+    title: 'Idioma japonés',
+    subTitle: 'Kana · 4 signos',
     instructions: 'Escucha y escribe la palabra en hiragana.',
     characterOrWord: 'にほんご',
     recommendedTool: 'fude',
     suggestedGrid: 'genkouyoushi',
     dictation: true,
-    strokesExpected: 12
+    strokesExpected: 12,
+    meaning: 'Idioma japonés'
+  },
+  {
+    id: 'jp-d-2',
+    category: 'japanese',
+    group: 'Dictado N5',
+    title: 'Agua y árbol',
+    subTitle: 'N5 · 3 signos',
+    instructions: 'Escribe las dos palabras con el orden de trazo de cada kanji o kana, un signo por cuadrado.',
+    characterOrWord: '水 と 木',
+    recommendedTool: 'fude',
+    suggestedGrid: 'genkouyoushi',
+    dictation: true,
+    strokesExpected: 10,
+    speech: 'みず と き',
+    meaning: 'Agua y árbol'
+  },
+  {
+    id: 'jp-d-3',
+    category: 'japanese',
+    group: 'Dictado N5',
+    title: 'Montaña y río',
+    subTitle: 'N5 · 2 signos',
+    instructions: 'Escucha y escribe en kanji: montaña y río.',
+    characterOrWord: '山 川',
+    recommendedTool: 'fude',
+    suggestedGrid: 'genkouyoushi',
+    dictation: true,
+    strokesExpected: 6,
+    speech: 'やま かわ',
+    meaning: 'Montaña y río'
   }
 ];

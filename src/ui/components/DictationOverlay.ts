@@ -1,4 +1,4 @@
-import { suggestedSeconds, wordsPerMinute, DictationService } from '../../core/audio/DictationService';
+import { suggestedSeconds, wordsPerMinute, DictationService, PlayResult } from '../../core/audio/DictationService';
 import { Lesson } from '../../types/ink';
 
 export interface DictationFinish {
@@ -12,6 +12,7 @@ export interface DictationFinish {
 export class DictationOverlay {
   private active: Lesson | null = null;
   private finished = false;
+  private replays = 0;
 
   public onFinish?: (result: DictationFinish) => void;
   public onCancel?: () => void;
@@ -34,12 +35,10 @@ export class DictationOverlay {
     this.active = lesson;
     this.finished = false;
     const seconds = lesson.dictationSeconds ?? suggestedSeconds(lesson.characterOrWord);
-    const lang = lesson.category === 'palmer' ? 'es-ES' : 'ja-JP';
-    this.prompt.textContent = this.service.canSpeak()
-      ? 'Escucha y escribe. El texto aparece al entregar.'
-      : 'Este navegador no puede leer en voz alta. Pide a alguien que te dicte la frase.';
+    this.replays = 0;
+    this.prompt.textContent = this.message(lesson, 'audio');
     this.root.hidden = false;
-    this.service.speak(lesson.characterOrWord, lang);
+    void this.play(lesson, 0.9);
     this.service.startTimer(seconds, (tick) => {
       this.clock.textContent = `${tick.remaining} s`;
     }, () => this.complete(true));
@@ -57,10 +56,25 @@ export class DictationOverlay {
     this.finished = false;
   }
 
+  /** Cada repetición va más lenta, como cuando el profesor repite la frase. */
   private replay(): void {
     if (!this.active) return;
-    const lang = this.active.category === 'palmer' ? 'es-ES' : 'ja-JP';
-    this.service.speak(this.active.characterOrWord, lang);
+    this.replays += 1;
+    void this.play(this.active, this.replays === 1 ? 0.75 : 0.6);
+  }
+
+  private async play(lesson: Lesson, rate: number): Promise<void> {
+    const result = await this.service.playLesson(lesson, rate);
+    if (this.active === lesson && result === 'none') this.prompt.textContent = this.message(lesson, result);
+  }
+
+  private message(lesson: Lesson, result: PlayResult): string {
+    const hint = lesson.category === 'japanese' && lesson.meaning ? ` Pista: «${lesson.meaning}».` : '';
+    if (result === 'none') {
+      const name = lesson.category === 'palmer' ? 'español' : 'japonés';
+      return `Esta frase no tiene audio grabado y no hay una voz en ${name} en este dispositivo. Pide a alguien que te la dicte, o instala una voz de ${name} en el sistema.${hint}`;
+    }
+    return `Escucha y escribe. «Repetir» la lee más lento. El texto aparece al entregar.${hint}`;
   }
 
   private complete(timedOut: boolean): void {
@@ -84,3 +98,4 @@ export class DictationOverlay {
     this.onCancel?.();
   }
 }
+

@@ -58,6 +58,8 @@ window.addEventListener('DOMContentLoaded', () => {
   const sheets = new SheetStore();
   const dictationService = new DictationService();
 
+  /** Dictados generados: llegan después del arranque (ver data/japanese/dictation). */
+  let generatedLessons: Lesson[] = [];
   let lessons = allLessons(settingsStore.get().customTexts);
   let lessonsById = new Map(lessons.map((lesson) => [lesson.id, lesson]));
   let plan: PlanItem[] = [];
@@ -440,7 +442,7 @@ window.addEventListener('DOMContentLoaded', () => {
     catalog.setScripts(settings.scripts);
     const texts = settings.customTexts.join('\n');
     if (texts !== lessons.filter((lesson) => lesson.custom).map((lesson) => lesson.characterOrWord).join('\n')) {
-      lessons = allLessons(settings.customTexts);
+      lessons = allLessons(settings.customTexts, generatedLessons);
       lessonsById = new Map(lessons.map((lesson) => [lesson.id, lesson]));
       catalog.setLessons(lessons);
     }
@@ -603,4 +605,23 @@ window.addEventListener('DOMContentLoaded', () => {
   if (last) catalog.focus(last);
   scheduleReminder(initial.reminderTime);
   applyRoute();
+
+  // Los dictados generados van en un archivo aparte: se suman al catálogo cuando llegan.
+  void import('./data/japanese/dictation/index')
+    .then((module) => module.loadDictationLessons())
+    .then((extra) => {
+      if (extra.length === 0) return;
+      generatedLessons = extra;
+      lessons = allLessons(settingsStore.get().customTexts, generatedLessons);
+      lessonsById = new Map(lessons.map((lesson) => [lesson.id, lesson]));
+      catalog.setLessons(lessons);
+      const lastId = settingsStore.get().lastLessonId;
+      const lastLesson = lastId ? lessonsById.get(lastId) : undefined;
+      if (lastLesson && screen !== 'studio') catalog.focus(lastLesson);
+      refreshPlan();
+      // Un enlace directo a un dictado generado se abre en cuanto el dictado existe.
+      if (screen !== 'studio' && routeFromHash().screen === 'studio') applyRoute();
+      else publishProgress();
+    })
+    .catch(() => undefined);
 });
