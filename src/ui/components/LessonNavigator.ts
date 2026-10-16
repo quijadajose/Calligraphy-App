@@ -31,6 +31,8 @@ const COPY: Record<string, { title: string; blurb: string }> = {
 };
 
 const JP_DICTATION = 'Dictado';
+/** Tarjetas por tanda: los grupos grandes (kanji N1, dictados N1…) se muestran de a poco. */
+const PAGE_SIZE = 120;
 const dictationGroup = (level: string) => `Dictado ${level}`;
 
 /**
@@ -50,6 +52,9 @@ export class LessonNavigator {
   private mastery = new Map<string, number>();
   private due = new Set<string>();
   private tiles = new Map<string, HTMLButtonElement>();
+  /** Cuántas tarjetas del grupo actual están puestas, y de qué grupo (para volver a la primera tanda). */
+  private shown = PAGE_SIZE;
+  private shownKey = '';
 
   public onSelect?: (lesson: Lesson) => void;
 
@@ -192,10 +197,39 @@ export class LessonNavigator {
     this.renderLevels();
     this.renderCopy();
     const lessons = this.visible();
+    const key = `${this.category}|${this.currentGroup()}|${this.query}|${this.kanjiOrder}`;
+    if (key !== this.shownKey) {
+      this.shownKey = key;
+      this.shown = PAGE_SIZE;
+    }
+    // La lección activa siempre queda a la vista, aunque esté al final de un grupo grande.
+    const active = lessons.findIndex((lesson) => lesson.id === this.activeId);
+    if (active >= this.shown) this.shown = Math.ceil((active + 1) / PAGE_SIZE) * PAGE_SIZE;
     this.tiles.clear();
     const fragment = document.createDocumentFragment();
-    for (const lesson of lessons) fragment.appendChild(this.tile(lesson));
+    for (const lesson of lessons.slice(0, this.shown)) fragment.appendChild(this.tile(lesson));
     this.list.replaceChildren(fragment);
+    this.renderMore(lessons);
+  }
+
+  /** Botón al final de la lista para poner la siguiente tanda de tarjetas. */
+  private renderMore(lessons: Lesson[]): void {
+    const left = lessons.length - this.shown;
+    if (left <= 0) return;
+    const more = document.createElement('button');
+    more.type = 'button';
+    more.className = 'lesson-more';
+    more.textContent = `Mostrar ${Math.min(PAGE_SIZE, left)} más (quedan ${left})`;
+    more.addEventListener('click', () => {
+      const from = this.shown;
+      this.shown += PAGE_SIZE;
+      more.remove();
+      const fragment = document.createDocumentFragment();
+      for (const lesson of lessons.slice(from, this.shown)) fragment.appendChild(this.tile(lesson));
+      this.list.append(fragment);
+      this.renderMore(lessons);
+    });
+    this.list.append(more);
   }
 
   private renderTabs(): void {

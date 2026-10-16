@@ -488,6 +488,30 @@
   padding: 4px 0 16px;
 }
 
+/* «Mostrar más»: ocupa toda la fila, al final de la lista. */
+.lesson-more {
+  grid-column: 1 / -1;
+  justify-self: center;
+  border: 0.5px solid var(--ub);
+  border-radius: var(--border-radius-pill);
+  background: var(--ui2);
+  color: var(--um);
+  font: inherit;
+  font-size: 14px;
+  padding: 10px 22px;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.lesson-more:hover {
+  color: var(--ut);
+}
+
+.lesson-more:focus-visible {
+  outline: 2px solid var(--accent, currentColor);
+  outline-offset: 2px;
+}
+
 .glyph-tile, .lesson-card {
   background: var(--ui2);
   border-radius: var(--border-radius-md);

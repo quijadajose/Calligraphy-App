@@ -137,6 +137,8 @@ export interface GenkouLayout {
  * solo se dibujan esos (una fila si caben), no la hoja entera. `null`: la hoja completa.
  */
 let boxLimit: number | null = null;
+/** Cuadro más chico al que se baja para que quepa una frase: todavía se escribe con el dedo. */
+const MIN_BOX = 56;
 
 export function setBoxLimit(limit: number | null): boolean {
   const next = limit && limit > 0 ? Math.round(limit) : null;
@@ -148,11 +150,19 @@ export function setBoxLimit(limit: number | null): boolean {
 export function genkouyoushiLayout(width: number, height: number): GenkouLayout {
   const top = practiceChrome.top;
   const usableH = Math.max(180, height - top - practiceChrome.bottom);
-  const boxSize = Math.min(200, Math.floor(Math.min(width, usableH) * 0.34));
   const gap = 16;
-  const maxCols = Math.max(1, Math.floor((width - gap) / (boxSize + gap)));
-  const maxRows = Math.max(1, Math.floor((usableH - gap) / (boxSize + gap)));
-  // Con límite, la hoja se encoge a lo justo; si la frase no cabe, se usa la hoja entera.
+  const fit = (size: number) => ({
+    maxCols: Math.max(1, Math.floor((width - gap) / (size + gap))),
+    maxRows: Math.max(1, Math.floor((usableH - gap) / (size + gap)))
+  });
+  let boxSize = Math.min(200, Math.floor(Math.min(width, usableH) * 0.34));
+  let { maxCols, maxRows } = fit(boxSize);
+  // Si la frase no cabe (un teléfono con 10 signos), los cuadros se achican hasta que quepa entera.
+  while (boxLimit !== null && maxCols * maxRows < boxLimit && boxSize > MIN_BOX) {
+    boxSize = Math.max(MIN_BOX, boxSize - 4);
+    ({ maxCols, maxRows } = fit(boxSize));
+  }
+  // Con límite, la hoja se encoge a lo justo; si ni así cabe, se usa la hoja entera.
   const limit = boxLimit !== null && boxLimit <= maxCols * maxRows ? boxLimit : null;
   const cols = limit !== null ? Math.min(maxCols, limit) : maxCols;
   const rows = limit !== null ? Math.ceil(limit / cols) : maxRows;

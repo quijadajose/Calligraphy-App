@@ -10,7 +10,9 @@ import { SlantAnalyzer } from '../core/evaluation/SlantAnalyzer';
 import { StrokeEvaluator } from '../core/evaluation/StrokeEvaluator';
 import { baseWidthMatching } from '../core/engine/BrushRenderer';
 import { InkCanvas } from '../core/engine/InkCanvas';
-import { CURSIVE_SLANT_DEG, genkouyoushiLayout, scriptSlant, setBoxLimit, setScriptSlant } from '../core/engine/gridMetrics';
+import { CURSIVE_SLANT_DEG, genkouyoushiLayout, scriptSlant, sentenceFrame, sentenceRowGeometry, sentenceRowIndexAt, setBoxLimit, setScriptSlant } from '../core/engine/gridMetrics';
+import { patternGuideProfile, sheetGuideProfile } from '../core/engine/SheetGuide';
+import { PROFILE_STEP } from '../core/evaluation/profile';
 import { ScriptStyle, scriptSlantFor, setSheetScript } from '../core/engine/scriptFonts';
 import { Settings } from '../core/settings/SettingsStore';
 import { SheetStore } from '../core/storage/SheetStore';
@@ -23,6 +25,10 @@ import { Toolbar } from '../ui/components/Toolbar';
 const IDLE_GAP_MS = 5000;
 /** Pausa tras el último trazo antes de calificar sola la hoja llena (deja ver el trazo final). */
 const AUTO_GRADE_DELAY_MS = 700;
+/** En las hojas Palmer se escribe con pausas entre palabras: se espera más antes de calificar. */
+const AUTO_GRADE_SHEET_DELAY_MS = 1500;
+/** Una línea cuenta como escrita cuando la tinta llega a este tramo del ancho del modelo. */
+const SHEET_ROW_FILL = 0.85;
 const DOCK_WIDTHS = [2, 3, 4, 6, 8, 12];
 
 export interface StudioElements {
@@ -276,6 +282,42 @@ export class Studio {
    * fuera del dictado y con el número de trazos conocido de cada signo.
    */
   private sheetIsFull(): boolean {
+    return this.japaneseSheetIsFull() || this.palmerSheetIsFull();
+  }
+
+  /**
+   * Hoja Palmer (planas, palabras, oraciones, soltura): todas las líneas escritas, cada una
+   * hasta casi el final del modelo. No aplica al dictado (se entrega) ni a las letras por pasos.
+   */
+  private palmerSheetIsFull(): boolean {
+    const lesson = this.lesson;
+    if (!lesson || lesson.category !== 'palmer' || !lesson.sheet || lesson.dictation || this.dictating) return false;
+    const { width, height } = this.ink.getSize();
+    const guide = lesson.pattern ? patternGuideProfile(lesson.pattern, width, height) : sheetGuideProfile(lesson.characterOrWord, width, height);
+    if (!guide) return false;
+    let first = -1;
+    let last = -1;
+    guide.forEach((column, index) => {
+      if (!column) return;
+      if (first < 0) first = index;
+      last = index;
+    });
+    if (last < 0) return false;
+    const columnWidth = sentenceRowGeometry(0, height).xHeight * PROFILE_STEP;
+    const startX = first * columnWidth;
+    const needX = startX + (last + 1 - first) * columnWidth * SHEET_ROW_FILL;
+    const { rows } = sentenceFrame(height);
+    const reach = Array.from({ length: rows }, () => -Infinity);
+    for (const stroke of this.ink.getStrokes()) {
+      if (stroke.points.length === 0) continue;
+      const meanY = stroke.points.reduce((sum, point) => sum + point.y, 0) / stroke.points.length;
+      const row = sentenceRowIndexAt(meanY, height);
+      for (const point of stroke.points) reach[row] = Math.max(reach[row], point.x);
+    }
+    return reach.every((x) => x >= needX);
+  }
+
+  private japaneseSheetIsFull(): boolean {
     const lesson = this.lesson;
     if (!lesson || lesson.category !== 'japanese' || this.dictating || lesson.dictation) return false;
     if (this.glyphs.length === 0 || this.glyphs.some((glyph) => !glyph)) return false;
@@ -301,7 +343,7 @@ export class Studio {
       if (document.querySelector('.score-modal-backdrop:not([hidden])')) return;
       this.autoGraded = true;
       this.evaluate();
-    }, AUTO_GRADE_DELAY_MS);
+    }, this.lesson?.category === 'palmer' ? AUTO_GRADE_SHEET_DELAY_MS : AUTO_GRADE_DELAY_MS);
   }
 
   private cancelAutoGrade(): void {
@@ -401,6 +443,7 @@ export class Studio {
       return;
     }
     this.onPracticed?.(lesson);
+    this.maybeAutoGrade();
     const progress = this.syncPalmerProgress();
     if (progress) {
       this.say(progress);
